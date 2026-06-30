@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
+use App\Services\V1\BaseService;
+
 /**
  * Class LanguageService
  * @package App\Services
  */
-class LanguageService
+class LanguageService extends BaseService
 {
     protected $languageRepository;
     protected $routerRepository;
@@ -26,6 +28,7 @@ class LanguageService
         LanguageRepository $languageRepository,
         RouterRepository $routerRepository,
     ){
+        parent::__construct($routerRepository);
         $this->languageRepository = $languageRepository;
         $this->routerRepository = $routerRepository;
     }

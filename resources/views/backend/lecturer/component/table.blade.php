@@ -29,7 +29,7 @@
                     {{ $lecturer->description }}
                 </td>
                 <td class="text-center js-switch-{{ $lecturer->id }}"> 
-                    <input type="checkbox" value="{{ $lecturer->publish }}" class="js-switch status " data-field="publish" data-model="{{ $config['model'] }}" {{ ($lecturer->publish == 2) ? 'checked' : '' }} data-modelId="{{ $lecturer->id }}" />
+                    <input type="checkbox" value="{{ $lecturer->publish }}" class="js-switch status " data-namespace="Core" data-field="publish" data-model="{{ $config['model'] }}" {{ ($lecturer->publish == 2) ? 'checked' : '' }} data-modelId="{{ $lecturer->id }}" />
                 </td>
                 <td class="text-center"> 
                     <a href="{{ route('lecturer.edit', $lecturer->id) }}" class="btn btn-success"><i class="fa fa-edit"></i></a>
