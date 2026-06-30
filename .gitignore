@@ -1,0 +1,17 @@
+/vendor
+/node_modules
+.env
+# /public/uploads
+# /public/upload
+/public/image-cacherm public.zip
+/db/*backup.sql
+/scratch
+/db
+*.zip
+*.tgz
+*.tar.gz
+*.rar
+*.tar
+/db_old/
+/public/canonical_comparison.html
+/public/seo_sync_report.html
