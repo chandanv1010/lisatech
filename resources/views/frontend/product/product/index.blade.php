@@ -41,209 +41,287 @@
         $constructionCards = collect($constructionWidget->object ?? []);
     @endphp
 
-    <!-- Hero Banner (Breadcrumbs with Background Banner Image) -->
-    <section class="about-hero">
-        @php
-            $heroTitle = $DetailCatalogues['title'] ?? ($productCatalogue->name ?? '');
-            $heroBg = '/userfiles/image/bg-about-hero.png';
-        @endphp
-        <img class="about-hero__bg" src="{{ asset($heroBg) }}" alt="{{ $heroTitle }}" loading="lazy">
-        <div class="hero-overlay"></div>
-        <div class="uk-container uk-container-center hero-content">
-            <h1 class="hero-title">
-                <span class="decor-line left"></span>
-                {{ $heroTitle }}
-                <span class="decor-line right"></span>
-            </h1>
-            <div class="hero-breadcrumb">
-                <ul class="uk-breadcrumb">
+    <section class="main-content modules-products">
+        <div class="uk-container uk-container-center">
+            
+            <!-- Simple 1-line Breadcrumb -->
+            <div class="breadcrumb-inline-wrapper">
+                <ul class="uk-breadcrumb simple-breadcrumb">
                     <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"
                                 title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
                     @endforeach
+                    <li><span>{{ $DetailProducts['name'] ?? '' }}</span></li>
                 </ul>
+            </div>
+
+            <div class="uk-grid uk-grid-medium col-reverse-959 uk-margin-top">
+
+                <!-- Left Column (1/4) -->
+                <div class="uk-width-large-1-4">
+
+                    <!-- Product Categories Tree Panel -->
+                    <div class="aside-panel aside-categories-list">
+                        <h3 class="aside-title">Danh mục sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <ul class="category-list">
+                            @foreach ($productCatalogues as $catData)
+                                @php
+                                    $catItem = $catData['item'];
+                                    $catName = $catItem->languages->first()->pivot->name ?? $catItem->name ?? '';
+                                    $catUrl = rewrite_url($catItem->languages->first()->pivot->canonical ?? $catItem->canonical ?? '');
+                                    
+                                    $isChecked1 = ($productCatalogue->lft >= $catItem->lft && $productCatalogue->rgt <= $catItem->rgt);
+                                    $isActive1 = ($productCatalogue->id == $catItem->id);
+                                @endphp
+                                <li class="category-item-container">
+                                    <a href="{{ $catUrl }}" class="category-parent-link {{ $isChecked1 ? 'active-parent' : '' }} {{ $isActive1 ? 'active' : '' }}">
+                                        <span class="custom-checkbox {{ $isChecked1 ? 'checked' : '' }}">
+                                            @if ($isChecked1)
+                                                <i class="fa fa-check"></i>
+                                            @endif
+                                        </span>
+                                        <span class="category-name">{{ $catName }}</span>
+                                    </a>
+                                    
+                                    @if (!empty($catData['children']) && count($catData['children']) > 0 && $isChecked1)
+                                        <ul class="subcategory-list level-2-list">
+                                            @foreach ($catData['children'] as $childData)
+                                                @php
+                                                    $childItem = $childData['item'];
+                                                    $childName = $childItem->languages->first()->pivot->name ?? $childItem->name ?? '';
+                                                    $childUrl = rewrite_url($childItem->languages->first()->pivot->canonical ?? $childItem->canonical ?? '');
+                                                    
+                                                    $isChecked2 = ($productCatalogue->lft >= $childItem->lft && $productCatalogue->rgt <= $childItem->rgt);
+                                                    $isChildActive = ($productCatalogue->id == $childItem->id);
+                                                @endphp
+                                                <li>
+                                                    <a href="{{ $childUrl }}" class="subcategory-link {{ $isChecked2 ? 'active-parent' : '' }} {{ $isChildActive ? 'active' : '' }}">
+                                                        <span class="prefix-line">---</span>{{ $childName }}
+                                                    </a>
+                                                    
+                                                    @if (!empty($childData['children']) && count($childData['children']) > 0 && $isChecked2)
+                                                        <ul class="subcategory-list level-3-list">
+                                                            @foreach ($childData['children'] as $grandChildData)
+                                                                 @php
+                                                                    $grandChildItem = $grandChildData['item'];
+                                                                    $grandChildName = $grandChildItem->languages->first()->pivot->name ?? $grandChildItem->name ?? '';
+                                                                    $grandChildUrl = rewrite_url($grandChildItem->languages->first()->pivot->canonical ?? $grandChildItem->canonical ?? '');
+                                                                    $isGrandChildActive = ($productCatalogue->id == $grandChildItem->id);
+                                                                @endphp
+                                                                <li>
+                                                                    <a href="{{ $grandChildUrl }}" class="subcategory-link {{ $isGrandChildActive ? 'active' : '' }}">
+                                                                        <span class="prefix-line">------</span>{{ $grandChildName }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- Online Support Panel -->
+                    <div class="aside-panel support-sidebar-panel">
+                        <h3 class="aside-title">Hỗ trợ trực tuyến</h3>
+                        <div class="support-list">
+                            @for ($i = 1; $i <= 5; $i++)
+                                @php
+                                    $sName = $system['support_name_' . $i] ?? "Hỗ trợ {$i}";
+                                    $sPhone = $system['support_phone_' . $i] ?? "0973 999 999";
+                                    $sZalo = $system['support_zalo_' . $i] ?? "https://zalo.me";
+                                @endphp
+                                @if (!empty($sName) && !empty($sPhone))
+                                    <div class="support-item">
+                                        <div class="support-info-left">
+                                            <h4 class="support-name">{{ $sName }}</h4>
+                                            <p class="support-hotline">Hotline: {{ $sPhone }}</p>
+                                        </div>
+                                        @if (!empty($sZalo))
+                                            <a href="{{ $sZalo }}" target="_blank" class="support-zalo-link" title="Chat Zalo">
+                                                <img src="{{ asset('frontend/resources/img/zalo-icon.png') }}" alt="Zalo" class="zalo-icon-img" onerror="this.onerror=null;this.src='https://zalo.me/favicon.ico'">
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endif
+                            @endfor
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (3/4) -->
+                <div class="uk-width-large-3-4">
+                    <div class="rightContent">
+                        
+                        <section class="product-detail">
+                            <section class="panel-body" style="padding: 0 !important;">
+                                <div class="uk-grid uk-grid-width-large-1-2">
+            
+                                    <!-- Left Column: White Card Gallery -->
+                                    <div class="gallery-container">
+                                        <div class="main-image-card">
+                                            <a id="main-image-link" href="{{ $DetailProducts['images'] }}"
+                                                data-uk-lightbox="{group:'#product-gallery'}" title="{{ $DetailProducts['title'] }}">
+                                                <img id="main-product-image" src="{{ $DetailProducts['images'] }}"
+                                                    alt="{{ $DetailProducts['title'] }}">
+                                            </a>
+                                        </div>
+            
+                                        @if (count($albums))
+                                            <div class="thumbnail-grid">
+                                                <div class="thumbnail-card active" data-src="{{ $DetailProducts['images'] }}">
+                                                    <img src="{{ $DetailProducts['images'] }}" alt="{{ $DetailProducts['title'] }}">
+                                                </div>
+                                                @foreach ($albums as $album)
+                                                    @php $albumImage = $album['images'] ?? $album['image'] ?? ''; @endphp
+                                                    @if ($albumImage)
+                                                        <div class="thumbnail-card" data-src="{{ getthumb($albumImage) }}">
+                                                            <img src="{{ getthumb($albumImage) }}"
+                                                                alt="{{ $DetailProducts['title'] }}">
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+            
+                                    <!-- Right Column: Product Info -->
+                                    <section class="productDetail-intro">
+                                        <h1 class="title" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 26px; margin: 0 0 15px 0;">{{ $DetailProducts['title'] }}</h1>
+            
+                                        <div class="separator-line"></div>
+            
+                                        @php
+                                            $price = (float) ($DetailProducts['price'] ?? 0);
+                                            $saleoff = (float) ($DetailProducts['saleoff'] ?? 0);
+                                        @endphp
+                                        <div class="productDetail-price uk-flex uk-flex-middle">
+                                            @if ($price > 0)
+                                                <div class="product-pricenew" style="color: #FF9811; font-size: 24px; font-weight: 800; margin-right: 15px;">{{ number_format($saleoff > 0 ? $saleoff : $price) }}đ</div>
+                                                @if ($saleoff > 0)
+                                                    <div class="product-priceold" style="text-decoration: line-through; color: #94a3b8; font-size: 16px;">{{ number_format($price) }}đ</div>
+                                                @endif
+                                            @else
+                                                <div class="product-pricenew" style="color: #FF9811; font-size: 24px; font-weight: 800;">Liên hệ</div>
+                                            @endif
+                                        </div>
+            
+                                        <div class="separator-line"></div>
+            
+                                        <div class="short-description-section">
+                                            <h4 class="section-title" style="color: #334155; font-size: 15px; font-weight: 700; margin-bottom: 10px;">Mô tả ngắn</h4>
+                                            <div class="desc-content" style="color: #475569; font-size: 14px; line-height: 1.6;">
+                                                {!! $DetailProducts['description'] ?? '' !!}
+                                            </div>
+                                        </div>
+            
+                                        <div class="productDetail-buy">
+                                            <div class="action-buttons-wrapper" style="margin-top: 25px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                                <button type="button" class="btn-primary-action btn-lienhe-modal" style="background-color: #FF9811 !important; color: white !important; font-weight: bold; border-radius: 30px; text-transform: uppercase; padding: 12px 35px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,17,0.3); transition: all 0.3s ease;">ĐẶT HÀNG</button>
+                                                
+                                                @if(!empty($DetailProducts['download']))
+                                                    <a href="{{ asset($DetailProducts['download']) }}" target="_blank" class="btn-secondary-action" style="background-color: #64748b !important; color: white !important; font-weight: bold; border-radius: 30px; text-transform: uppercase; padding: 12px 35px; text-decoration: none; display: inline-block; transition: all 0.3s ease;" download>DOWNLOAD</a>
+                                                @endif
+                                            </div>
+                                        </div>
+            
+                                        <div class="share-section uk-flex uk-flex-middle" style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                                            <span class="share-label" style="color: #64748b; font-size: 13.5px; margin-right: 12px;">Chia sẻ:</span>
+                                            <div class="share-icons uk-flex">
+                                                <a href="#" class="share-icon icon-link" title="Sao chép liên kết"
+                                                    onclick="copyLink(event)"><i class="fa fa-link"></i></a>
+                                                <a href="https://zalo.me/share?url={{ urlencode($canonicalUrl) }}" target="_blank"
+                                                    class="share-icon icon-zalo" title="Chia sẻ Zalo">
+                                                    <img src="https://chat.zalo.me/favicon.ico" alt="Zalo"
+                                                        style="width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1);">
+                                                </a>
+                                                <a href="https://www.messenger.com/t/" target="_blank" class="share-icon icon-messenger"
+                                                    title="Messenger"><i class="fa fa-commenting"></i></a>
+                                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($canonicalUrl) }}"
+                                                    target="_blank" class="share-icon icon-facebook" title="Facebook"><i
+                                                        class="fa fa-facebook"></i></a>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+            
+                                <!-- Product Tabs Content -->
+                                <section class="product-content uk-margin-large-top">
+                                    <ul class="uk-list uk-clearfix tab-control uk-flex" data-uk-switcher="{connect:'#tab-content'}">
+                                        <li class="uk-active">Thông số kỹ thuật</li>
+                                        @if(!empty($DetailProducts['applications']))
+                                            <li>Ứng dụng</li>
+                                        @endif
+                                    </ul>
+                                    <ul id="tab-content" class="uk-switcher tab-content">
+                                        <li class="tab-pane-content">
+                                            <div id="tocDiv">
+                                                <ol id="tocListAncarat"></ol>
+                                            </div>
+                                            <article class="article content-detail-new">{!! $DetailProducts['content'] ?? '' !!}</article>
+                                        </li>
+                                        @if(!empty($DetailProducts['applications']))
+                                            <li class="tab-pane-content">
+                                                <article class="article content-detail-new">{!! $DetailProducts['applications'] !!}</article>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </section>
+                            </section>
+                        </section>
+
+                        <!-- Related Products Section (Concept Image 3) -->
+                        @if (!empty($products_same))
+                            <section class="related-products-section uk-margin-large-top" style="border-top: 1px solid #edf2f7; padding-top: 40px; margin-top: 50px !important;">
+                                <header class="related-section-head" style="margin-bottom: 25px;">
+                                    <h2 class="section-title-cyan" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">
+                                        SẢN PHẨM LIÊN QUAN
+                                    </h2>
+                                </header>
+                                <section class="panel-body" style="padding: 0 !important;">
+                                    <div class="uk-grid lib-grid-15 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-related-products">
+                                        @foreach ($products_same as $prod)
+                                            @php
+                                                $pTitle = $prod['title'] ?? '';
+                                                $pHref = rewrite_url($prod['canonical'] ?? '');
+                                                $pImage = getthumb($prod['images'] ?? ($prod['image'] ?? ''));
+                                                $pDesc = cutnchar(strip_tags($prod['description'] ?? ''), 120);
+                                            @endphp
+                                            <div class="related-item-wrapper" style="margin-bottom: 20px;">
+                                                <div class="related-product-card" style="background: #fff; border: 1px solid #edf2f7; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.02); height: 100%; transition: all 0.3s ease;">
+                                                    <div class="card-thumb img-shine" style="position: relative; overflow: hidden; aspect-ratio: 4/3;">
+                                                        <a class="img-cover" href="{{ $pHref }}"
+                                                            title="{{ $pTitle }}" style="display: block; width: 100%; height: 100%;">
+                                                            <img src="{{ $pImage }}" alt="{{ $pTitle }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                                                        </a>
+                                                    </div>
+                                                    <div class="card-info" style="padding: 15px;">
+                                                        <h3 class="card-title" style="margin: 0 0 10px 0; font-size: 14.5px; font-weight: 700; line-height: 1.4;"><a href="{{ $pHref }}"
+                                                                title="{{ $pTitle }}" style="color: #334155; text-decoration: none; transition: color 0.2s;">{{ $pTitle }}</a></h3>
+                                                        <p class="card-desc" style="color: #64748b; font-size: 12.5px; line-height: 1.5; margin: 0;">{{ $pDesc }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </section>
+                            </section>
+                        @endif
+
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section class="main-content">
-        <div class="uk-container uk-container-center">
-            <section class="product-detail">
-                <section class="panel-body">
-                    <div class="uk-grid uk-grid-width-large-1-2">
 
-                        <!-- Left Column: White Card Gallery -->
-                        <div class="gallery-container">
-                            <div class="main-image-card">
-                                <a id="main-image-link" href="{{ $DetailProducts['images'] }}"
-                                    data-uk-lightbox="{group:'#product-gallery'}" title="{{ $DetailProducts['title'] }}">
-                                    <img id="main-product-image" src="{{ $DetailProducts['images'] }}"
-                                        alt="{{ $DetailProducts['title'] }}">
-                                </a>
-                            </div>
-
-                            @if (count($albums))
-                                <div class="thumbnail-grid">
-                                    <div class="thumbnail-card active" data-src="{{ $DetailProducts['images'] }}">
-                                        <img src="{{ $DetailProducts['images'] }}" alt="{{ $DetailProducts['title'] }}">
-                                    </div>
-                                    @foreach ($albums as $album)
-                                        @php $albumImage = $album['images'] ?? $album['image'] ?? ''; @endphp
-                                        @if ($albumImage)
-                                            <div class="thumbnail-card" data-src="{{ getthumb($albumImage) }}">
-                                                <img src="{{ getthumb($albumImage) }}"
-                                                    alt="{{ $DetailProducts['title'] }}">
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Right Column: Product Info -->
-                        <section class="productDetail-intro">
-                            <h1 class="title">{{ $DetailProducts['title'] }}</h1>
-
-                            <div class="separator-line"></div>
-
-                            @php
-                                $price = (float) ($DetailProducts['price'] ?? 0);
-                                $saleoff = (float) ($DetailProducts['saleoff'] ?? 0);
-                            @endphp
-                            <div class="productDetail-price uk-flex uk-flex-middle">
-                                @if ($price > 0)
-                                    <div class="product-pricenew">{{ number_format($saleoff > 0 ? $saleoff : $price) }}đ
-                                    </div>
-                                    @if ($saleoff > 0)
-                                        <div class="product-priceold">{{ number_format($price) }}đ</div>
-                                    @endif
-                                @else
-                                    <div class="product-pricenew">Liên hệ</div>
-                                @endif
-                            </div>
-
-                            <div class="separator-line"></div>
-
-                            <div class="short-description-section">
-                                <h4 class="section-title">Mô tả ngắn</h4>
-                                <div class="desc-content">
-                                    {!! $DetailProducts['description'] ?? '' !!}
-                                </div>
-                            </div>
-
-                            <div class="productDetail-buy">
-                                <form class="uk-form form">
-                                    <div class="quantity-row uk-flex uk-flex-middle">
-                                        <span class="label">Chọn số lượng</span>
-                                        <div class="quantity-control uk-flex uk-flex-middle">
-                                            <button type="button" class="qty-btn btn-down">-</button>
-                                            <input type="text" value="01" class="quantity-input" readonly>
-                                            <button type="button" class="qty-btn btn-up">+</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="action-buttons">
-                                        <button type="button" class="btn-primary-action btn-lienhe-modal">LIÊN HỆ</button>
-                                        <div class="sub-actions-flex">
-                                            <a href="tel:{{ $system['contact_hotline'] ?? '' }}"
-                                                class="btn-sub-action btn-call">GỌI NGAY</a>
-                                            <a href="https://zalo.me/{{ preg_replace('/\D/', '', $system['contact_hotline'] ?? '') }}"
-                                                target="_blank" class="btn-sub-action btn-zalo">CHAT ZALO</a>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="share-section uk-flex uk-flex-middle">
-                                <span class="share-label">Chia sẻ:</span>
-                                <div class="share-icons uk-flex">
-                                    <a href="#" class="share-icon icon-link" title="Sao chép liên kết"
-                                        onclick="copyLink(event)"><i class="fa fa-link"></i></a>
-                                    <a href="https://zalo.me/share?url={{ urlencode($canonicalUrl) }}" target="_blank"
-                                        class="share-icon icon-zalo" title="Chia sẻ Zalo">
-                                        <img src="https://chat.zalo.me/favicon.ico" alt="Zalo"
-                                            style="width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1);">
-                                    </a>
-                                    <a href="https://www.messenger.com/t/" target="_blank" class="share-icon icon-messenger"
-                                        title="Messenger"><i class="fa fa-commenting"></i></a>
-                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($canonicalUrl) }}"
-                                        target="_blank" class="share-icon icon-facebook" title="Facebook"><i
-                                            class="fa fa-facebook"></i></a>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <!-- Product Tabs Content -->
-                    <section class="product-content uk-margin-large-top">
-                        <ul class="uk-list uk-clearfix tab-control uk-flex" data-uk-switcher="{connect:'#tab-content'}">
-                            <li class="uk-active">Thông tin chi tiết</li>
-                            <li>Đánh giá sản phẩm</li>
-                        </ul>
-                        <ul id="tab-content" class="uk-switcher tab-content">
-                            <li class="tab-pane-content">
-                                <div id="tocDiv">
-                                    <ol id="tocListAncarat"></ol>
-                                </div>
-                                <article class="article content-detail-new">{!! $DetailProducts['content'] ?? '' !!}</article>
-                            </li>
-                            <li class="tab-pane-content">
-                                <div class="comments">
-                                    <div class="fb-comments" data-href="{{ $canonicalUrl }}" data-width="100%"
-                                        data-numposts="3"></div>
-                                </div>
-                            </li>
-                        </ul>
-                    </section>
-                </section>
-            </section>
-
-            <!-- Related Products Section (Concept Image 3) -->
-            @if (!empty($products_same))
-                <section class="related-products-section uk-margin-large-top">
-                    <header class="related-section-head">
-                        <h2 class="section-title-cyan">
-                            <span class="line"></span>
-                            <span class="dot">•</span>
-                            SẢN PHẨM LIÊN QUAN
-                            <span class="dot">•</span>
-                            <span class="line"></span>
-                        </h2>
-                    </header>
-                    <section class="panel-body">
-                        <div class="uk-grid lib-grid-15 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-related-products">
-                            @foreach ($products_same as $prod)
-                                @php
-                                    $pTitle = $prod['title'] ?? '';
-                                    $pHref = rewrite_url($prod['canonical'] ?? '');
-                                    $pImage = getthumb($prod['images'] ?? ($prod['image'] ?? ''));
-                                    $pDesc =
-                                        cutnchar(strip_tags($prod['description'] ?? ''), 120) ?:
-                                        'Thiết kế phòng hát karaoke sang trọng, hiện đại, mang phong cách đẳng cấp và thời thượng nhất hiện nay...';
-                                @endphp
-                                <div class="related-item-wrapper">
-                                    <div class="related-product-card">
-                                        <div class="card-thumb img-shine">
-                                            <a class="img-cover" href="{{ $pHref }}"
-                                                title="{{ $pTitle }}">
-                                                <img src="{{ $pImage }}" alt="{{ $pTitle }}">
-                                            </a>
-                                        </div>
-                                        <div class="card-info">
-                                            <h3 class="card-title"><a href="{{ $pHref }}"
-                                                    title="{{ $pTitle }}">{{ $pTitle }}</a></h3>
-                                            <p class="card-desc">{{ $pDesc }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                </section>
-            @endif
-        </div>
-    </section>
 
     <!-- Construction Section from Homepage -->
     @if ($constructionWidget)
@@ -292,99 +370,47 @@
 
     <style>
         .main-content {
-            background-color: #000000 !important;
-            color: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #475569 !important;
             padding: 50px 0 !important;
         }
 
-        /* Breadcrumb Banner */
-        .about-hero {
-            position: relative;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+        .simple-breadcrumb {
+            display: inline-flex !important;
+            align-items: center !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 0 20px 0 !important;
+            flex-wrap: wrap !important;
         }
 
-        .about-hero__bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
+        .simple-breadcrumb>li {
+            display: inline-flex !important;
+            align-items: center !important;
+            color: #64748b !important;
+            font-size: 14px !important;
         }
 
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 2;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            width: 100%;
-        }
-
-        .hero-title {
-            font-family: 'Yeseva One', serif;
-            font-size: 40px !important;
-            color: #ffffff !important;
-            margin: 0 0 15px 0 !important;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .hero-title .decor-line {
-            height: 1px;
-            background-color: #00cbd6;
-            width: 60px;
-        }
-
-        .hero-breadcrumb {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .uk-breadcrumb {
-            display: inline-flex;
-            align-items: center;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            gap: 8px;
-        }
-
-        .uk-breadcrumb>li {
-            color: #ffffff;
-            font-size: 14px;
-        }
-
-        .uk-breadcrumb>li>a {
-            color: rgba(255, 255, 255, 0.7) !important;
+        .simple-breadcrumb>li>a {
+            color: #64748b !important;
             text-decoration: none !important;
+            transition: color 0.2s !important;
+            font-weight: 500 !important;
         }
 
-        .uk-breadcrumb>li>a:hover {
-            color: #00cbd6 !important;
+        .simple-breadcrumb>li>a:hover {
+            color: #FF9811 !important;
         }
 
-        .uk-breadcrumb>li:nth-child(n+2):before {
-            content: '/';
-            color: rgba(255, 255, 255, 0.5) !important;
-            margin-right: 8px;
+        .simple-breadcrumb>li>span {
+            color: #1e293b !important;
+            font-weight: 500 !important;
+        }
+
+        .simple-breadcrumb>li:nth-child(n+2):before {
+            content: '/' !important;
+            color: #cbd5e1 !important;
+            margin: 0 8px !important;
         }
 
         /* Product Detail Gallery */
@@ -396,7 +422,8 @@
 
         .main-image-card {
             background-color: #ffffff !important;
-            border-radius: 8px;
+            border: 1px solid #edf2f7;
+            border-radius: 12px;
             padding: 20px;
             display: flex;
             align-items: center;
@@ -404,7 +431,7 @@
             min-height: 350px;
             max-height: 480px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         .main-image-card img {
@@ -421,7 +448,7 @@
 
         .thumbnail-card {
             background-color: #ffffff !important;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 5px;
             width: 80px;
             height: 80px;
@@ -432,6 +459,7 @@
             border: 2px solid transparent;
             transition: all 0.2s ease;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
 
         .thumbnail-card img {
@@ -442,7 +470,7 @@
 
         .thumbnail-card.active,
         .thumbnail-card:hover {
-            border-color: rgba(14, 60, 125, 1)
+            border-color: #0b4a92;
         }
 
         /* Product Intro Column */
@@ -450,160 +478,10 @@
             padding-left: 30px;
         }
 
-        .productDetail-intro .title {
-            font-size: 28px !important;
-            font-weight: bold !important;
-            color: #00cbd6 !important;
-            /* Cyan color matching the mockup */
-            margin: 0 0 15px 0 !important;
-            line-height: 1.3;
-        }
-
         .separator-line {
             height: 1px;
-            background-color: #222222;
+            background-color: #edf2f7;
             margin: 15px 0;
-        }
-
-        .productDetail-price {
-            margin: 15px 0;
-            gap: 15px;
-        }
-
-        .productDetail-price .product-pricenew {
-            font-size: 30px !important;
-            font-weight: bold !important;
-            color: #ff1e1e !important;
-            /* Bold red new price */
-        }
-
-        .productDetail-price .product-priceold {
-            font-size: 18px !important;
-            color: rgba(255, 255, 255, 0.5) !important;
-            text-decoration: line-through !important;
-        }
-
-        .short-description-section .section-title {
-            color: #ffffff !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
-            margin-bottom: 10px !important;
-        }
-
-        .short-description-section .desc-content {
-            color: rgba(255, 255, 255, 0.8) !important;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* Quantity Selector */
-        .quantity-row {
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .quantity-row .label {
-            font-size: 14px;
-            color: #ffffff;
-        }
-
-        .quantity-control {
-            border: 1px solid #333;
-            border-radius: 20px;
-            background-color: #111;
-            padding: 2px;
-            overflow: hidden;
-        }
-
-        .quantity-control .qty-btn {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-
-        .quantity-control .qty-btn:hover {
-            background-color: #222;
-            border-radius: 50%;
-        }
-
-        .quantity-control .quantity-input {
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            width: 40px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 25px;
-            max-width: 100%;
-        }
-
-        .btn-primary-action {
-            width: 100%;
-            padding: 15px;
-            background-color: #ff1e1e !important;
-            color: #ffffff !important;
-            font-size: 18px !important;
-            font-weight: bold !important;
-            font-family: var(--second-font), sans-serif !important;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary-action:hover {
-            background-color: #e00000 !important;
-        }
-
-        .sub-actions-flex {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn-sub-action {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 14px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-family: var(--second-font), sans-serif !important;
-            text-decoration: none !important;
-            color: #ffffff !important;
-            font-size: 15px;
-            transition: opacity 0.2s;
-            box-sizing: border-box;
-            text-transform: uppercase;
-        }
-
-        .btn-sub-action:hover {
-            opacity: 0.9;
-        }
-
-        .btn-call {
-            background-color: #3bcacb !important;
-        }
-
-        .btn-zalo {
-            background-color: #1e88e5 !important;
         }
 
         /* Share section */
@@ -614,7 +492,7 @@
 
         .share-label {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.6);
+            color: #64748b;
         }
 
         .share-icons {
@@ -657,7 +535,7 @@
 
         /* Tabs styling Override (Image 3) */
         .tab-control {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-bottom: 1px solid #edf2f7 !important;
             background: transparent !important;
             display: flex !important;
             margin-bottom: 30px !important;
@@ -673,7 +551,7 @@
             padding: 12px 0 !important;
             font-size: 16px !important;
             font-weight: bold !important;
-            color: rgba(255, 255, 255, 0.6) !important;
+            color: #64748b !important;
             cursor: pointer !important;
             position: relative !important;
             transition: all 0.2s ease !important;
@@ -690,17 +568,17 @@
         .tab-control li.uk-active {
             background: transparent !important;
             background-color: transparent !important;
-            color: #ffffff !important;
+            color: #0b4a92 !important;
         }
 
         .tab-control li.uk-active {
-            color: rgba(14, 60, 125, 1);
-            border-bottom: 2px solid rgba(14, 60, 125, 1)
+            color: #0b4a92 !important;
+            border-bottom: 2px solid #0b4a92 !important;
         }
 
-        /* Content color styling (white text, cyan link) */
+        /* Content color styling */
         .content-detail-new {
-            color: #ffffff !important;
+            color: #475569 !important;
             font-size: 15px;
             line-height: 1.8;
         }
@@ -713,102 +591,208 @@
         .content-detail-new h2,
         .content-detail-new h3,
         .content-detail-new h4 {
-            color: #ffffff !important;
+            color: #334155 !important;
         }
 
         .content-detail-new a {
-            color: rgba(14, 60, 125, 1);
+            color: #0b4a92;
             text-decoration: underline !important;
         }
 
         .content-detail-new a:hover {
-            color: #ffffff !important;
+            color: #FF9811 !important;
         }
 
-        /* Related Products Section (Image 3) */
-        .section-title-cyan {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00cbd6 !important;
-            font-size: 24px !important;
-            font-weight: bold !important;
-            text-transform: uppercase;
-            margin: 40px 0 30px 0 !important;
-            gap: 15px;
+        /* Sidebar Styling (Light Theme) */
+        .aside-panel {
+            background-color: #ffffff !important;
+            border: 1px solid #edf2f7 !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+            margin-bottom: 25px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
         }
 
-        .section-title-cyan .line {
-            height: 1px;
-            background-color: #00cbd6;
-            width: 150px;
-        }
-
-        .section-title-cyan .dot {
-            font-size: 16px;
-        }
-
-        .list-related-products>div {
-            margin-bottom: 25px;
-        }
-
-        .related-product-card {
-            border: 2px solid #00cbd6 !important;
-            border-radius: 4px;
-            background-color: transparent !important;
-            overflow: hidden;
-            transition: transform 0.3s;
-            margin-bottom: 20px;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        .related-product-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .related-product-card .card-thumb {
-            width: 100%;
-            height: 175px;
-            overflow: hidden;
-            border-bottom: 2px solid #00cbd6;
-        }
-
-        .related-product-card .card-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .related-product-card .card-info {
-            padding: 15px;
-        }
-
-        .related-product-card .card-title {
-            margin: 0 0 10px 0 !important;
+        .aside-title {
+            color: #0b4a92 !important;
             font-size: 16px !important;
-            font-weight: bold !important;
-            line-height: 1.4;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            border-bottom: 2px solid #0b4a92 !important;
+            padding-bottom: 12px !important;
+            margin-top: 0 !important;
+            margin-bottom: 20px !important;
+            font-family: var(--font-base, 'Inter', sans-serif);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .related-product-card .card-title a {
-            color: #ffffff !important;
-            text-decoration: none !important;
-            transition: color 0.2s;
+        .aside-title i {
+            font-size: 14px;
+            color: #64748b;
         }
 
-        .related-product-card .card-title a:hover {
-            color: #00cbd6 !important;
-        }
-
-        .related-product-card .card-desc {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.7) !important;
-            line-height: 1.5;
+        /* Category Tree Checklist Style */
+        .category-list {
+            list-style: none !important;
+            padding: 0 !important;
             margin: 0 !important;
         }
 
+        .category-item-container {
+            margin-bottom: 15px;
+        }
+
+        .category-item-container:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-parent-link {
+            display: flex;
+            align-items: center;
+            color: #334155 !important;
+            text-decoration: none !important;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .category-parent-link:hover,
+        .category-parent-link.active,
+        .category-parent-link.active-parent {
+            color: #0b4a92 !important;
+            font-weight: 600;
+        }
+
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: #fff;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .custom-checkbox i {
+            font-size: 10px;
+            color: #fff;
+            display: none;
+        }
+
+        .category-parent-link:hover .custom-checkbox {
+            border-color: #0b4a92;
+        }
+
+        .custom-checkbox.checked {
+            border-color: #0b4a92;
+            background-color: #0b4a92;
+        }
+
+        .custom-checkbox.checked i {
+            display: block;
+        }
+
+        /* Subcategories level 2 and 3 indents */
+        .subcategory-list {
+            list-style: none !important;
+            padding: 0 0 0 12px !important;
+            margin: 8px 0 0 0 !important;
+            border-left: 1px dashed #e2e8f0;
+        }
+
+        .subcategory-list li {
+            margin-bottom: 8px;
+        }
+
+        .subcategory-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .subcategory-list.level-3-list {
+            padding-left: 15px !important;
+            margin-top: 6px !important;
+            border-left: 1px dashed #cbd5e1;
+        }
+
+        .subcategory-link {
+            display: flex;
+            align-items: center;
+            color: #64748b !important;
+            font-size: 13px;
+            text-decoration: none !important;
+            transition: all 0.2s;
+        }
+
+        .subcategory-link:hover,
+        .subcategory-link.active,
+        .subcategory-link.active-parent {
+            color: #0b4a92 !important;
+            font-weight: 600;
+        }
+
+        .prefix-line {
+            margin-right: 6px;
+            color: #cbd5e1;
+        }
+
+        /* Support Sidebar Panel */
+        .support-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .support-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .support-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .support-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+            margin: 0 0 4px 0;
+        }
+
+        .support-hotline {
+            font-size: 13px;
+            color: #0b4a92;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .zalo-icon-img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .zalo-icon-img:hover {
+            transform: scale(1.1);
+        }
+
         @media (max-width: 959px) {
+            .col-reverse-959 {
+                display: flex;
+                flex-direction: column-reverse;
+            }
             .product-detail {
                 padding-left: 15px !important;
                 padding-right: 15px !important;
@@ -818,10 +802,6 @@
             .productDetail-intro {
                 padding-left: 0;
                 margin-top: 30px;
-            }
-
-            .section-title-cyan .line {
-                width: 80px;
             }
         }
 

@@ -360,6 +360,11 @@ class ProductService extends BaseService
 
     private function formatLanguagePayload($payload, $productId, $languageId)
     {
+        foreach (['meta_title', 'meta_keyword', 'meta_description', 'description', 'content', 'applications'] as $field) {
+            if (array_key_exists($field, $payload) && is_null($payload[$field])) {
+                $payload[$field] = '';
+            }
+        }
         $payload['canonical'] = Str::slug($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['product_id'] = $productId;
@@ -404,6 +409,7 @@ class ProductService extends BaseService
             'follow',
             'publish',
             'image',
+            'download',
             'album',
             'price',
             'stock',
@@ -431,6 +437,7 @@ class ProductService extends BaseService
             'name',
             'description',
             'content',
+            'applications',
             'meta_title',
             'meta_keyword',
             'meta_description',

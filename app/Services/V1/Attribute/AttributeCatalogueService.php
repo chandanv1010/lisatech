@@ -157,6 +157,11 @@ class AttributeCatalogueService extends BaseService
 
     private function formatLanguagePayload($attributeCatalogue, $request, $languageId){
         $payload = $request->only($this->payloadLanguage());
+        foreach (['meta_title', 'meta_keyword', 'meta_description', 'description', 'content'] as $field) {
+            if (array_key_exists($field, $payload) && is_null($payload[$field])) {
+                $payload[$field] = '';
+            }
+        }
         $payload['canonical'] = Str::slug($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['attribute_catalogue_id'] = $attributeCatalogue->id;

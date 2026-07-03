@@ -222,6 +222,11 @@ class PostCatalogueService extends BaseService
 
     private function formatLanguagePayload($postCatalogue, $request, $languageId){
         $payload = $request->only($this->payloadLanguage());
+        foreach (['meta_title', 'meta_keyword', 'meta_description', 'description', 'content'] as $field) {
+            if (array_key_exists($field, $payload) && is_null($payload[$field])) {
+                $payload[$field] = '';
+            }
+        }
         $payload['canonical'] = Str::slug($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['post_catalogue_id'] = $postCatalogue->id;

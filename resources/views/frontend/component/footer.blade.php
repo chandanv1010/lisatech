@@ -13,12 +13,9 @@
     $socialLinkedin = $system['social_linkedin'] ?? ($system['seo_linkedin'] ?? '');
     $socialYoutube = $system['social_youtube'] ?? ($system['seo_youtube'] ?? '');
 
-    // Data Menu Sitelink (từ logic của bạn ở trên)
-    $sitelinkNav = $menu['sitelink'] ?? [];
-    $filteredSitelink = array_filter($sitelinkNav, function ($item) {
-        $name = $item['item']->languages->first()->pivot->name ?? '';
-        return strpos(strtolower($name), 'dmca') === false && strpos(strtolower($name), 'img') === false;
-    });
+    // Data Menu từ MenuComposer
+    $quickLinksNav = $menu['menu-lien-ket-nhanh'] ?? [];
+    $policiesNav = $menu['chinh-sach'] ?? [];
 @endphp
 
 <footer class="footer-lisa" id="footer">
@@ -30,10 +27,11 @@
                 <h3 class="footer-lisa__title">Thông Tin Liên Hệ</h3>
 
                 <div class="footer-lisa__contact-block">
-                    {{-- Tên công ty lấy từ DB, không hardcode "Lisa tech" --}}
-                    {{-- @if (!empty($companyName))
-                        <div class="footer-lisa__company-name">{{ $companyName }}</div>
-                    @endif --}}
+                    @if (!empty($companyName))
+                        <div class="footer-lisa__company-name" style="font-weight: 700; color: #fff; margin-bottom: 20px;">
+                            {{ $companyName }}
+                        </div>
+                    @endif
 
                     @if (!empty($address))
                         <div class="footer-lisa__contact-row">
@@ -84,15 +82,16 @@
             {{-- ====== CỘT 2: LIÊN KẾT NHANH (TIMELINE) ====== --}}
             <div class="footer-lisa__col">
                 <h3 class="footer-lisa__title">Liên Kết Nhanh</h3>
-                @if (!empty($filteredSitelink))
+                @if (!empty($quickLinksNav))
                     <ul class="footer-lisa__nav-list--timeline">
-                        @foreach ($filteredSitelink as $item)
+                        @foreach ($quickLinksNav as $item)
                             @php
-                                $name = $item['item']->languages->first()->pivot->name ?? '';
-                                $link = $item['item']->links ?? '#';
+                                $pivot = menu_translation_pivot($item['item']);
+                                $name = $pivot?->name ?? '';
+                                $link = $pivot ? write_url($pivot->canonical) : '#';
                             @endphp
                             @if ($name)
-                                <li><a href="{{ url($link) }}">{{ $name }}</a></li>
+                                <li><a href="{{ $link }}">{{ $name }}</a></li>
                             @endif
                         @endforeach
                     </ul>
@@ -102,11 +101,20 @@
             {{-- ====== CỘT 3: CHÍNH SÁCH ====== --}}
             <div class="footer-lisa__col">
                 <h3 class="footer-lisa__title">Chính Sách</h3>
-                {{-- Bạn có thể loop menu policy tại đây --}}
-                <ul class="footer-lisa__nav-list--dot">
-                    <li><a href="#">Tài liệu biến tần Yaskawa</a></li>
-                    <li><a href="#">Thông tin công ty</a></li>
-                </ul>
+                @if (!empty($policiesNav))
+                    <ul class="footer-lisa__nav-list--dot">
+                        @foreach ($policiesNav as $item)
+                            @php
+                                $pivot = menu_translation_pivot($item['item']);
+                                $name = $pivot?->name ?? '';
+                                $link = $pivot ? write_url($pivot->canonical) : '#';
+                            @endphp
+                            @if ($name)
+                                <li><a href="{{ $link }}">{{ $name }}</a></li>
+                            @endif
+                        @endforeach
+                    </ul>
+                @endif
             </div>
 
             {{-- ====== CỘT 4: MẠNG XÃ HỘI & ĐĂNG KÝ ====== --}}
@@ -114,57 +122,49 @@
                 <h3 class="footer-lisa__title">Kết Nối Với Lisatech</h3>
 
                 <div class="footer-lisa__social-icons">
-                    {{-- Chỉ hiển thị icon nào CÓ nhập data trong system --}}
-                    @if (!empty($socialZalo))
-                        <a href="{{ $socialZalo }}" class="zalo" target="_blank" title="Zalo">
-                            <img src="{{ asset('frontend/resources/img/zalo-icon.png') }}"
-                                style="width:16px; filter: brightness(0) invert(1);" alt="Zalo">
-                        </a>
-                    @endif
+                    <a href="{{ !empty($socialZalo) ? $socialZalo : '#' }}" class="zalo" target="_blank" title="Zalo">
+                        <img src="{{ asset('frontend/resources/img/zalo-icon.png') }}"
+                            style="width:16px; filter: brightness(0) invert(1);" alt="Zalo">
+                    </a>
 
-                    @if (!empty($socialFacebook))
-                        <a href="{{ $socialFacebook }}" class="facebook" target="_blank" title="Facebook">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                            </svg>
-                        </a>
-                    @endif
+                    <a href="{{ !empty($socialFacebook) ? $socialFacebook : '#' }}" class="facebook" target="_blank" title="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                    </a>
 
-                    @if (!empty($socialTwitter))
-                        <a href="{{ $socialTwitter }}" class="twitter" target="_blank" title="Twitter">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path
-                                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-                            </svg>
-                        </a>
-                    @endif
+                    <a href="{{ !empty($socialTwitter) ? $socialTwitter : '#' }}" class="twitter" target="_blank" title="Twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                        </svg>
+                    </a>
 
-                    @if (!empty($socialLinkedin))
-                        <a href="{{ $socialLinkedin }}" class="linkedin" target="_blank" title="LinkedIn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path
-                                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                                <rect x="2" y="9" width="4" height="12" />
-                                <circle cx="4" cy="4" r="2" />
-                            </svg>
-                        </a>
-                    @endif
+                    <a href="{{ !empty($socialLinkedin) ? $socialLinkedin : '#' }}" class="linkedin" target="_blank" title="LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                            <rect x="2" y="9" width="4" height="12" />
+                            <circle cx="4" cy="4" r="2" />
+                        </svg>
+                    </a>
 
-                    @if (!empty($socialYoutube))
-                        <a href="{{ $socialYoutube }}" class="youtube" target="_blank" title="YouTube">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path
-                                    d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-                                <polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="var(--color-primary)" />
-                            </svg>
-                        </a>
-                    @endif
+                    <a href="{{ !empty($socialYoutube) ? $socialYoutube : '#' }}" class="youtube" target="_blank" title="YouTube">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                            <polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="var(--color-primary)" />
+                        </svg>
+                    </a>
                 </div>
 
                 <div class="footer-lisa__subscribe">
                     <h4 class="footer-lisa__subscribe-title">Đăng Ký Nhận Tin</h4>
-                    <form class="footer-lisa__subscribe-form" action="#" method="POST">
-                        <input type="email" placeholder="Nhập email để nhận tin" required>
+                    <form class="footer-lisa__subscribe-form" action="{{ route('contact.save') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="name" value="Đăng ký nhận tin">
+                        <input type="hidden" name="message" value="Đăng ký nhận tin từ footer">
+                        <input type="email" name="email" placeholder="Nhập email để nhận tin" required>
                         <button type="submit">Đăng Ký</button>
                     </form>
                 </div>

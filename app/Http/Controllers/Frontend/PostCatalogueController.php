@@ -14,6 +14,7 @@ use App\Enums\SlideEnum;
 use Jenssegers\Agent\Facades\Agent;
 use App\Models\Introduce;
 use App\Models\Post;
+use App\Support\SchemaCache;
 use App\Support\LegacyFrontend;
 
 class PostCatalogueController extends FrontendController
@@ -45,10 +46,13 @@ class PostCatalogueController extends FrontendController
     public function index($id, $request, $page = 1)
     {
         $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($id, $this->language);
+        $publishColumn = SchemaCache::hasColumn('post_catalogues', 'publish') ? 'publish' : 'pubish';
+        $parentColumn = SchemaCache::hasColumn('post_catalogues', 'parent_id') ? 'parent_id' : 'parentid';
+
         $postCatalogue->children = $this->postCatalogueRepository->findByCondition(
             [
-                ['publish', '=', 2],
-                ['parent_id', '=', $postCatalogue->id]
+                [$publishColumn, '=', 2],
+                [$parentColumn, '=', $postCatalogue->id]
             ],
             true,
             [],
@@ -74,6 +78,7 @@ class PostCatalogueController extends FrontendController
             ['keyword' => 'product-category', 'children' => true],
             ['keyword' => 'product-category-highlight', 'object' => true],
             ['keyword' => 'about-us-2'],
+            ['keyword' => 'about-vision-mission'],
             ['keyword' => 'karaoke-construction', 'object' => true],
         ], $this->language);
 

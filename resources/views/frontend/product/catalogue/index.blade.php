@@ -3,123 +3,22 @@
 @php
     $languageId = $config['language'] ?? 1;
 
-    // Helpers from homepage for karaoke-construction
+    // Helpers
     $languageOf = static function ($object) {
         $languages = $object->languages ?? null;
         return $languages instanceof \Illuminate\Support\Collection ? $languages->first() : $languages;
     };
     $objectName = static fn($object) => $languageOf($object)->name ?? ($object->name ?? '');
-    $objectDescription = static fn($object) => $languageOf($object)->description ?? ($object->description ?? '');
-    $objectUrl = static fn($object) => !empty($languageOf($object)->canonical ?? null)
-        ? rewrite_url($languageOf($object)->canonical)
-        : '#';
-    $imageFallbacks = [
-        '/uploads/images/thiet-ke/thiet-ke-phong-khach-01.jpg',
-        '/uploads/images/thiet-ke/thiet-ke-phong-hop-01.jpg',
-        '/uploads/images/thiet-ke/thiet-ke-phong-giam-doc-01.jpg',
-        '/uploads/images/thiet-ke/thiet-ke-nha-hang-01.jpg',
-    ];
-    $imageUrl = static function ($path, $index = 0) use ($imageFallbacks) {
-        $path = $path ?: '';
-        if ($path && file_exists(public_path(ltrim($path, '/')))) {
-            return asset($path);
-        }
-        return asset($imageFallbacks[$index % count($imageFallbacks)]);
-    };
-
-    // Construction Widget
-    $constructionWidget = $widgets['karaoke-construction'] ?? null;
-    $constructionBg = '';
-    if ($constructionWidget) {
-        $albumArray = is_string($constructionWidget->album)
-            ? json_decode($constructionWidget->album, true)
-            : $constructionWidget->album;
-        $constructionBg = $albumArray[0] ?? '';
-    }
-    $constructionCards = collect($constructionWidget->object ?? []);
-
-    // Left sidebar categories checklist logic
-    $currentChildren = \App\Models\ProductCatalogue::where('parent_id', $productCatalogue->id)
-        ->where('publish', 2)
-        ->with([
-            'languages' => function ($q) use ($languageId) {
-                $q->where('language_id', $languageId);
-            },
-        ])
-        ->orderBy('order', 'asc')
-        ->orderBy('id', 'desc')
-        ->get();
-
-    $sidebarCategories = collect();
-    $sidebarTitle = '';
-
-    if ($currentChildren->isNotEmpty()) {
-        $sidebarCategories = $currentChildren;
-        $sidebarTitle =
-            $DetailCatalogues['title'] ??
-            ($productCatalogue->languages->first()->pivot->name ?? ($productCatalogue->name ?? ''));
-    } else {
-        // If no children, show siblings (children of the parent)
-        if ($productCatalogue->parent_id > 0) {
-            $parentCat = \App\Models\ProductCatalogue::where('id', $productCatalogue->parent_id)
-                ->with([
-                    'languages' => function ($q) use ($languageId) {
-                        $q->where('language_id', $languageId);
-                    },
-                ])
-                ->first();
-
-            if ($parentCat) {
-                $sidebarTitle = $parentCat->languages->first()->pivot->name ?? ($parentCat->name ?? '');
-                $sidebarCategories = \App\Models\ProductCatalogue::where('parent_id', $productCatalogue->parent_id)
-                    ->where('publish', 2)
-                    ->with([
-                        'languages' => function ($q) use ($languageId) {
-                            $q->where('language_id', $languageId);
-                        },
-                    ])
-                    ->orderBy('order', 'asc')
-                    ->orderBy('id', 'desc')
-                    ->get();
-            }
-        }
-    }
-
-    // Featured products in sidebar (take 3)
-    $featuredProducts = [];
-    if (!empty($widgets['featured-products']->object) && count($widgets['featured-products']->object)) {
-        $featuredProducts = $widgets['featured-products']->object->take(3);
-    } else {
-        $featuredProducts = \App\Models\Product::where('publish', 2)
-            ->with([
-                'languages' => function ($q) use ($languageId) {
-                    $q->where('language_id', $languageId);
-                },
-            ])
-            ->orderBy('id', 'desc')
-            ->limit(3)
-            ->get();
-    }
 @endphp
 
 @section('content')
-    <!-- Hero Banner -->
-    <section class="about-hero">
-        @php
-            $heroTitle = $DetailCatalogues['title'] ?? ($productCatalogue->name ?? '');
-            // Fixed background image same as gioi-thieu page
-            $heroBg = '/userfiles/image/bg-about-hero.png';
-        @endphp
-        <img class="about-hero__bg" src="{{ asset($heroBg) }}" alt="{{ $heroTitle }}" loading="lazy">
-        <div class="hero-overlay"></div>
-        <div class="uk-container uk-container-center hero-content">
-            <h1 class="hero-title">
-                <span class="decor-line left"></span>
-                {{ $heroTitle }}
-                <span class="decor-line right"></span>
-            </h1>
-            <div class="hero-breadcrumb">
-                <ul class="uk-breadcrumb">
+    <!-- Main Content Grid -->
+    <section class="main-content modules-products">
+        <div class="uk-container uk-container-center">
+            
+            <!-- Simple 1-line Breadcrumb -->
+            <div class="breadcrumb-inline-wrapper">
+                <ul class="uk-breadcrumb simple-breadcrumb">
                     <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"
@@ -127,91 +26,151 @@
                     @endforeach
                 </ul>
             </div>
-        </div>
-    </section>
 
-    <!-- Main Content (Grid 1/4 and 3/4) -->
-    <section class="main-content modules-products">
-        <div class="uk-container uk-container-center">
-            <div class="uk-grid uk-grid-medium col-reverse-959">
+            <div class="uk-grid uk-grid-medium col-reverse-959 uk-margin-top">
 
                 <!-- Left Column (1/4) -->
                 <div class="uk-width-large-1-4">
 
-                    <!-- Child/Sibling Categories Checklist Block -->
-                    @if ($sidebarCategories->isNotEmpty())
-                        <div class="aside-panel aside-categories-list">
-                            <h3 class="aside-title">{{ $sidebarTitle }}</h3>
-                            <ul class="category-list">
-                                @foreach ($sidebarCategories as $subCat)
-                                    @php
-                                        $subName = $subCat->languages->first()->pivot->name ?? '';
-                                        $subUrl = rewrite_url($subCat->languages->first()->pivot->canonical ?? '');
-                                        $isActive = $subCat->id === $productCatalogue->id;
-                                    @endphp
-                                    <li>
-                                        <a href="{{ $subUrl }}" class="category-link {{ $isActive ? 'active' : '' }}">
-                                            <span class="checkbox-box"></span>
-                                            {{ $subName }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    <!-- Product Categories Tree Panel -->
+                    <div class="aside-panel aside-categories-list">
+                        <h3 class="aside-title">Danh mục sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <ul class="category-list">
+                            @foreach ($productCatalogues as $catData)
+                                @php
+                                    $catItem = $catData['item'];
+                                    $catName = $catItem->languages->first()->pivot->name ?? $catItem->name ?? '';
+                                    $catUrl = rewrite_url($catItem->languages->first()->pivot->canonical ?? $catItem->canonical ?? '');
+                                    
+                                    // Check if current category is this category or a descendant
+                                    $isChecked1 = ($productCatalogue->lft >= $catItem->lft && $productCatalogue->rgt <= $catItem->rgt);
+                                    $isActive1 = ($productCatalogue->id == $catItem->id);
+                                @endphp
+                                <li class="category-item-container">
+                                    <a href="{{ $catUrl }}" class="category-parent-link {{ $isChecked1 ? 'active-parent' : '' }} {{ $isActive1 ? 'active' : '' }}">
+                                        <span class="custom-checkbox {{ $isChecked1 ? 'checked' : '' }}">
+                                            @if ($isChecked1)
+                                                <i class="fa fa-check"></i>
+                                            @endif
+                                        </span>
+                                        <span class="category-name">{{ $catName }}</span>
+                                    </a>
+                                    
+                                    {{-- Level 2 subcategories --}}
+                                    @if (!empty($catData['children']) && count($catData['children']) > 0 && $isChecked1)
+                                        <ul class="subcategory-list level-2-list">
+                                            @foreach ($catData['children'] as $childData)
+                                                @php
+                                                    $childItem = $childData['item'];
+                                                    $childName = $childItem->languages->first()->pivot->name ?? $childItem->name ?? '';
+                                                    $childUrl = rewrite_url($childItem->languages->first()->pivot->canonical ?? $childItem->canonical ?? '');
+                                                    
+                                                    $isChecked2 = ($productCatalogue->lft >= $childItem->lft && $productCatalogue->rgt <= $childItem->rgt);
+                                                    $isChildActive = ($productCatalogue->id == $childItem->id);
+                                                @endphp
+                                                <li>
+                                                    <a href="{{ $childUrl }}" class="subcategory-link {{ $isChecked2 ? 'active-parent' : '' }} {{ $isChildActive ? 'active' : '' }}">
+                                                        <span class="prefix-line">---</span>{{ $childName }}
+                                                    </a>
+                                                    
+                                                    {{-- Level 3 subcategories --}}
+                                                    @if (!empty($childData['children']) && count($childData['children']) > 0 && $isChecked2)
+                                                        <ul class="subcategory-list level-3-list">
+                                                            @foreach ($childData['children'] as $grandChildData)
+                                                                @php
+                                                                    $grandChildItem = $grandChildData['item'];
+                                                                    $grandChildName = $grandChildItem->languages->first()->pivot->name ?? $grandChildItem->name ?? '';
+                                                                    $grandChildUrl = rewrite_url($grandChildItem->languages->first()->pivot->canonical ?? $grandChildItem->canonical ?? '');
+                                                                    $isGrandChildActive = ($productCatalogue->id == $grandChildItem->id);
+                                                                @endphp
+                                                                <li>
+                                                                    <a href="{{ $grandChildUrl }}" class="subcategory-link {{ $isGrandChildActive ? 'active' : '' }}">
+                                                                        <span class="prefix-line">------</span>{{ $grandChildName }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
-                    <!-- Featured Products Block -->
-                    @if (count($featuredProducts))
-                        <div class="aside-panel aside-featured-products">
-                            <h3 class="aside-title">Sản phẩm nổi bật</h3>
-                            <div class="featured-list">
-                                @foreach ($featuredProducts as $item)
-                                    @php
-                                        $pName = '';
-                                        $pCanonical = '';
-                                        $pDescription = '';
-                                        $pImage = '';
+                    <!-- Price Filter Panel -->
+                    <div class="aside-panel price-filter-panel">
+                        <h3 class="aside-title">Giá sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <ul class="price-filter-list">
+                            @php
+                                $priceRanges = [
+                                    ['min' => 0, 'max' => 5000000, 'label' => '0 - 5.000.000 VNĐ'],
+                                    ['min' => 5000000, 'max' => 10000000, 'label' => '5.000.000 - 10.000.000 VNĐ'],
+                                    ['min' => 10000000, 'max' => 20000000, 'label' => '10.000.000 - 20.000.000 VNĐ'],
+                                    ['min' => 20000000, 'max' => 30000000, 'label' => '20.000.000 - 30.000.000 VNĐ'],
+                                    ['min' => 30000000, 'max' => 999999999, 'label' => 'Trên 30.000.000 VNĐ'],
+                                ];
+                                $currentMin = request('price.price_min');
+                                $currentMax = request('price.price_max');
+                            @endphp
+                            @foreach ($priceRanges as $range)
+                                @php
+                                    $isSelected = ($currentMin !== null && $currentMax !== null && (float)$currentMin == $range['min'] && (float)$currentMax == $range['max']);
+                                    $filterUrl = request()->fullUrlWithQuery([
+                                        'price' => [
+                                            'price_min' => $range['min'],
+                                            'price_max' => $range['max']
+                                        ]
+                                    ]);
+                                @endphp
+                                <li>
+                                    <a href="{{ $filterUrl }}" class="price-filter-link {{ $isSelected ? 'active' : '' }}">
+                                        <span class="custom-radio {{ $isSelected ? 'selected' : '' }}">
+                                            @if ($isSelected)
+                                                <span class="radio-inner"></span>
+                                            @endif
+                                        </span>
+                                        {{ $range['label'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                            @if ($currentMin !== null || $currentMax !== null)
+                                <li class="clear-filter-item">
+                                    <a href="{{ request()->url() }}" class="btn-clear-filter"><i class="fa fa-times-circle"></i> Xóa bộ lọc</a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
 
-                                        if ($item instanceof \App\Models\Product) {
-                                            $pName = $item->languages->first()->pivot->name ?? ($item->name ?? '');
-                                            $pCanonical =
-                                                $item->languages->first()->pivot->canonical ?? ($item->canonical ?? '');
-                                            $pDescription =
-                                                $item->languages->first()->pivot->description ??
-                                                ($item->description ?? '');
-                                            $pImage = $item->image;
-                                        } elseif (is_object($item)) {
-                                            $pName = $item->pivot->name ?? ($item->name ?? ($item->title ?? ''));
-                                            $pCanonical =
-                                                $item->pivot->canonical ?? ($item->canonical ?? ($item->slug ?? ''));
-                                            $pDescription = $item->pivot->description ?? ($item->description ?? '');
-                                            $pImage = $item->image ?? ($item->images ?? '');
-                                        } else {
-                                            $pName =
-                                                $item['pivot']['name'] ?? ($item['name'] ?? ($item['title'] ?? ''));
-                                            $pCanonical =
-                                                $item['pivot']['canonical'] ??
-                                                ($item['canonical'] ?? ($item['slug'] ?? ''));
-                                            $pDescription =
-                                                $item['pivot']['description'] ?? ($item['description'] ?? '');
-                                            $pImage = $item['image'] ?? ($item['images'] ?? '');
-                                        }
-
-                                        $pUrl = rewrite_url($pCanonical);
-                                        $pImage = \App\Support\LegacyFrontend::image($pImage);
-                                        $pDesc = cutnchar(strip_tags($pDescription), 120);
-                                    @endphp
-                                    <div class="featured-item">
-                                        <a href="{{ $pUrl }}" class="thumb-link img-cover">
-                                            <img src="{{ $pImage }}" alt="{{ $pName }}" loading="lazy">
-                                        </a>
-                                        <h4 class="title"><a href="{{ $pUrl }}">{{ $pName }}</a></h4>
-                                        <div class="desc">{{ $pDesc }}</div>
+                    <!-- Online Support Panel -->
+                    <div class="aside-panel support-sidebar-panel">
+                        <h3 class="aside-title">Hỗ trợ trực tuyến</h3>
+                        <div class="support-list">
+                            @for ($i = 1; $i <= 5; $i++)
+                                @php
+                                    $sName = $system['support_name_' . $i] ?? "Hỗ trợ {$i}";
+                                    $sPhone = $system['support_phone_' . $i] ?? "0973 999 999";
+                                    $sZalo = $system['support_zalo_' . $i] ?? "https://zalo.me";
+                                @endphp
+                                @if (!empty($sName) && !empty($sPhone))
+                                    <div class="support-item">
+                                        <div class="support-info-left">
+                                            <h4 class="support-name">{{ $sName }}</h4>
+                                            <p class="support-hotline">Hotline: {{ $sPhone }}</p>
+                                        </div>
+                                        @if (!empty($sZalo))
+                                            <a href="{{ $sZalo }}" target="_blank" class="support-zalo-link" title="Chat Zalo">
+                                                <img src="{{ asset('frontend/resources/img/zalo-icon.png') }}" alt="Zalo" class="zalo-icon-img" onerror="this.onerror=null;this.src='https://zalo.me/favicon.ico'">
+                                            </a>
+                                        @endif
                                     </div>
-                                @endforeach
-                            </div>
+                                @endif
+                            @endfor
                         </div>
-                    @endif
+                    </div>
+
                 </div>
 
                 <!-- Right Column (3/4) -->
@@ -231,10 +190,10 @@
 
                         <!-- Category Products Grid -->
                         @if (!empty($productsList))
-                            <section class="panel-products productCatalogue uk-margin-large-top">
+                            <section class="panel-products productCatalogue">
                                 <section class="panel-body">
-                                    <div class="uk-grid lib-grid-15 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-product"
-                                        data-uk-grid-match="{target:'.product-1 .product-title'}">
+                                    <div class="uk-grid lib-grid-20 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-product"
+                                        data-uk-grid-match="{target:'.product-card-inner .product-title-text'}">
                                         @foreach ($productsList as $product)
                                             @include('frontend.component.legacy-product-item', [
                                                 'product' => $product,
@@ -247,7 +206,9 @@
                                 </section>
                             </section>
                         @else
-                            <p style="color:#888;">Dữ liệu đang được cập nhật...</p>
+                            <div class="no-products-box">
+                                <p>Dữ liệu đang được cập nhật...</p>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -256,81 +217,100 @@
         </div>
     </section>
 
-    <!-- Construction Section from Homepage -->
-    @if ($constructionWidget)
-        <section class="karaoke-card-section karaoke-card-section--construction">
-            @if (!empty($constructionBg))
-                <img class="karaoke-section-bg" src="{{ asset($constructionBg) }}"
-                    alt="{{ $constructionWidget->name ?? '' }}" loading="lazy">
-            @endif
-            <div class="karaoke-card-section__overlay"></div>
-            <div class="karaoke-shell">
-                @if (!empty($constructionWidget->name))
-                    <header class="karaoke-section-heading">
-                        <span></span>
-                        <h2>{{ $constructionWidget->name }}</h2>
-                        <span></span>
-                    </header>
-                @endif
-                @if ($constructionCards->isNotEmpty())
-                    <div class="karaoke-room-grid">
-                        @foreach ($constructionCards as $card)
-                            @php
-                                $cardTitle = $objectName($card);
-                                $cardImage = $card->image ?? '';
-                                $cardUrl = $objectUrl($card);
-                            @endphp
-                            <a class="karaoke-room-card" href="{{ $cardUrl }}" title="{{ $cardTitle }}">
-                                @if ($cardImage)
-                                    <img src="{{ $imageUrl($cardImage, $loop->index) }}" alt="{{ $cardTitle }}"
-                                        loading="lazy">
-                                @endif
-                                <span>{{ $cardTitle }}</span>
-                            </a>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        </section>
-    @endif
-
     <!-- Styles & Scripts -->
     <style>
+        /* Light Theme Main Wrapper Overrides */
         .modules-products {
-            background-color: #000 !important;
-            color: #fff !important;
-            padding: 60px 0 !important;
+            background-color: #f8fafc !important; /* Premium light grayish blue background */
+            color: #1e293b !important;
+            padding: 40px 0 !important;
+        }
+
+        .rightContent {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        /* Inline 1-line Breadcrumb styling */
+        .breadcrumb-inline-wrapper {
+            background: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+        }
+
+        .simple-breadcrumb {
+            display: inline-flex !important;
+            align-items: center !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .simple-breadcrumb>li {
+            display: inline-flex !important;
+            align-items: center !important;
+            color: #64748b !important;
+            font-size: 14px !important;
+        }
+
+        .simple-breadcrumb>li>a {
+            color: #64748b !important;
+            text-decoration: none !important;
+            transition: color 0.2s !important;
+            font-weight: 500 !important;
+        }
+
+        .simple-breadcrumb>li>a:hover {
+            color: #FF9811 !important;
+        }
+
+        .simple-breadcrumb>li>span {
+            color: #1e293b !important;
+            font-weight: 500 !important;
+        }
+
+        .simple-breadcrumb>li:nth-child(n+2):before {
+            color: #cbd5e1 !important;
+            margin: 0 8px !important;
         }
 
         /* Category Title & Description */
         .category-title {
-            color: rgba(14, 60, 125, 1);
-            font-size: 28px !important;
+            color: #0b4a92;
+            font-size: 26px !important;
             font-weight: 800 !important;
             text-transform: uppercase !important;
             margin-top: 0 !important;
             margin-bottom: 20px !important;
-            font-family: var(--main-font);
+            font-family: var(--font-base, 'Inter', sans-serif);
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 15px;
         }
 
         .category-description-wrapper {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .category-description {
             font-size: 14px;
-            line-height: 1.6;
-            color: #ffffff !important;
+            line-height: 1.7;
+            color: #475569 !important;
             transition: max-height 0.3s ease-out;
         }
 
         .category-description * {
-            color: #ffffff !important;
+            color: #475569 !important;
         }
 
         .category-description a,
         .category-description a * {
-            color: rgba(14, 60, 125, 1)
+            color: #0b4a92 !important;
+            font-weight: 600;
         }
 
         .category-description.collapsed {
@@ -346,7 +326,7 @@
             left: 0;
             width: 100%;
             height: 50px;
-            background: linear-gradient(to bottom, transparent, #000);
+            background: linear-gradient(to bottom, transparent, #fff);
             pointer-events: none;
         }
 
@@ -354,280 +334,468 @@
             display: none;
             align-items: center;
             gap: 8px;
-            color: rgba(14, 60, 125, 1);
+            color: #0b4a92;
             font-weight: 700;
             font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-top: 15px;
             text-decoration: none !important;
             transition: color 0.2s;
         }
 
         .btn-readmore:hover {
-            color: #fff !important;
+            color: #FF9811 !important;
         }
 
-        /* Sidebar styling */
+        /* Sidebar Styling (Light Theme) */
         .aside-panel {
-            background-color: #080a10 !important;
-            border: 1px solid #1f2833 !important;
-            border-radius: 8px !important;
+            background-color: #ffffff !important;
+            border: 1px solid #edf2f7 !important;
+            border-radius: 16px !important;
             padding: 24px !important;
-            margin-bottom: 30px !important;
+            margin-bottom: 25px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
         }
 
         .aside-title {
-            color: rgba(14, 60, 125, 1);
-            font-size: 18px !important;
+            color: #0b4a92 !important;
+            font-size: 16px !important;
             font-weight: 800 !important;
             text-transform: uppercase !important;
-            border-bottom: 2px solid rgba(14, 60, 125, 1);
+            border-bottom: 2px solid #0b4a92 !important;
             padding-bottom: 12px !important;
             margin-top: 0 !important;
-            margin-bottom: 24px !important;
-            font-family: var(--main-font);
+            margin-bottom: 20px !important;
+            font-family: var(--font-base, 'Inter', sans-serif);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Category checklist */
+        .aside-title i {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Category Tree Checklist Style */
         .category-list {
             list-style: none !important;
             padding: 0 !important;
             margin: 0 !important;
         }
 
-        .category-list li {
-            margin-bottom: 14px;
+        .category-item-container {
+            margin-bottom: 15px;
         }
 
-        .category-list li:last-child {
+        .category-item-container:last-child {
             margin-bottom: 0;
         }
 
-        .category-link {
+        .category-parent-link {
             display: flex;
             align-items: center;
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: #334155 !important;
             text-decoration: none !important;
             font-size: 14px;
-            transition: color 0.2s, font-weight 0.2s;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
-        .category-link:hover,
-        .category-link.active {
-            color: rgba(14, 60, 125, 1)
+        .category-parent-link:hover,
+        .category-parent-link.active,
+        .category-parent-link.active-parent {
+            color: #0b4a92 !important;
+            font-weight: 600;
         }
 
-        .checkbox-box {
-            width: 16px;
-            height: 16px;
-            border: 1px solid #334155;
-            border-radius: 3px;
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
             margin-right: 12px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
-            position: relative;
-            background-color: #020617;
-            transition: border-color 0.2s, background-color 0.2s;
+            background-color: #fff;
+            transition: all 0.2s;
+            box-sizing: border-box;
         }
 
-        .category-link:hover .checkbox-box {
-            border-color: rgba(14, 60, 125, 1)
+        .custom-checkbox i {
+            font-size: 10px;
+            color: #fff;
+            display: none;
         }
 
-        .category-link.active .checkbox-box {
-            border-color: rgba(14, 60, 125, 1);
-            background-color: rgba(14, 60, 125, 1)
+        .category-parent-link:hover .custom-checkbox {
+            border-color: #0b4a92;
         }
 
-        .category-link.active .checkbox-box::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 8px;
-            height: 8px;
-            background-color: #000;
-            border-radius: 1px;
+        .custom-checkbox.checked {
+            border-color: #0b4a92;
+            background-color: #0b4a92;
         }
 
-        /* Sidebar Featured Products */
-        .featured-list {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .featured-item {
-            border-bottom: 1px dashed #1e293b;
-            padding-bottom: 24px;
-        }
-
-        .featured-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .featured-item .thumb-link {
+        .custom-checkbox.checked i {
             display: block;
-            width: 100%;
-            aspect-ratio: 16 / 10;
-            margin-bottom: 12px;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #1e293b;
         }
 
-        .featured-item .thumb-link img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
+        /* Subcategories level 2 and 3 indents */
+        .subcategory-list {
+            list-style: none !important;
+            padding: 0 0 0 12px !important;
+            margin: 8px 0 0 0 !important;
+            border-left: 1px dashed #e2e8f0;
         }
 
-        .featured-item:hover .thumb-link img {
-            transform: scale(1.05);
+        .subcategory-list li {
+            margin-bottom: 8px;
         }
 
-        .featured-item .title {
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            margin: 0 0 6px 0 !important;
-            line-height: 1.3;
+        .subcategory-list li:last-child {
+            margin-bottom: 0;
         }
 
-        .featured-item .title a {
-            color: rgba(14, 60, 125, 1);
+        .subcategory-list.level-3-list {
+            padding-left: 15px !important;
+            margin-top: 6px !important;
+            border-left: 1px dashed #cbd5e1;
+        }
+
+        .subcategory-link {
+            display: flex;
+            align-items: center;
+            color: #64748b !important;
+            font-size: 13px;
             text-decoration: none !important;
+            transition: all 0.2s;
         }
 
-        .featured-item .title a:hover {
-            color: #fff !important;
+        .subcategory-link:hover,
+        .subcategory-link.active,
+        .subcategory-link.active-parent {
+            color: #0b4a92 !important;
+            font-weight: 600;
         }
 
-        .featured-item .desc {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.4;
+        .prefix-line {
+            margin-right: 6px;
+            color: #cbd5e1;
         }
 
-        /* Product grid override */
-        .product-item {
-            background: transparent !important;
-            box-shadow: none !important;
-            border: none !important;
-        }
-
-        .product-1 {
-            background: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            overflow: visible !important;
-            text-align: center !important;
-            transition: none !important;
-        }
-
-        .product-1 .product-thumb {
-            background-color: #ffffff !important;
-            padding: 0 !important;
-            border-radius: 0 !important;
-            border: none !important;
-            height: 175px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow: hidden !important;
-            box-shadow: none !important;
-        }
-
-        .product-1 .product-thumb img {
-            width: 100% !important;
-            height: 175px !important;
-            object-fit: cover !important;
-        }
-
-        .product-1 .product-info {
-            padding: 15px 0 0 0 !important;
-            background: transparent !important;
-            border: none !important;
-        }
-
-        .product-1 .product-title {
-            margin: 0 !important;
-            text-align: center !important;
-        }
-
-        .product-1 .product-title a {
-            color: #ffffff !important;
-            font-weight: 600 !important;
-            font-size: 15px !important;
-            line-height: 1.4 !important;
-            text-decoration: none !important;
-            transition: color 0.2s;
-        }
-
-        .product-1:hover .product-title a {
-            color: rgba(14, 60, 125, 1)
-        }
-
-        .about-hero .hero-content {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .about-hero .hero-content .hero-title {
-            line-height: 1.3 !important;
-            margin-bottom: 0 !important;
-        }
-
-        /* Hero Breadcrumb styling */
-        .about-hero .hero-breadcrumb {
-            margin-top: 30px !important;
-            display: flex !important;
-            justify-content: center !important;
-        }
-
-        .about-hero .uk-breadcrumb {
-            display: inline-flex !important;
-            align-items: center !important;
+        /* Price Filter styling */
+        .price-filter-list {
             list-style: none !important;
             padding: 0 !important;
             margin: 0 !important;
         }
 
-        .about-hero .uk-breadcrumb>li {
-            display: inline-flex !important;
-            align-items: center !important;
-            color: #ffffff !important;
-            font-size: 14px !important;
+        .price-filter-list li {
+            margin-bottom: 12px;
         }
 
-        .about-hero .uk-breadcrumb>li>a {
-            color: #ffffff !important;
+        .price-filter-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .price-filter-link {
+            display: flex;
+            align-items: center;
+            color: #475569 !important;
+            font-size: 14px;
             text-decoration: none !important;
-            transition: color 0.2s !important;
-            font-weight: 500 !important;
+            transition: all 0.2s;
         }
 
-        .about-hero .uk-breadcrumb>li>a:hover {
-            color: rgba(14, 60, 125, 1)
+        .price-filter-link:hover,
+        .price-filter-link.active {
+            color: #0b4a92 !important;
+            font-weight: 600;
         }
 
-        .about-hero .uk-breadcrumb>li>span {
+        .custom-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background-color: #fff;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .radio-inner {
+            width: 8px;
+            height: 8px;
+            background-color: #0b4a92;
+            border-radius: 50%;
+        }
+
+        .price-filter-link:hover .custom-radio {
+            border-color: #0b4a92;
+        }
+
+        .custom-radio.selected {
+            border-color: #0b4a92;
+        }
+
+        .clear-filter-item {
+            margin-top: 15px;
+            border-top: 1px solid #edf2f7;
+            padding-top: 12px;
+        }
+
+        .btn-clear-filter {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #ef4444 !important;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none !important;
+        }
+
+        .btn-clear-filter:hover {
+            color: #dc2626 !important;
+        }
+
+        /* Support Panel sidebar styling */
+        .support-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .support-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .support-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .support-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0b4a92;
+            margin: 0 0 4px 0;
+        }
+
+        .support-hotline {
+            font-size: 13px;
+            color: #475569;
+            margin: 0;
+        }
+
+        .support-zalo-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .support-zalo-link:hover {
+            transform: scale(1.1);
+        }
+
+        .zalo-icon-img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        /* Product Cards Visual Updates */
+        .product-item {
+            margin-bottom: 25px;
+        }
+
+        .product-card-inner {
+            background: #ffffff;
+            border: 1px solid #edf2f7;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+
+        .product-card-inner:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-color: #0b4a92;
+        }
+
+        .product-thumb-container {
+            width: 100%;
+            height: 240px;
+            position: relative;
+            background: #f8fafc;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image-link {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .product-image-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 15px;
+            transition: transform 0.5s ease;
+            box-sizing: border-box;
+        }
+
+        .product-card-inner:hover .product-image-link img {
+            transform: scale(1.05);
+        }
+
+        /* Round Red Discount Badge at top-right corner of image */
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ef4444;
+            color: #ffffff;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .discount-label {
+            font-size: 8px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 1px;
+            letter-spacing: 0.5px;
+        }
+
+        .discount-value {
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* Product Details Info area aligned to LEFT */
+        .product-info-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .product-title-text {
+            margin: 0 0 10px 0 !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            line-height: 1.4 !important;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-title-text a {
+            color: #1e293b !important;
+            text-decoration: none !important;
+            transition: color 0.2s;
+        }
+
+        .product-card-inner:hover .product-title-text a {
+            color: #0b4a92 !important;
+        }
+
+        /* Prices aligned left */
+        .product-price-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .current-price-text {
+            color: #0b4a92;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .old-price-text {
+            color: #94a3b8;
+            font-size: 13px;
+            text-decoration: line-through;
+        }
+
+        /* Order Button styling aligned left with box shadow and custom orange color */
+        .product-action-section {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .btn-product-order {
+            background-color: #FF9811;
             color: #ffffff !important;
-            font-weight: 500 !important;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            padding: 8px 30px;
+            border-radius: 20px;
+            text-decoration: none !important;
+            box-shadow: 0 4px 10px rgba(255, 152, 17, 0.4);
+            transition: all 0.2s;
+            border: none;
+            display: inline-block;
         }
 
-        .about-hero .uk-breadcrumb>li:nth-child(n+2):before {
-            color: rgba(255, 255, 255, 0.6) !important;
+        .btn-product-order:hover {
+            background-color: #0b4a92;
+            box-shadow: 0 4px 10px rgba(11, 74, 146, 0.4);
+            transform: translateY(-1px);
         }
 
-        /* Pagination styling */
+        /* No products / updating display box */
+        .no-products-box {
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background-color: #f8fafc;
+        }
+
+        /* Pagination styling (Light Theme) */
         .pagination-wrapper {
-            margin-top: 50px;
+            margin-top: 40px;
             text-align: center;
         }
 
@@ -638,7 +806,7 @@
             list-style: none !important;
             padding: 0 !important;
             margin: 0 !important;
-            gap: 12px;
+            gap: 8px;
         }
 
         .uk-pagination>li {
@@ -653,35 +821,66 @@
             justify-content: center;
             min-width: 36px;
             height: 36px;
-            color: #ffffff !important;
-            font-size: 16px;
+            color: #475569 !important;
+            font-size: 15px;
             font-weight: 600;
             text-decoration: none !important;
             transition: all 0.2s;
             box-sizing: border-box;
-            border: none !important;
-            background: transparent !important;
-            border-radius: 0 !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #ffffff !important;
+            border-radius: 8px !important;
         }
 
         .uk-pagination>li.uk-active>a,
         .uk-pagination>li.uk-active>span {
-            background-color: rgba(14, 60, 125, 1);
-            border: none !important;
-            color: #000000 !important;
-            width: 36px;
-            height: 36px;
-            border-radius: 50% !important;
+            background-color: #0b4a92 !important;
+            border: 1px solid #0b4a92 !important;
+            color: #ffffff !important;
         }
 
         .uk-pagination>li>a:hover {
-            color: rgba(14, 60, 125, 1);
-            background: transparent !important;
+            color: #ffffff !important;
+            background-color: #0b4a92 !important;
+            border-color: #0b4a92 !important;
         }
 
         .uk-pagination>li.uk-disabled>span {
-            color: rgba(255, 255, 255, 0.4) !important;
+            color: #94a3b8 !important;
+            border-color: #e2e8f0 !important;
+            background: #f1f5f9 !important;
             cursor: not-allowed;
+        }
+
+        @media (max-width: 767px) {
+            /* Optimize image height to avoid extremely tall product cards on 2-column grid */
+            .product-thumb-container {
+                height: 160px !important;
+            }
+            .product-info-container {
+                padding: 12px !important;
+            }
+            .product-title-text {
+                font-size: 13px !important;
+                height: 36px !important;
+                margin-bottom: 6px !important;
+                line-height: 1.35 !important;
+            }
+            .product-price-section {
+                margin-bottom: 5px !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+            }
+            .current-price-text {
+                font-size: 13.5px !important;
+            }
+            .old-price-text {
+                font-size: 11px !important;
+            }
+            /* Hide "Đặt hàng" button on mobile */
+            .product-action-section {
+                display: none !important;
+            }
         }
     </style>
 

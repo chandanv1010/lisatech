@@ -50,4 +50,25 @@
             </div>
         </div>
     </div>
+    @if(request()->routeIs('product.create', 'product.edit'))
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-lg-12">
+                <div class="form-row">
+                    <div class="uk-flex uk-flex-middle uk-flex-space-between">
+                        <label for="" class="control-label text-left">Ứng dụng</label>
+                        <a href="" class="multipleUploadImageCkeditor" data-target="ckApplications">{{ __('messages.upload') }}</a>
+                    </div>
+                    <textarea
+                        name="applications"
+                        class="form-control ck-editor"
+                        placeholder=""
+                        autocomplete="off"
+                        id="ckApplications"
+                        data-height="500"
+                        {{ (isset($disabled)) ? 'disabled' : '' }}
+                    >{{ old('applications', ($model->applications) ?? '' ) }}</textarea>
+                </div>
+            </div>
+        </div>
+    @endif
 @endif

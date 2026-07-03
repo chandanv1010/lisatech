@@ -113,7 +113,32 @@ class System{
             ]
         ];
 
-       
+        $data['support'] = [
+            'label' => 'Hỗ trợ trực tuyến',
+            'description' => 'Cấu hình thông tin hỗ trợ trực tuyến (Hotline, Zalo, vv...) hiển thị ở sidebar danh mục sản phẩm',
+            'value' => [
+                'support_name_1' => ['type' => 'text', 'label' => 'Tên hỗ trợ 1'],
+                'support_phone_1' => ['type' => 'text', 'label' => 'Hotline hỗ trợ 1'],
+                'support_zalo_1' => ['type' => 'text', 'label' => 'Link Zalo 1'],
+                
+                'support_name_2' => ['type' => 'text', 'label' => 'Tên hỗ trợ 2'],
+                'support_phone_2' => ['type' => 'text', 'label' => 'Hotline hỗ trợ 2'],
+                'support_zalo_2' => ['type' => 'text', 'label' => 'Link Zalo 2'],
+                
+                'support_name_3' => ['type' => 'text', 'label' => 'Tên hỗ trợ 3'],
+                'support_phone_3' => ['type' => 'text', 'label' => 'Hotline hỗ trợ 3'],
+                'support_zalo_3' => ['type' => 'text', 'label' => 'Link Zalo 3'],
+                
+                'support_name_4' => ['type' => 'text', 'label' => 'Tên hỗ trợ 4'],
+                'support_phone_4' => ['type' => 'text', 'label' => 'Hotline hỗ trợ 4'],
+                'support_zalo_4' => ['type' => 'text', 'label' => 'Link Zalo 4'],
+                
+                'support_name_5' => ['type' => 'text', 'label' => 'Tên hỗ trợ 5'],
+                'support_phone_5' => ['type' => 'text', 'label' => 'Hotline hỗ trợ 5'],
+                'support_zalo_5' => ['type' => 'text', 'label' => 'Link Zalo 5'],
+            ]
+        ];
+
         return $data;
     }
 	

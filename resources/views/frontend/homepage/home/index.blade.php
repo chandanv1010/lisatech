@@ -490,21 +490,43 @@
     <div class="uk-container uk-container-center">
         <h2 class="section-title">{{ $widgets['services']->name ?? 'Dịch Vụ & Tư Vấn' }}</h2>
         <div class="services-grid">
-            @if (isset($widgets['services']) && !empty($widgets['services']->album))
-                @foreach ($widgets['services']->album as $service)
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fa {{ $service['icon'] ?? 'fa-cog' }}"></i></div>
-                        <div class="service-text">{!! nl2br($service['name'] ?? '') !!}</div>
-                    </div>
-                @endforeach
-            @elseif (isset($widgets['services']) && $widgets['services']->object)
-                @foreach ($widgets['services']->object as $service)
-                    @php $sLang = $service->languages->first(); @endphp
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fa {{ $service->icon ?? 'fa-cog' }}"></i></div>
-                        <div class="service-text">{!! nl2br($sLang->name ?? '') !!}</div>
-                    </div>
-                @endforeach
+            @if (isset($widgets['services']))
+                @if ($widgets['services']->model === 'PostCatalogue' && $widgets['services']->object)
+                    @foreach ($widgets['services']->object as $catalogue)
+                        @php
+                            $posts = $catalogue->posts ?? collect();
+                        @endphp
+                        @foreach ($posts as $post)
+                            @php
+                                $pLang = $post->languages->first();
+                                $postName = $pLang->name ?? $post->name ?? '';
+                                $postUrl = write_url($pLang->canonical ?? '#');
+                                $postImage = !empty($post->image) ? $post->image : 'uploads/images/slide/master-hp-riello-ups-slide.png';
+                            @endphp
+                            <a href="{{ $postUrl }}" class="service-card">
+                                <div class="service-icon">
+                                    <img src="{{ asset(ltrim($postImage, '/')) }}" alt="{{ $postName }}">
+                                </div>
+                                <div class="service-text">{!! nl2br($postName) !!}</div>
+                            </a>
+                        @endforeach
+                    @endforeach
+                @elseif (!empty($widgets['services']->album))
+                    @foreach ($widgets['services']->album as $service)
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa {{ $service['icon'] ?? 'fa-cog' }}"></i></div>
+                            <div class="service-text">{!! nl2br($service['name'] ?? '') !!}</div>
+                        </div>
+                    @endforeach
+                @elseif ($widgets['services']->object)
+                    @foreach ($widgets['services']->object as $service)
+                        @php $sLang = $service->languages->first(); @endphp
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa {{ $service->icon ?? 'fa-cog' }}"></i></div>
+                            <div class="service-text">{!! nl2br($sLang->name ?? '') !!}</div>
+                        </div>
+                    @endforeach
+                @endif
             @endif
         </div>
     </div>
@@ -538,7 +560,7 @@
                 </div>
             </div>
 
-            <form class="contact-form" action="#" method="POST">
+            <form class="contact-form" action="{{ route('contact.save') }}" method="POST">
                 @csrf
                 <div class="form-row">
                     <div class="form-group">
@@ -569,21 +591,44 @@
     <div class="uk-container uk-container-center">
         <h2 class="section-title">{{ $widgets['why-lisatech']->name ?? 'Vì Sao Chọn Lisatech?' }}</h2>
         <div class="why-grid">
-            @if (isset($widgets['why-lisatech']) && !empty($widgets['why-lisatech']->album))
-                @foreach ($widgets['why-lisatech']->album as $reason)
-                    <div class="why-item">
-                        <i class="fa {{ $reason['icon'] ?? 'fa-star' }}"></i>
-                        <p>{!! nl2br($reason['name'] ?? '') !!}</p>
-                    </div>
-                @endforeach
-            @elseif (isset($widgets['why-lisatech']) && $widgets['why-lisatech']->object)
-                @foreach ($widgets['why-lisatech']->object as $reason)
-                    @php $rLang = $reason->languages->first(); @endphp
-                    <div class="why-item">
-                        <i class="fa {{ $reason->icon ?? 'fa-star' }}"></i>
-                        <p>{!! nl2br($rLang->name ?? '') !!}</p>
-                    </div>
-                @endforeach
+            @if (isset($widgets['why-lisatech']))
+                @if ($widgets['why-lisatech']->model === 'PostCatalogue' && $widgets['why-lisatech']->object)
+                    @foreach ($widgets['why-lisatech']->object as $catalogue)
+                        @php
+                            $posts = $catalogue->posts ?? collect();
+                        @endphp
+                        @foreach ($posts as $post)
+                            @php
+                                $pLang = $post->languages->first();
+                                $postName = $pLang->name ?? $post->name ?? '';
+                                $postImage = !empty($post->image) ? $post->image : '';
+                            @endphp
+                            <div class="why-item">
+                                @if (!empty($postImage))
+                                    <img src="{{ asset(ltrim($postImage, '/')) }}" alt="{{ $postName }}" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 15px;">
+                                @else
+                                    <i class="fa fa-star"></i>
+                                @endif
+                                <p>{!! nl2br($postName) !!}</p>
+                            </div>
+                        @endforeach
+                    @endforeach
+                @elseif (!empty($widgets['why-lisatech']->album))
+                    @foreach ($widgets['why-lisatech']->album as $reason)
+                        <div class="why-item">
+                            <i class="fa {{ $reason['icon'] ?? 'fa-star' }}"></i>
+                            <p>{!! nl2br($reason['name'] ?? '') !!}</p>
+                        </div>
+                    @endforeach
+                @elseif ($widgets['why-lisatech']->object)
+                    @foreach ($widgets['why-lisatech']->object as $reason)
+                        @php $rLang = $reason->languages->first(); @endphp
+                        <div class="why-item">
+                            <i class="fa {{ $reason->icon ?? 'fa-star' }}"></i>
+                            <p>{!! nl2br($rLang->name ?? '') !!}</p>
+                        </div>
+                    @endforeach
+                @endif
             @endif
         </div>
     </div>
@@ -606,40 +651,86 @@
         </div>
 
         <div class="news-grid">
-            @if (isset($widgets['news']) && $widgets['news']->object)
-                @foreach ($widgets['news']->object as $news)
-                    @php $nLang = $news->languages->first(); @endphp
-                    <article class="news-card">
-                        <div class="news-card__content">
-                            <span class="news-card__category">
-                                {{ $nLang->description ?? 'Tin tức' }}
-                            </span>
+            @if (isset($widgets['news']))
+                @if ($widgets['news']->model === 'PostCatalogue' && $widgets['news']->object)
+                    @foreach ($widgets['news']->object as $catalogue)
+                        @php
+                            $posts = $catalogue->posts ?? collect();
+                            $posts = $posts->take(4);
+                        @endphp
+                        @foreach ($posts as $news)
+                            @php
+                                $nLang = $news->languages->first();
+                                $newsName = $nLang->name ?? $news->name ?? '';
+                                $newsUrl = write_url($nLang->canonical ?? '#');
+                                $newsDesc = $nLang->description ?? $catalogue->languages->first()->name ?? 'Tin tức';
+                            @endphp
+                            <article class="news-card">
+                                <div class="news-card__content">
 
-                            <h3 class="news-card__title">
-                                {{ $nLang->name ?? '' }}
-                            </h3>
+                                    <h3 class="news-card__title">
+                                        {{ $newsName }}
+                                    </h3>
 
-                            <div class="news-card__footer">
-                                <span class="news-card__date">
-                                    {{ isset($news->updated_at) ? date('d/m/Y', strtotime($news->updated_at)) : date('d/m/Y') }}
-                                </span>
+                                    <div class="news-card__footer">
+                                        <span class="news-card__date">
+                                            {{ isset($news->updated_at) ? date('d/m/Y', strtotime($news->updated_at)) : date('d/m/Y') }}
+                                        </span>
 
-                                <a href="{{ $nLang->canonical ?? '#' }}" class="news-card__more">
-                                    Đọc Thêm
-                                    <svg viewBox="0 0 24 24" fill="none">
-                                        <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </a>
+                                        <a href="{{ $newsUrl }}" class="news-card__more">
+                                            Đọc Thêm
+                                            <svg viewBox="0 0 24 24" fill="none">
+                                                <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="news-card__image">
+                                    <img src="{{ !empty($news->image) ? asset(ltrim($news->image, '/')) : 'https://picsum.photos/600/380' }}"
+                                        alt="{{ $newsName }}">
+                                </div>
+                            </article>
+                        @endforeach
+                    @endforeach
+                @elseif ($widgets['news']->object)
+                    @foreach ($widgets['news']->object as $news)
+                        @php
+                            $nLang = $news->languages->first();
+                            $newsName = $nLang->name ?? $news->name ?? '';
+                            $newsUrl = write_url($nLang->canonical ?? '#');
+                            $newsDesc = $nLang->description ?? 'Tin tức';
+                        @endphp
+                        <article class="news-card">
+                            <div class="news-card__content">
+
+                                <h3 class="news-card__title">
+                                    {{ $newsName }}
+                                </h3>
+
+                                <div class="news-card__footer">
+                                    <span class="news-card__date">
+                                        {{ isset($news->updated_at) ? date('d/m/Y', strtotime($news->updated_at)) : date('d/m/Y') }}
+                                    </span>
+
+                                    <a href="{{ $newsUrl }}" class="news-card__more">
+                                        Đọc Thêm
+                                        <svg viewBox="0 0 24 24" fill="none">
+                                            <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="news-card__image">
-                            <img src="{{ $news->image ?? 'https://picsum.photos/600/380' }}"
-                                alt="{{ $nLang->name ?? '' }}">
-                        </div>
-                    </article>
-                @endforeach
+                            <div class="news-card__image">
+                                <img src="{{ !empty($news->image) ? asset(ltrim($news->image, '/')) : 'https://picsum.photos/600/380' }}"
+                                    alt="{{ $newsName }}">
+                            </div>
+                        </article>
+                    @endforeach
+                @endif
             @endif
         </div>
     </div>

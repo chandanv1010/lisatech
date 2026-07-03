@@ -50,7 +50,7 @@ $currentLangCode = in_array($currentLangCode, array_column($languageOptions, 'co
 $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCode) ?: $languageOptions[0];
 @endphp
 <header
-    class="header-new {{ isset($postCatalogue) && in_array($postCatalogue->canonical, ['gioi-thieu', 've-chung-toi']) ? 'header-transparent' : '' }}"
+    class="header-new {{ isset($postCatalogue) && in_array($postCatalogue->canonical, ['ve-chung-toi']) ? 'header-transparent' : '' }}"
     id="header">
     <section class="topbar-new uk-visible-large">
         <div class="uk-container uk-container-center">
@@ -145,8 +145,8 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
 
 
 
-    <section class="mobile-header-new uk-hidden-large">
-        <a href="#offcanvas" class="toggle-btn" data-uk-offcanvas="{target:'#offcanvas'}"><i class="fa fa-bars"></i></a>
+    <section class="mobile-header mobile-header-new uk-hidden-large">
+        <a href="#offcanvas" class="toggle-btn" data-uk-offcanvas=""><i class="fa fa-bars"></i></a>
         <div class="logo">
             <a href="{{ url('/') }}" title="{{ $seoTitle }}">
                 <img src="{{ $logoUrl }}" alt="{{ $seoTitle }}"

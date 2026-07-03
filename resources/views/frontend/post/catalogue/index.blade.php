@@ -90,34 +90,27 @@
     }
 @endphp
 
-<!-- Hero Banner (Breadcrumbs with Background Banner Image) -->
-<section class="about-hero">
-    @php
-        $heroTitle = $DetailCatalogues['title'] ?? $postCatalogue->name ?? '';
-        $heroBg = '/userfiles/image/bg-about-hero.png';
-    @endphp
-    <img class="about-hero__bg" src="{{ asset($heroBg) }}" alt="{{ $heroTitle }}" loading="lazy">
-    <div class="hero-overlay"></div>
-    <div class="uk-container uk-container-center hero-content">
-        <h1 class="hero-title">
-            <span class="decor-line left"></span>
-            {{ $heroTitle }}
-            <span class="decor-line right"></span>
-        </h1>
-        <div class="hero-breadcrumb">
-            <ul class="uk-breadcrumb">
-                <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
-                @foreach($Breadcrumb ?? [] as $item)
-                    <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}" title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
-</section>
-
 <!-- Main Content (Grid 1/4 and 3/4) -->
 <section class="main-content modules-posts">
     <div class="uk-container uk-container-center">
+        
+        <!-- Simple 1-line Breadcrumb -->
+        <div class="breadcrumb-inline-wrapper">
+            <ul class="uk-breadcrumb simple-breadcrumb">
+                <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
+                @php
+                    $breadcrumbCount = count($Breadcrumb ?? []);
+                @endphp
+                @foreach($Breadcrumb ?? [] as $k => $item)
+                    @if($k === $breadcrumbCount - 1)
+                        <li><span>{{ $item['title'] ?? '' }}</span></li>
+                    @else
+                        <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}" title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
+                    @endif
+                @endforeach
+            </ul>
+        </div>
+
         <div class="uk-grid uk-grid-medium col-reverse-959">
             
             <!-- Left Column: Sidebar (1/4) -->
@@ -136,7 +129,11 @@
                                 @endphp
                                 <li>
                                     <a href="{{ $subUrl }}" class="category-link {{ $isActive ? 'active' : '' }}">
-                                        <span class="checkbox-box"></span>
+                                        <span class="checkbox-box {{ $isActive ? 'checked' : '' }}">
+                                            @if ($isActive)
+                                                <i class="fa fa-check"></i>
+                                            @endif
+                                        </span>
                                         <span class="category-name">{{ $subName }}</span>
                                     </a>
                                 </li>
@@ -147,35 +144,31 @@
                 
                 <!-- Most Viewed inside Sidebar -->
                 @if(!empty($most_viewed))
-                    <section class="mostViewed">
-                        <header class="panel-head">
-                            <div class="heading"><span>Bài đọc nhiều</span></div>
-                        </header>
-                        <section class="panel-body">
-                            <div class="most-viewed-list">
-                                @foreach($most_viewed as $post)
-                                    @php
-                                        $title = $post['title'] ?? '';
-                                        $href = rewrite_url($post['canonical'] ?? '');
-                                        $image = getthumb($post['images'] ?? null);
-                                    @endphp
-                                    <div class="article-item">
-                                        <div class="thumb">
-                                            <a class="image img-cover" href="{{ $href }}" title="{{ $title }}">
-                                                <img src="{{ $image }}" alt="{{ $title }}">
-                                            </a>
-                                        </div>
-                                        <h3 class="title"><a href="{{ $href }}" title="{{ $title }}">{{ $title }}</a></h3>
+                    <section class="aside-panel mostViewed" style="padding: 24px !important;">
+                        <h3 class="aside-title">Bài đọc nhiều</h3>
+                        <div class="most-viewed-list">
+                            @foreach($most_viewed as $post)
+                                @php
+                                    $title = $post['title'] ?? '';
+                                    $href = rewrite_url($post['canonical'] ?? '');
+                                    $image = getthumb($post['images'] ?? null);
+                                @endphp
+                                <div class="article-item-mini" style="display: flex; gap: 12px; margin-bottom: 15px; border-bottom: 1px dashed #edf2f7; padding-bottom: 12px;">
+                                    <div class="thumb" style="width: 70px; height: 50px; flex-shrink: 0; border-radius: 4px; overflow: hidden;">
+                                        <a href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
+                                            <img src="{{ $image }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </a>
                                     </div>
-                                @endforeach
-                            </div>
-                        </section>
+                                    <h4 class="title" style="margin: 0; font-size: 13px; line-height: 1.4; font-weight: 600;"><a href="{{ $href }}" title="{{ $title }}" style="color: #334155; text-decoration: none;">{{ $title }}</a></h4>
+                                </div>
+                            @endforeach
+                        </div>
                     </section>
                 @endif
                 
                 <!-- Featured Products inside Sidebar -->
                 @if(!empty($featuredProducts) && count($featuredProducts))
-                    <div class="aside-panel sidebar-featured-products" style="margin-top: 25px;">
+                    <div class="aside-panel sidebar-featured-products">
                         <h3 class="aside-title">Sản phẩm nổi bật</h3>
                         <div class="featured-list">
                             @foreach($featuredProducts as $item)
@@ -185,12 +178,12 @@
                                     $pHref = rewrite_url($item->languages->first()->pivot->canonical ?? $item->canonical ?? '');
                                     $pImage = getthumb($item->image ?? $item->images ?? '');
                                 @endphp
-                                <div class="featured-item">
-                                    <a class="thumb-link img-shine" href="{{ $pHref }}" title="{{ $pName }}">
-                                        <img src="{{ $pImage }}" alt="{{ $pName }}">
+                                <div class="featured-item" style="border-bottom: 1px dashed #edf2f7; padding-bottom: 15px; margin-bottom: 15px;">
+                                    <a class="thumb-link img-shine" href="{{ $pHref }}" title="{{ $pName }}" style="display: block; aspect-ratio: 16/10; overflow: hidden; border-radius: 6px; margin-bottom: 8px;">
+                                        <img src="{{ $pImage }}" alt="{{ $pName }}" style="width: 100%; height: 100%; object-fit: cover;">
                                     </a>
-                                    <h4 class="title"><a href="{{ $pHref }}" title="{{ $pName }}">{{ $pName }}</a></h4>
-                                    <div class="desc">{{ $pDesc }}</div>
+                                    <h4 class="title" style="margin: 0 0 5px 0; font-size: 13.5px; font-weight: 700;"><a href="{{ $pHref }}" title="{{ $pName }}" style="color: #0b4a92; text-decoration: none;">{{ $pName }}</a></h4>
+                                    <div class="desc" style="font-size: 12px; color: #64748b; line-height: 1.4;">{{ $pDesc }}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -205,8 +198,8 @@
                     
                     <!-- Category Description -->
                     @if(!empty($DetailCatalogues['description']))
-                        <div class="category-description-wrapper">
-                            <div class="category-description">
+                        <div class="category-description-wrapper" style="background-color: #f8fafc; border: 1px solid #edf2f7; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+                            <div class="category-description" style="color: #475569; font-size: 14px; line-height: 1.7;">
                                 {!! $DetailCatalogues['description'] !!}
                             </div>
                             <a href="#" class="btn-readmore">Xem thêm <i class="fa fa-long-arrow-right"></i></a>
@@ -215,7 +208,7 @@
                     
                     <!-- Articles List -->
                     @if(!empty($ArticlesList))
-                        <div class="listArticle">
+                        <div class="listArticle" style="display: flex; flex-direction: column; gap: 25px;">
                             @foreach($ArticlesList as $post)
                                 @php
                                     $title = $post['title'] ?? '';
@@ -224,20 +217,20 @@
                                     $description = cutnchar(strip_tags($post['description'] ?? ''), 220);
                                     $created = $post['created'] ?? '';
                                 @endphp
-                                <div class="article-item">
-                                    <article class="article-2 uk-grid uk-grid-collapse">
+                                <div class="article-item" style="background: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); transition: all 0.3s ease;">
+                                    <article class="article-2 uk-grid uk-grid-collapse" data-uk-grid-margin>
                                         <div class="uk-width-small-1-3">
-                                            <div class="thumb img-flash">
-                                                <a class="image img-cover" href="{{ $href }}" title="{{ $title }}">
-                                                    <img src="{{ $image }}" alt="{{ $title }}">
+                                            <div class="thumb img-flash" style="border-radius: 8px; overflow: hidden; aspect-ratio: 4/3;">
+                                                <a class="image img-cover" href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
+                                                    <img src="{{ $image }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="uk-width-small-2-3">
-                                            <div class="info">
-                                                <h2 class="title"><a href="{{ $href }}" title="{{ $title }}">{{ $title }}</a></h2>
-                                                <div class="meta-date"><i class="fa fa-calendar"></i> {{ $created }}</div>
-                                                <div class="description">{{ $description }}</div>
+                                            <div class="info" style="padding-left: 25px;">
+                                                <h2 class="title" style="margin: 0 0 10px 0; font-size: 19px; font-weight: 800; line-height: 1.4;"><a href="{{ $href }}" title="{{ $title }}" style="color: #0b4a92; text-decoration: none; transition: color 0.2s;">{{ $title }}</a></h2>
+                                                <div class="meta-date" style="font-size: 12.5px; color: #64748b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;"><i class="fa fa-calendar" style="color: #0b4a92;"></i> {{ $created }}</div>
+                                                <div class="description" style="color: #475569; font-size: 13.5px; line-height: 1.6;">{{ $description }}</div>
                                             </div>
                                         </div>
                                     </article>
@@ -249,7 +242,7 @@
                             {!! $PaginationList ?? '' !!}
                         </div>
                     @else
-                        <p style="color: rgba(255,255,255,0.6); padding: 20px;">Dữ liệu bài viết đang được cập nhật...</p>
+                        <p style="color: #64748b; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: center;">Dữ liệu bài viết đang được cập nhật...</p>
                     @endif
                     
                 </div>
@@ -299,109 +292,72 @@
 
 <style>
     .modules-posts {
-        background-color: #000000 !important;
-        color: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #475569 !important;
         padding: 60px 0 !important;
     }
     
-    /* Breadcrumb styling */
-    .about-hero {
-        position: relative;
-        height: 300px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
+    /* Simple Breadcrumb styling */
+    .simple-breadcrumb {
+        display: inline-flex !important;
+        align-items: center !important;
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 0 20px 0 !important;
+        flex-wrap: wrap !important;
     }
-    .about-hero__bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 1;
+
+    .simple-breadcrumb>li {
+        display: inline-flex !important;
+        align-items: center !important;
+        color: #64748b !important;
+        font-size: 14px !important;
     }
-    .hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: 2;
-    }
-    .hero-content {
-        position: relative;
-        z-index: 3;
-        text-align: center;
-        width: 100%;
-    }
-    .hero-title {
-        font-family: 'Yeseva One', serif;
-        font-size: 40px !important;
-        color: #ffffff !important;
-        margin: 0 0 15px 0 !important;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-    }
-    .hero-title .decor-line {
-        height: 1px;
-        background-color: #00cbd6;
-        width: 60px;
-    }
-    .hero-breadcrumb {
-        display: flex;
-        justify-content: center;
-        margin-top: 15px;
-    }
-    .uk-breadcrumb {
-        display: inline-flex;
-        align-items: center;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        gap: 8px;
-    }
-    .uk-breadcrumb > li {
-        color: #ffffff;
-        font-size: 14px;
-    }
-    .uk-breadcrumb > li > a {
-        color: rgba(255,255,255,0.7) !important;
+
+    .simple-breadcrumb>li>a {
+        color: #64748b !important;
         text-decoration: none !important;
+        transition: color 0.2s !important;
+        font-weight: 500 !important;
     }
-    .uk-breadcrumb > li > a:hover {
-        color: #00cbd6 !important;
+
+    .simple-breadcrumb>li>a:hover {
+        color: #FF9811 !important;
     }
-    .uk-breadcrumb > li:nth-child(n+2):before {
-        content: '/';
-        color: rgba(255,255,255,0.5) !important;
-        margin-right: 8px;
+
+    .simple-breadcrumb>li>span {
+        color: #1e293b !important;
+        font-weight: 500 !important;
+    }
+
+    .simple-breadcrumb>li:nth-child(n+2):before {
+        content: '/' !important;
+        color: #cbd5e1 !important;
+        margin: 0 8px !important;
     }
     
-    /* Left Sidebar Panel styles */
+    /* Sidebar Styling (Light Theme) */
     .aside-panel {
-        background-color: #090909 !important;
-        border: 1px solid #1a1a1a !important;
-        border-radius: 6px !important;
-        padding: 20px !important;
+        background-color: #ffffff !important;
+        border: 1px solid #edf2f7 !important;
+        border-radius: 16px !important;
+        padding: 24px !important;
         margin-bottom: 25px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
     }
     .aside-title {
-        color: #00cbd6 !important;
-        font-weight: bold !important;
-        font-size: 18px !important;
+        color: #0b4a92 !important;
+        font-size: 16px !important;
+        font-weight: 800 !important;
         text-transform: uppercase !important;
-        border-bottom: 1px solid #222;
-        padding-bottom: 10px;
-        margin: 0 0 20px 0 !important;
+        border-bottom: 2px solid #0b4a92 !important;
+        padding-bottom: 12px !important;
+        margin-top: 0 !important;
+        margin-bottom: 20px !important;
+        font-family: var(--font-base, 'Inter', sans-serif);
     }
     
-    /* Checklist structure */
+    /* Category checklist */
     .category-list {
         list-style: none !important;
         padding: 0 !important;
@@ -417,55 +373,52 @@
         display: flex !important;
         align-items: center;
         text-decoration: none !important;
-        color: rgba(255, 255, 255, 0.7) !important;
+        color: #334155 !important;
         font-size: 14px;
         transition: color 0.2s;
     }
     .category-link:hover, .category-link.active {
-        color: #00cbd6 !important;
+        color: #0b4a92 !important;
     }
     
     /* Checkbox box */
     .checkbox-box {
-        width: 16px;
-        height: 16px;
-        border: 1px solid #334155;
-        border-radius: 3px;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #cbd5e1;
+        border-radius: 4px;
         margin-right: 12px;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        position: relative;
-        background-color: #020617;
-        transition: border-color 0.2s, background-color 0.2s;
+        background-color: #fff;
+        transition: all 0.2s;
+        box-sizing: border-box;
     }
     .category-link:hover .checkbox-box {
-        border-color: #00cbd6;
+        border-color: #0b4a92;
     }
-    .category-link.active .checkbox-box {
-        border-color: #00cbd6;
-        background-color: #00cbd6;
+    .checkbox-box.checked {
+        border-color: #0b4a92;
+        background-color: #0b4a92;
     }
-    .category-link.active .checkbox-box::after {
-        content: '';
-        position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 8px;
-        height: 8px;
-        background-color: #000;
-        border-radius: 1px;
+    .checkbox-box.checked i {
+        display: block;
+        font-size: 10px;
+        color: #fff;
     }
     
     /* Category Description styles */
     .category-description-wrapper {
-        background-color: #090909;
-        border: 1px solid #1a1a1a;
+        background-color: #f8fafc;
+        border: 1px solid #edf2f7;
         border-radius: 6px;
         padding: 20px;
         margin-bottom: 30px;
     }
     .category-description {
-        color: #ffffff !important;
+        color: #475569 !important;
         font-size: 14px;
         line-height: 1.6;
         position: relative;
@@ -476,213 +429,41 @@
         overflow: hidden;
     }
     .category-description p, .category-description span, .category-description strong, .category-description li {
-        color: #ffffff !important;
+        color: #475569 !important;
     }
     .category-description a {
-        color: #00cbd6 !important;
+        color: #0b4a92 !important;
         text-decoration: underline !important;
     }
     .category-description a:hover {
-        color: #ffffff !important;
+        color: #FF9811 !important;
     }
     
     .btn-readmore {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: #00cbd6 !important;
+        color: #0b4a92 !important;
         font-size: 14px;
         font-weight: bold;
         margin-top: 15px;
         text-decoration: none !important;
     }
     .btn-readmore:hover {
-        color: #ffffff !important;
+        color: #FF9811 !important;
     }
     
     /* Article item */
-    .listArticle {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-    .article-item {
-        background-color: #090909 !important;
-        border: 1px solid #1a1a1a;
-        border-radius: 6px;
-        padding: 15px;
-        transition: transform 0.3s, border-color 0.3s;
-    }
     .article-item:hover {
         transform: translateY(-3px);
-        border-color: #00cbd6;
-    }
-    .article-item .thumb {
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .article-2 .image {
-        height: 165px !important;
-    }
-    .article-item .thumb img {
-        width: 100%;
-        height: 165px;
-        object-fit: cover;
-    }
-    .article-item .info {
-        padding-left: 20px;
-    }
-    .article-item .title {
-        font-size: 18px !important;
-        font-weight: bold !important;
-        margin: 0 0 10px 0 !important;
-        line-height: 1.4;
-    }
-    .article-item .title a {
-        color: #ffffff !important;
-        text-decoration: none !important;
-        transition: color 0.2s;
+        border-color: #0b4a92 !important;
+        box-shadow: 0 10px 25px rgba(11,74,146,0.05);
     }
     .article-item .title a:hover {
-        color: #00cbd6 !important;
-    }
-    .article-item .meta-date {
-        font-size: 13px;
-        color: rgba(255,255,255,0.5);
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .article-item .meta-date i {
-        color: #00cbd6;
-    }
-    .article-item .description {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.7) !important;
-        line-height: 1.6;
+        color: #FF9811 !important;
     }
     
-    /* Sidebar Most Viewed overrides */
-    .mostViewed {
-        background-color: #090909;
-        border: 1px solid #1a1a1a;
-        border-radius: 6px;
-        padding: 20px;
-        margin-top: 25px;
-    }
-    .mostViewed .panel-head {
-        border-bottom: 1px solid #222;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        text-align: left !important;
-    }
-    .mostViewed .heading {
-        margin: 0 !important;
-        padding: 0 !important;
-        text-align: left !important;
-    }
-    .mostViewed .heading:before,
-    .mostViewed .heading:after {
-        display: none !important;
-        content: none !important;
-    }
-    .mostViewed .heading span {
-        font-size: 18px !important;
-        font-weight: bold !important;
-        color: #00cbd6 !important;
-        text-transform: uppercase;
-        margin: 0 !important;
-    }
-    .most-viewed-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    .mostViewed .article-item {
-        background-color: transparent !important;
-        border: none !important;
-        padding: 0 !important;
-        display: flex;
-        gap: 12px;
-        transition: none;
-        transform: none;
-    }
-    .mostViewed .article-item .thumb {
-        width: 80px;
-        height: 60px;
-        flex-shrink: 0;
-    }
-    .mostViewed .article-item .thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .mostViewed .article-item .title {
-        font-size: 14px !important;
-        line-height: 1.4;
-        font-weight: 500 !important;
-        margin: 0 !important;
-        text-align: left !important;
-    }
-    .mostViewed .article-item .title a {
-        color: #ffffff !important;
-        text-decoration: none !important;
-    }
-    .mostViewed .article-item .title a:hover {
-        color: #00cbd6 !important;
-    }
-    
-    /* Sidebar Featured Products overrides */
-    .featured-list {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    .featured-item {
-        border-bottom: 1px dashed #222;
-        padding-bottom: 20px;
-    }
-    .featured-item:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    .featured-item .thumb-link {
-        display: block;
-        width: 100%;
-        aspect-ratio: 16 / 10;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid #1e293b;
-    }
-    .featured-item .thumb-link img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .featured-item .title {
-        font-size: 14px !important;
-        font-weight: bold !important;
-        margin: 0 0 6px 0 !important;
-        line-height: 1.3;
-        text-align: left !important;
-    }
-    .featured-item .title a {
-        color: #00cbd6 !important;
-        text-decoration: none !important;
-    }
-    .featured-item .title a:hover {
-        color: #fff !important;
-    }
-    .featured-item .desc {
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.6);
-        line-height: 1.4;
-        text-align: left !important;
-    }
-    
-    /* Pagination overrides */
+    /* Pagination */
     .pagination-wrapper {
         margin-top: 40px;
         text-align: center;
@@ -703,7 +484,7 @@
         justify-content: center;
         min-width: 36px;
         height: 36px;
-        color: #ffffff !important;
+        color: #334155 !important;
         font-size: 15px;
         font-weight: bold;
         text-decoration: none !important;
@@ -714,15 +495,12 @@
     }
     .uk-pagination > li.uk-active > a,
     .uk-pagination > li.uk-active > span {
-        background-color: #00cbd6 !important;
-        color: #000000 !important;
+        background-color: #0b4a92 !important;
+        color: #ffffff !important;
         border-radius: 50% !important;
     }
     .uk-pagination > li > a:hover {
-        color: #00cbd6 !important;
-    }
-    .uk-pagination > li.uk-disabled > span {
-        color: rgba(255,255,255,0.4) !important;
+        color: #0b4a92 !important;
     }
     
     @media (max-width: 959px) {
@@ -731,7 +509,7 @@
             flex-direction: column-reverse;
         }
         .article-item .info {
-            padding-left: 0;
+            padding-left: 0 !important;
             margin-top: 15px;
         }
     }

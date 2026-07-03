@@ -16,6 +16,7 @@ class Product extends Model
 
     protected $fillable = [
         'image',
+        'download',
         'album',
         'publish',
         'follow',
@@ -62,6 +63,7 @@ class Product extends Model
             'meta_description',
             'description',
             'content',
+            'applications',
         ];
 
         if (SchemaCache::hasColumn('product_language', 'url')) {

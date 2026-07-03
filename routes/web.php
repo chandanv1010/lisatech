@@ -65,10 +65,10 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('paypal/cancel' . config('apps.general.suffix'), [PaypalController::class, 'cancel'])->name('paypal.cancel');
 
     /** DYNAMIC ROUTE */
-    Route::get('{canonical}' . config('apps.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-/]+');
-    Route::get('{canonical}', [RouterController::class, 'index'])->name('router.index.without_suffix')->where('canonical', '[a-zA-Z0-9-/]+');
     Route::get('{canonical}/trang-{page}' . config('apps.general.suffix'), [RouterController::class, 'page'])->name('router.page')->where('canonical', '[a-zA-Z0-9-/]+')->where('page', '[0-9]+');
     Route::get('{canonical}/trang-{page}', [RouterController::class, 'page'])->name('router.page.without_suffix')->where('canonical', '[a-zA-Z0-9-/]+')->where('page', '[0-9]+');
+    Route::get('{canonical}' . config('apps.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-/]+');
+    Route::get('{canonical}', [RouterController::class, 'index'])->name('router.index.without_suffix')->where('canonical', '[a-zA-Z0-9-/]+');
 
     /*Schools*/
 });

@@ -13800,9 +13800,8 @@ div#tocDiv {
     margin-left: 20px;
 }
 
-.header-new a:hover,
-.header-new .main-nav li.active a {
-    color: #00e0ff !important;
+.header-new .main-nav > li.active > a {
+    color: rgba(14, 60, 125, 1) !important;
 }
 
 .header-new .mobile-header {

@@ -153,6 +153,15 @@
                 </div>
             </div>
         </div>
+        <div class="row mb15">
+            <div class="col-lg-12">
+                <div class="form-row">
+                    <label for="">Tài liệu Download</label>
+                    <input type="text" name="download"
+                        value="{{ old('download', $product->download ?? '') }}" class="form-control upload-image" data-type="Files" placeholder="Chọn tài liệu..." readonly>
+                </div>
+            </div>
+        </div>
         <div class="form-row mb20 hidden">
             <label for="" class="control-label text-left">Thời gian BH</label>
             <div class="guarantee">

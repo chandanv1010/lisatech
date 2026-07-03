@@ -197,6 +197,11 @@ class PostService extends BaseService
     }
 
     private function formatLanguagePayload($payload, $postId, $languageId){
+        foreach (['meta_title', 'meta_keyword', 'meta_description', 'description', 'content'] as $field) {
+            if (array_key_exists($field, $payload) && is_null($payload[$field])) {
+                $payload[$field] = '';
+            }
+        }
         if (array_key_exists('canonical', $payload)) {
             if (!SchemaCache::hasColumn('post_language', 'canonical')) {
                 unset($payload['canonical']);

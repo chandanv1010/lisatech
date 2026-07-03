@@ -403,12 +403,21 @@ if(!function_exists('percent')){
 
 if(!function_exists('seo')){
     function seo($model = null, $page = 1){
+        if (is_null($model)) {
+            return [
+                'meta_title' => '',
+                'meta_keyword' => '',
+                'meta_description' => '',
+                'meta_image' => '',
+                'canonical' => '',
+            ];
+        }
         $canonical = ($page > 1) ? write_url($model->canonical, true, false).'/trang-'.$page.config('apps.general.suffix'): write_url($model->canonical, true, true);
         return [
-            'meta_title' => ($model->meta_title) ?? $model->name,
-            'meta_keyword' => ($model->meta_keyword) ?? '',
-            'meta_description' => ($model->meta_description) ?? cut_string_and_decode($model->descipriont, 168),
-            'meta_image' => $model->image,
+            'meta_title' => (!empty($model->meta_title)) ? $model->meta_title : ($model->name ?? ''),
+            'meta_keyword' => (!empty($model->meta_keyword)) ? $model->meta_keyword : '',
+            'meta_description' => (!empty($model->meta_description)) ? $model->meta_description : cut_string_and_decode($model->description ?? $model->descipriont ?? '', 168),
+            'meta_image' => $model->image ?? '',
             'canonical' => $canonical,
         ];
     }

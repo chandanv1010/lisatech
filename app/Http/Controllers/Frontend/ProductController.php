@@ -116,6 +116,7 @@ class ProductController extends FrontendController
                 }
             ], categorySelectRaw('product'))
         );
+        $productCatalogues = recursive($this->productCatalogueRepository->all(['languages']));
 
         $wishlist = Cart::instance('wishlist')->content();
 
@@ -170,6 +171,7 @@ class ProductController extends FrontendController
             'productRelated',
             'children',
             'promotionLeft',
+            'productCatalogues',
         ) + $legacy);
     }
 
