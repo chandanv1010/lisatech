@@ -1,4 +1,4 @@
-<base href="{{ config('app.url') }}">
+<base href="{{ rtrim(url('/'), '/') }}/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -24,6 +24,6 @@
 
 <script src="backend/js/jquery-3.1.1.min.js"></script>
 <script>
-    var BASE_URL = '{{ config('app.url')  }}'
+    var BASE_URL = '{{ url('/')  }}/'
     var SUFFIX = '{{ config('apps.general.suffix')  }}'
 </script>

@@ -46,7 +46,7 @@
             
             <!-- Simple 1-line Breadcrumb -->
             <div class="breadcrumb-inline-wrapper">
-                <ul class="uk-list uk-clearfix uk-flex uk-flex-middle">
+                <ul class="uk-breadcrumb simple-breadcrumb">
                     <li><a href="{{ homepage_url() }}" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"

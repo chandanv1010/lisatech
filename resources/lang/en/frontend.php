@@ -98,4 +98,10 @@ return [
     'services_consultation' => 'Services & Consultation',
     'why_choose_lisatech' => 'Why Choose Lisatech?',
     'news_insights' => 'News & Insights',
+    'recommend_products' => 'Recommended Products',
+    'suggest_products' => 'Suggested Products',
+    'bestseller_products' => 'Bestselling Products',
+    'karaoke_projects' => 'Karaoke Projects',
+    'showroom_system' => 'Showroom System',
+    'customer_types' => 'Customer Types',
 ];

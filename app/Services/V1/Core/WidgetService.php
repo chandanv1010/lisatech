@@ -82,15 +82,16 @@ class WidgetService extends BaseService
         DB::beginTransaction();
         try {
             $payload = $request->only('name', 'keyword', 'short_code', 'description', 'album', 'model', 'note');
+            $currentWidget = $this->widgetRepository->findById($id);
             if ($request->has('modelItem.id')) {
                 $payload['model_id'] = $request->input('modelItem.id', []);
             } else {
-                $currentWidget = $this->widgetRepository->findById($id);
                 $payload['model_id'] = $currentWidget->model_id ?? [];
             }
-            $payload['description'] = [
-                $languageId => $payload['description']
-            ];
+            
+            $description = is_array($currentWidget->description ?? null) ? $currentWidget->description : [];
+            $description[$languageId] = $payload['description'] ?? '';
+            $payload['description'] = $description;
 
             $widget = $this->widgetRepository->update($id, $payload);
             DB::commit();
@@ -218,6 +219,32 @@ class WidgetService extends BaseService
             $widget->model_id = is_string($widget->model_id) && json_decode($widget->model_id, true)
                 ? json_decode($widget->model_id, true)
                 : [$widget->model_id];
+
+            // Map widget keywords to translations
+            $translationKeys = [
+                'hero-sidebar' => 'frontend.quick_category_search',
+                'product-categories' => 'frontend.product_categories',
+                'solutions' => 'frontend.solutions_fields',
+                'featured-products' => 'frontend.featured_products',
+                'services' => 'frontend.services_consultation',
+                'why-lisatech' => 'frontend.why_choose_lisatech',
+                'news' => 'frontend.news_insights',
+                'showroom-system' => 'frontend.showroom_system',
+                'recommend' => 'frontend.recommend_products',
+                'suggest' => 'frontend.suggest_products',
+                'bestseller-home' => 'frontend.bestseller_products',
+                'customer-types' => 'frontend.customer_types',
+                'karaoke-construction' => 'frontend.karaoke_projects',
+            ];
+
+            if (isset($translationKeys[$widget->keyword])) {
+                $translatedKey = $translationKeys[$widget->keyword];
+                $translated = __($translatedKey);
+                if ($translated !== $translatedKey) {
+                    $widget->name = $translated;
+                }
+            }
+
             return $widget;
         });
     }

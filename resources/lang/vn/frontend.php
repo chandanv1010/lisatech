@@ -98,4 +98,10 @@ return [
     'services_consultation' => 'Dịch Vụ & Tư Vấn',
     'why_choose_lisatech' => 'Vì Sao Chọn Lisatech?',
     'news_insights' => 'Tin Tức & Insights',
+    'recommend_products' => 'Sản phẩm đề xuất',
+    'suggest_products' => 'Sản phẩm gợi ý',
+    'bestseller_products' => 'Sản phẩm bán chạy',
+    'karaoke_projects' => 'Thi công Karaoke',
+    'showroom_system' => 'Hệ thống Showroom',
+    'customer_types' => 'Loại khách hàng',
 ];
