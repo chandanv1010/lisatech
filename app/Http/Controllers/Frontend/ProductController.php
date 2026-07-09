@@ -68,13 +68,7 @@ class ProductController extends FrontendController
     }
 
     private function promotionLeft($product = null){
-        if(empty($product->promotions)){
-            return;
-        }
-        $end = Carbon::parse($product->promotions->endDate);
-        $now = Carbon::now();
-        $dayLefts = $now->diffInDays($end, false);
-        return $dayLefts;
+        return null;
     }
 
 
@@ -85,10 +79,11 @@ class ProductController extends FrontendController
         if (is_null($product)) {
             abort(404);
         }
-        $product = $this->productService->combineProductAndPromotion([$id], $product, true);
+        // Temporarily disable promotions and gift calculations to optimize page queries count
+        // $product = $this->productService->combineProductAndPromotion([$id], $product, true);
        
         $promotion_gifts = null;
-        $promotion_gifts = $this->promotionService->getProTakeGiftBuyProduct($id);
+        // $promotion_gifts = $this->promotionService->getProTakeGiftBuyProduct($id);
         $product['promotion_gifts'] = $promotion_gifts;
         $seller = null;
         if (!is_null($product->seller_id)) {

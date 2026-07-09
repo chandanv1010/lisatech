@@ -36,7 +36,7 @@
                 @foreach($menu['mobile-menu'] as $key => $val)
                     @php
                         $name = $val['item']->languages->first()->pivot->name;
-                        $canonical = ($name == 'Trang chủ') ?  '' : write_url($val['item']->languages->first()->pivot->canonical, true, true);
+                        $canonical = ($name == 'Trang chủ' || $name == 'Home') ?  '' : write_url($val['item']->languages->first()->pivot->canonical, true, true);
                     @endphp
                     <li>
                         <a href="{{ $canonical }}" title="{{ $name }}">{{ $name }}</a>

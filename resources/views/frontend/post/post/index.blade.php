@@ -79,7 +79,7 @@
             <!-- Simple 1-line Breadcrumb -->
             <div class="breadcrumb-inline-wrapper">
                 <ul class="uk-breadcrumb simple-breadcrumb">
-                    <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
+                    <li><a href="{{ homepage_url() }}" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"
                                 title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
@@ -121,14 +121,14 @@
 
                     <!-- Table of Contents sticky box -->
                     <div id="tocDiv" class="hidden-mb hehe aside-panel">
-                        <h3 class="aside-title">Mục lục bài viết</h3>
+                        <h3 class="aside-title">{{ __('frontend.toc') }}</h3>
                         <ol id="tocListAncarat" style="padding-left: 20px; list-style: decimal; color: #0b4a92;"></ol>
                     </div>
 
                     <!-- Most Viewed inside Sidebar -->
                     @if (!empty($most_viewed))
                         <section class="aside-panel mostViewed" style="padding: 24px !important;">
-                            <h3 class="aside-title">Bài đọc nhiều</h3>
+                            <h3 class="aside-title">{{ __('frontend.most_read') }}</h3>
                             <div class="most-viewed-list">
                                 @foreach ($most_viewed as $postItem)
                                     @php
@@ -152,20 +152,20 @@
                     <!-- Featured Products inside Sidebar -->
                     @if (!empty($featuredProducts) && count($featuredProducts))
                         <div class="aside-panel sidebar-featured-products">
-                            <h3 class="aside-title">Sản phẩm nổi bật</h3>
+                            <h3 class="aside-title">{{ __('frontend.featured_products') }}</h3>
                             <div class="featured-list">
                                 @foreach ($featuredProducts as $item)
                                     @php
-                                        $pName = $item->languages->first()->pivot->name ?? ($item->name ?? '');
+                                        $pLang = ($item->languages && $item->languages->first()) ? $item->languages->first()->pivot : null;
+                                        $pName = $pLang->name ?? ($item->name ?? '');
                                         $pDesc = cutnchar(
                                             strip_tags(
-                                                $item->languages->first()->pivot->description ??
-                                                    ($item->description ?? ''),
+                                                $pLang->description ?? ($item->description ?? ''),
                                             ),
                                             100,
                                         );
                                         $pHref = rewrite_url(
-                                            $item->languages->first()->pivot->canonical ?? ($item->canonical ?? ''),
+                                            $pLang->canonical ?? ($item->canonical ?? ''),
                                         );
                                         $pImage = getthumb($item->image ?? ($item->images ?? ''));
                                     @endphp
@@ -191,9 +191,9 @@
                                 <h1 class="title" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 30px; line-height: 1.4; margin: 0 0 15px 0;">{{ $DetailArticles['title'] ?? '' }}</h1>
 
                                 <div class="meta uk-flex uk-flex-middle" style="font-size: 13px; color: #64748b; border-bottom: 1px solid #edf2f7; padding-bottom: 12px; margin-bottom: 25px; gap: 20px;">
-                                    <div class="time"><i class="fa fa-calendar" style="color:#0b4a92;"></i> Cập nhật:
+                                    <div class="time"><i class="fa fa-calendar" style="color:#0b4a92;"></i> {{ __('frontend.updated_at') }}
                                         {{ $DetailArticles['created'] ?? '' }}</div>
-                                    <div class="viewed"><i class="fa fa-eye" style="color:#0b4a92;"></i> Lượt xem:
+                                    <div class="viewed"><i class="fa fa-eye" style="color:#0b4a92;"></i> {{ __('frontend.views') }}
                                         {{ $DetailArticles['viewed'] ?? 0 }}</div>
                                 </div>
 
@@ -224,7 +224,7 @@
             @if (!empty($articles_same) && count($articles_same))
                 <section class="uk-panel article-related-grid uk-margin-large-top" style="border-top: 1px solid #edf2f7; padding-top: 40px; margin-top: 50px !important;">
                     <header class="panel-head-clean" style="margin-bottom: 25px;">
-                        <h2 class="heading-clean" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">CÁC BÀI VIẾT KHÁC</h2>
+                        <h2 class="heading-clean" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">{{ __('frontend.other_posts') }}</h2>
                     </header>
                     <div class="grid-8-posts" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 25px;">
                         @foreach (collect($articles_same)->take(8) as $postItem)

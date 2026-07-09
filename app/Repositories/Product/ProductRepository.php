@@ -332,7 +332,7 @@ class ProductRepository extends BaseRepository
 
     public function getRelated($limit = 6, $productCatalogueId = 0, $productId = 0)
     {
-        return $this->model->where('publish', 2)->where('product_catalogue_id', $productCatalogueId)->where('id', '!=', $productId)->orderBy('id', 'desc')->limit($limit)->get();
+        return $this->model->with(['languages'])->where('publish', 2)->where('product_catalogue_id', $productCatalogueId)->where('id', '!=', $productId)->orderBy('id', 'desc')->limit($limit)->get();
     }
 
     public function getProductByProductCatalogue(array $productCatalogue = [], $language_id = 0)

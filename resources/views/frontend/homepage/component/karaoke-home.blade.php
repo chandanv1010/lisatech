@@ -266,7 +266,7 @@
                         $dbImg = !empty($productCat->image) ? $productCat->image : '';
                         $imgPath = !empty($dbImg) ? $dbImg : $defaultProduct;
                     @endphp
-                    <a href="{{ $pcLang->canonical ?? '#' }}" class="product-category__card">
+                    <a href="{{ write_url($pcLang->canonical ?? null) }}" class="product-category__card">
                         <div class="product-category__icon">
                             <img src="{{ asset($iconPath) }}" alt="{{ $pcLang->name ?? '' }}">
                         </div>

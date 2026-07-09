@@ -44,6 +44,9 @@ $socialLinks[] = [
 }
 
 $currentLangCode = request('lang', app()->getLocale());
+if ($currentLangCode === 'vn') {
+    $currentLangCode = 'vi';
+}
 $currentLangCode = in_array($currentLangCode, array_column($languageOptions, 'code'), true)
 ? $currentLangCode
 : 'vi';
@@ -66,8 +69,8 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
                 </div>
 
                 <div class="search-center">
-                    <form action="{{ write_url('search') }}" method="GET" class="search-form">
-                        <input type="text" name="keyword" placeholder="Tìm sản phẩm, danh mục, thương hiệu..."
+                    <form action="{{ route('product.catalogue.search') }}" method="GET" class="search-form">
+                        <input type="text" name="keyword" placeholder="{{ __('frontend.search_placeholder') }}"
                             value="{{ request('keyword') }}">
                         <button type="submit"><i class="fa fa-search"></i></button>
                     </form>
@@ -87,7 +90,7 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
                     </div>
 
                     <a href="{{ route('contact.index') }}" class="btn-yellow btn-quote">
-                        <i class="fa fa-paper-plane"></i> Yêu cầu báo giá
+                        <i class="fa fa-paper-plane"></i> {{ __('frontend.request_quote') }}
                     </a>
 
                     <div class="language-dropdown">
@@ -122,7 +125,7 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
         <div class="uk-container uk-container-center">
             <div class="container">
                 <div class="logo">
-                    <a href="{{ url('/') }}" title="{{ $seoTitle }}">
+                    <a href="{{ homepage_url() }}" title="{{ $seoTitle }}">
                         <img src="{{ $logoUrl }}" alt="{{ $seoTitle }}"
                             onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'">
                     </a>
@@ -135,7 +138,7 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
                     </ul>
                     <a href="{{ $registerUrl }}" class="header-cta">
                         <i class="fa fa-phone"></i>
-                        <span>Liên hệ kinh doanh</span>
+                        <span>{{ __('frontend.contact_business') }}</span>
                     </a>
                 </div>
                 @endif
@@ -148,7 +151,7 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
     <section class="mobile-header mobile-header-new uk-hidden-large">
         <a href="#offcanvas" class="toggle-btn" data-uk-offcanvas=""><i class="fa fa-bars"></i></a>
         <div class="logo">
-            <a href="{{ url('/') }}" title="{{ $seoTitle }}">
+            <a href="{{ homepage_url() }}" title="{{ $seoTitle }}">
                 <img src="{{ $logoUrl }}" alt="{{ $seoTitle }}"
                     onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}'">
             </a>
@@ -161,8 +164,8 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
         <a class="uk-modal-close uk-close"></a>
         <form action="{{ url('tim-kiem') }}" method="get" class="uk-form">
             <input type="text" name="keyword" class="uk-width-1-1 uk-form-large"
-                placeholder="Nhập từ khóa tìm kiếm...">
-            <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-top" type="submit">Tìm kiếm</button>
+                placeholder="{{ __('frontend.search_placeholder') }}">
+            <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-top" type="submit">{{ __('messages.search') }}</button>
         </form>
     </div>
 </div>

@@ -19,7 +19,16 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = session('app_locale', config('app.locale')); 
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if ($lang === 'en') {
+                session(['frontend_locale' => 'en']);
+            } elseif ($lang === 'vi' || $lang === 'vn') {
+                session(['frontend_locale' => 'vn']);
+            }
+        }
+
+        $locale = session('frontend_locale', config('app.locale')); 
         App::setLocale($locale);
 
         $languageId = cache()->rememberForever('language_id_' . $locale, function () use ($locale) {

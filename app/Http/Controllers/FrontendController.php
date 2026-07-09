@@ -17,16 +17,15 @@ class FrontendController extends Controller
     public function __construct(
         // SystemRepository $systemRepository
     ){
-
-        $this->setLanguage();
-        $this->setSystem();
-
+        $this->middleware(function ($request, $next) {
+            $this->setLanguage();
+            $this->setSystem();
+            return $next($request);
+        });
     }
 
     public function setLanguage(){
-        $locale = app()->getLocale(); // vn en cn
-        // $language = Language::where('canonical', $locale)->first();
-        $this->language = 1;
+        $this->language = config('app.language_id', 1);
     }
 
     public function setSystem(){

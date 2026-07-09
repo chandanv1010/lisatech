@@ -46,13 +46,26 @@ class LegacyFrontend
         }
 
         $path = trim($canonical, '/');
+
         $suffixValue = (string) config('apps.general.suffix', '.html');
 
         if ($suffix && $suffixValue !== '' && !Str::endsWith($path, $suffixValue)) {
             $path .= $suffixValue;
         }
 
-        return ($fullDomain ? rtrim(config('app.url'), '/') : rtrim(url('/'), '/')) . '/' . $path;
+        $url = ($fullDomain ? rtrim(config('app.url'), '/') : rtrim(url('/'), '/')) . '/' . $path;
+
+        if (session('frontend_locale') === 'en' || request()->query('lang') === 'en') {
+            if (strpos($url, '?') !== false) {
+                if (strpos($url, 'lang=') === false) {
+                    $url .= '&lang=en';
+                }
+            } else {
+                $url .= '?lang=en';
+            }
+        }
+
+        return $url;
     }
 
     public static function system(array $system, string $key, string $default = ''): string

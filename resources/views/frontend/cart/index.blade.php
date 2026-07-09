@@ -5,13 +5,13 @@
         <div class="uk-container uk-container-center">
             <ul class="uk-list uk-clearfix uk-flex uk-flex-middle">
                 <li>
-                    <a href="/" title="Trang chủ">Trang chủ</a>
+                    <a href="/" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a>
                 </li>
                 <li>    
                     <span class="slash">/</span>
                 </li>
                 <li>
-                    <a href="{{ write_url('thanh-toan') }}" title="Thanh toán">Thanh toán</a>
+                    <a href="{{ write_url('thanh-toan') }}" title="{{ __('frontend.checkout') }}">{{ __('frontend.checkout') }}</a>
                 </li>
             </ul>
         </div>
@@ -28,7 +28,7 @@
         @endif
         <form action="{{ route('cart.store') }}" class="uk-form form" method="post">
             @csrf
-            <h2 class="heading-1"><span>Thông tin đặt hàng</span></h2>
+            <h2 class="heading-1"><span>{{ __('frontend.order_info') }}</span></h2>
             <div class="cart-wrapper">
                 <div class="uk-grid uk-grid-medium">
                     <div class="uk-width-large-2-5">
@@ -40,7 +40,7 @@
                     <div class="uk-width-large-3-5">
                         <div class="panel-cart">
                             <div class="panel-head">
-                                <h2 class="cart-heading"><span>Đơn hàng</span></h2>
+                                <h2 class="cart-heading"><span>{{ __('frontend.order_label') }}</span></h2>
                             </div>
                             @include('frontend.cart.component.item')
                             @include('frontend.cart.component.voucher')
@@ -72,7 +72,7 @@
                             </div>
                             @include('frontend.cart.component.summary')
                             @if(count($carts) && !is_null($carts) )
-                                <button type="submit" class="cart-checkout" value="create" name="create">Thanh toán đơn hàng</button>
+                                <button type="submit" class="cart-checkout" value="create" name="create">{{ __('frontend.checkout_order') }}</button>
                             @endif
                         </div>
                     </div>

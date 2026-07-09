@@ -331,6 +331,16 @@ if(!function_exists('renderSystemSelect')){
     }
 }
 
+if(!function_exists('homepage_url')){
+    function homepage_url(){
+        $url = url('/');
+        if (session('frontend_locale') === 'en' || request()->query('lang') === 'en') {
+            $url .= '?lang=en';
+        }
+        return $url;
+    }
+}
+
 if(!function_exists('write_url')){
     function write_url($canonical = null, bool $fullDomain = true, $suffix = true){
         return \App\Support\LegacyFrontend::url($canonical, $fullDomain, $suffix);

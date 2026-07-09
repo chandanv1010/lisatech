@@ -97,7 +97,7 @@
         <!-- Simple 1-line Breadcrumb -->
         <div class="breadcrumb-inline-wrapper">
             <ul class="uk-breadcrumb simple-breadcrumb">
-                <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
+                <li><a href="{{ homepage_url() }}" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a></li>
                 @php
                     $breadcrumbCount = count($Breadcrumb ?? []);
                 @endphp
@@ -145,7 +145,7 @@
                 <!-- Most Viewed inside Sidebar -->
                 @if(!empty($most_viewed))
                     <section class="aside-panel mostViewed" style="padding: 24px !important;">
-                        <h3 class="aside-title">Bài đọc nhiều</h3>
+                        <h3 class="aside-title">{{ __('frontend.most_read') }}</h3>
                         <div class="most-viewed-list">
                             @foreach($most_viewed as $post)
                                 @php
@@ -169,13 +169,14 @@
                 <!-- Featured Products inside Sidebar -->
                 @if(!empty($featuredProducts) && count($featuredProducts))
                     <div class="aside-panel sidebar-featured-products">
-                        <h3 class="aside-title">Sản phẩm nổi bật</h3>
+                        <h3 class="aside-title">{{ __('frontend.featured_products') }}</h3>
                         <div class="featured-list">
                             @foreach($featuredProducts as $item)
                                 @php
-                                    $pName = $item->languages->first()->pivot->name ?? $item->name ?? '';
-                                    $pDesc = cutnchar(strip_tags($item->languages->first()->pivot->description ?? $item->description ?? ''), 100);
-                                    $pHref = rewrite_url($item->languages->first()->pivot->canonical ?? $item->canonical ?? '');
+                                    $pLang = ($item->languages && $item->languages->first()) ? $item->languages->first()->pivot : null;
+                                    $pName = $pLang->name ?? $item->name ?? '';
+                                    $pDesc = cutnchar(strip_tags($pLang->description ?? $item->description ?? ''), 100);
+                                    $pHref = rewrite_url($pLang->canonical ?? $item->canonical ?? '');
                                     $pImage = getthumb($item->image ?? $item->images ?? '');
                                 @endphp
                                 <div class="featured-item" style="border-bottom: 1px dashed #edf2f7; padding-bottom: 15px; margin-bottom: 15px;">
@@ -198,51 +199,65 @@
                     
                     <!-- Category Description -->
                     @if(!empty($DetailCatalogues['description']))
-                        <div class="category-description-wrapper" style="background-color: #f8fafc; border: 1px solid #edf2f7; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
-                            <div class="category-description" style="color: #475569; font-size: 14px; line-height: 1.7;">
+                        @php
+                            $isPolicy = in_array($postCatalogue->id, [1154, 1155, 1156, 1157, 1158]);
+                        @endphp
+                        @if ($isPolicy)
+                            <div class="policy-content" style="color: #334155; font-size: 15px; line-height: 1.8; margin-bottom: 40px;">
                                 {!! $DetailCatalogues['description'] !!}
                             </div>
-                            <a href="#" class="btn-readmore">Xem thêm <i class="fa fa-long-arrow-right"></i></a>
-                        </div>
+                        @else
+                            <div class="category-description-wrapper" style="background-color: #f8fafc; border: 1px solid #edf2f7; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+                                <div class="category-description" style="color: #475569; font-size: 14px; line-height: 1.7;">
+                                    {!! $DetailCatalogues['description'] !!}
+                                </div>
+                                <a href="#" class="btn-readmore">{{ __('frontend.view_more') }} <i class="fa fa-long-arrow-right"></i></a>
+                            </div>
+                        @endif
                     @endif
                     
                     <!-- Articles List -->
-                    @if(!empty($ArticlesList))
-                        <div class="listArticle" style="display: flex; flex-direction: column; gap: 25px;">
-                            @foreach($ArticlesList as $post)
-                                @php
-                                    $title = $post['title'] ?? '';
-                                    $href = rewrite_url($post['canonical'] ?? '');
-                                    $image = getthumb($post['images'] ?? null);
-                                    $description = cutnchar(strip_tags($post['description'] ?? ''), 220);
-                                    $created = $post['created'] ?? '';
-                                @endphp
-                                <div class="article-item" style="background: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); transition: all 0.3s ease;">
-                                    <article class="article-2 uk-grid uk-grid-collapse" data-uk-grid-margin>
-                                        <div class="uk-width-small-1-3">
-                                            <div class="thumb img-flash" style="border-radius: 8px; overflow: hidden; aspect-ratio: 4/3;">
-                                                <a class="image img-cover" href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
-                                                    <img src="{{ $image }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                                </a>
+                    @php
+                        $isPolicy = in_array($postCatalogue->id, [1154, 1155, 1156, 1157, 1158]);
+                    @endphp
+                    @if (!$isPolicy)
+                        @if(!empty($ArticlesList))
+                            <div class="listArticle" style="display: flex; flex-direction: column; gap: 25px;">
+                                @foreach($ArticlesList as $post)
+                                    @php
+                                        $title = $post['title'] ?? '';
+                                        $href = rewrite_url($post['canonical'] ?? '');
+                                        $image = getthumb($post['images'] ?? null);
+                                        $description = cutnchar(strip_tags($post['description'] ?? ''), 220);
+                                        $created = $post['created'] ?? '';
+                                    @endphp
+                                    <div class="article-item" style="background: #ffffff; border: 1px solid #edf2f7; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); transition: all 0.3s ease;">
+                                        <article class="article-2 uk-grid uk-grid-collapse" data-uk-grid-margin>
+                                            <div class="uk-width-small-1-3">
+                                                <div class="thumb img-flash" style="border-radius: 8px; overflow: hidden; aspect-ratio: 4/3;">
+                                                    <a class="image img-cover" href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
+                                                        <img src="{{ $image }}" alt="{{ $title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="uk-width-small-2-3">
-                                            <div class="info" style="padding-left: 25px;">
-                                                <h2 class="title" style="margin: 0 0 10px 0; font-size: 19px; font-weight: 800; line-height: 1.4;"><a href="{{ $href }}" title="{{ $title }}" style="color: #0b4a92; text-decoration: none; transition: color 0.2s;">{{ $title }}</a></h2>
-                                                <div class="meta-date" style="font-size: 12.5px; color: #64748b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;"><i class="fa fa-calendar" style="color: #0b4a92;"></i> {{ $created }}</div>
-                                                <div class="description" style="color: #475569; font-size: 13.5px; line-height: 1.6;">{{ $description }}</div>
+                                            <div class="uk-width-small-2-3">
+                                                <div class="info" style="padding-left: 25px;">
+                                                    <h2 class="title" style="margin: 0 0 10px 0; font-size: 19px; font-weight: 800; line-height: 1.4;"><a href="{{ $href }}" title="{{ $title }}" style="color: #0b4a92; text-decoration: none; transition: color 0.2s;">{{ $title }}</a></h2>
+                                                    <div class="meta-date" style="font-size: 12.5px; color: #64748b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;"><i class="fa fa-calendar" style="color: #0b4a92;"></i> {{ $created }}</div>
+                                                    <div class="description" style="color: #475569; font-size: 13.5px; line-height: 1.6;">{{ $description }}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </article>
-                                </div>
-                            @endforeach
-                        </div>
-                        
-                        <div class="pagination-wrapper">
-                            {!! $PaginationList ?? '' !!}
-                        </div>
-                    @else
-                        <p style="color: #64748b; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: center;">Dữ liệu bài viết đang được cập nhật...</p>
+                                        </article>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="pagination-wrapper">
+                                {!! $PaginationList ?? '' !!}
+                            </div>
+                        @else
+                            <p style="color: #64748b; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: center;">{{ __('frontend.updating_data') }}</p>
+                        @endif
                     @endif
                     
                 </div>
@@ -527,10 +542,10 @@
                     e.preventDefault();
                     if (desc.classList.contains('collapsed')) {
                         desc.classList.remove('collapsed');
-                        readmoreBtn.innerHTML = 'Thu gọn <i class="fa fa-long-arrow-left"></i>';
+                        readmoreBtn.innerHTML = '{{ __('frontend.collapse') }} <i class="fa fa-long-arrow-left"></i>';
                     } else {
                         desc.classList.add('collapsed');
-                        readmoreBtn.innerHTML = 'Xem thêm <i class="fa fa-long-arrow-right"></i>';
+                        readmoreBtn.innerHTML = '{{ __('frontend.view_more') }} <i class="fa fa-long-arrow-right"></i>';
                     }
                 });
             } else {

@@ -38,10 +38,10 @@
                                         
                                         <div class="hero-actions">
                                             <a href="{{ $slideUrl }}" class="btn btn-primary-blue">
-                                                <i class="fa fa-search"></i> Tìm sản phẩm
+                                                <i class="fa fa-search"></i> {{ __('frontend.find_product') }}
                                             </a>
                                             <a href="{{ write_url('lien-he') }}" class="btn btn-primary-orange">
-                                                <i class="fa fa-paper-plane"></i> Yêu cầu báo giá
+                                                <i class="fa fa-paper-plane"></i> {{ __('frontend.request_quote') }}
                                             </a>
                                         </div>
                                         
@@ -49,15 +49,15 @@
                                         <div class="hero-features">
                                             <div class="feature-item">
                                                 <img src="{{ asset('vendor/frontend/img/project/icon_1.png') }}" alt="Check">
-                                                <span>Hàng chính hãng<br>CO/CQ đầy đủ</span>
+                                                <span>{!! __('frontend.genuine_goods') !!}</span>
                                             </div>
                                             <div class="feature-item">
                                                 <img src="{{ asset('vendor/frontend/img/project/icon_2.png') }}" alt="Gear">
-                                                <span>Tư vấn kỹ thuật<br>miễn phí</span>
+                                                <span>{!! __('frontend.technical_consultation') !!}</span>
                                             </div>
                                             <div class="feature-item">
                                                 <img src="{{ asset('vendor/frontend/img/project/icon_3.png') }}" alt="Truck">
-                                                <span>Giao hàng toàn quốc<br>nhanh chóng</span>
+                                                <span>{!! __('frontend.nationwide_delivery') !!}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -87,7 +87,7 @@
             @if (isset($widgets['hero-sidebar']) && isset($widgets['hero-sidebar']->object) && count($widgets['hero-sidebar']->object) > 0)
                 <div class="hero-category-card">
                     <h3 class="card-title">
-                        {{ $widgets['hero-sidebar']->name ?? 'Tìm nhanh danh mục' }}
+                        {{ $widgets['hero-sidebar']->name ?? __('frontend.quick_category_search') }}
                     </h3>
                     
                     @php
@@ -121,7 +121,7 @@
                         @endforeach
                     </ul>
                     <a href="{{ write_url('san-pham') }}" class="btn btn-full-blue">
-                        Xem tất cả danh mục
+                        {{ __('frontend.view_all_categories') }}
                     </a>
                 </div>
             @endif
@@ -192,7 +192,7 @@
             </h2>
 
             <a href="#" class="product-category__view-all">
-                Xem Tất Cả Danh Mục
+                {{ __('frontend.view_all_categories') }}
                 <i class="fa fa-arrow-right"></i>
             </a>
         </div>
@@ -202,6 +202,16 @@
                 $productCatWidget = $widgets['product-categories'] ?? null;
                 $defaultIcon = 'frontend/resources/img/icon-default.svg';
                 $defaultProduct = 'uploads/images/slide/master-hp-riello-ups-slide.png';
+                
+                // Map the custom post IDs in the widget to the actual product catalogue slugs
+                $categoryUrlMap = [
+                    1319 => 'san-pham/thiet-bi-linh-kien-thang-may/c82',
+                    1320 => 'thiet-bi-nguon',
+                    1321 => 'san-pham/bien-tan-servo-yaskawa-japan/c104',
+                    1322 => 'bo-bien-doi-tan-so-50hz/60hz/-400hz-pc1162-html',
+                    1323 => 'san-pham/bo-luu-dien-riello-ups-italy/c83',
+                    1324 => 'ac-quy-pc1157-html',
+                ];
             @endphp
 
             @if ($productCatWidget && $productCatWidget->object)
@@ -215,8 +225,10 @@
                         // Load product image from DB, fallback to default shop-1.png
                         $dbImg = !empty($productCat->image) ? $productCat->image : '';
                         $imgPath = !empty($dbImg) ? $dbImg : $defaultProduct;
+                        
+                        $targetCanonical = $categoryUrlMap[$productCat->id] ?? ($pcLang->canonical ?? null);
                     @endphp
-                    <a href="{{ $pcLang->canonical ?? '#' }}" class="product-category__card">
+                    <a href="{{ write_url($targetCanonical) }}" class="product-category__card">
                         <div class="product-category__icon">
                             <img src="{{ asset($iconPath) }}" alt="{{ $pcLang->name ?? '' }}">
                         </div>
@@ -242,8 +254,8 @@
 <!-- Slider Section (Giải Pháp & Lĩnh Vực) -->
 @if (isset($widgets['solutions']))
     @php
-        $langId = session('app_locale') == 'en' ? 2 : 1;
-        $parentCategoryId = ($langId == 2) ? 1058 : 58;
+        $langId = config('app.language_id', 1);
+        $parentCategoryId = ($langId == 4) ? 1058 : 58;
         
         $parentField = \Illuminate\Support\Facades\Schema::hasColumn('post_catalogues', 'parent_id') ? 'parent_id' : 'parentid';
         $publishField = \Illuminate\Support\Facades\Schema::hasColumn('post_catalogues', 'publish') ? 'publish' : 'pubish';
@@ -263,8 +275,8 @@
             <div class="uk-container uk-container-center">
 
                 <div class="solutions-header">
-                    <h2 class="title">{{ ($langId == 2) ? 'Solutions & Fields' : 'Giải Pháp & Lĩnh Vực' }}</h2>
-                    <a href="#" class="view-all">{{ ($langId == 2) ? 'View All Categories' : 'Xem Tất Cả Danh Mục' }} &rarr;</a>
+                    <h2 class="title">{{ __('frontend.solutions_fields') }}</h2>
+                    <a href="#" class="view-all">{{ __('frontend.view_all_categories') }} &rarr;</a>
                 </div>
 
                 <!-- Swiper -->
@@ -351,7 +363,7 @@
 
         $featuredProducts = $widgets['featured-products']->object ?? collect();
         if ($featuredProducts->count() < 16) {
-            $langId = session('app_locale') == 'en' ? 2 : 1;
+            $langId = config('app.language_id', 1);
             $pool = App\Models\Product::where('publish', 2)
                 ->whereNull('deleted_at')
                 ->where('image', '!=', '')
@@ -379,8 +391,8 @@
         <section class="products-section">
             <div class="uk-container uk-container-center">
                 <div class="products-header">
-                    <h2 class="title">{{ $widgets['featured-products']->name ?? 'Sản Phẩm Nổi Bật' }}</h2>
-                    <a href="{{ write_url('san-pham') }}" class="view-all">Xem Tất Cả Danh Mục &rarr;</a>
+                    <h2 class="title">{{ $widgets['featured-products']->name ?? __('frontend.featured_products') }}</h2>
+                    <a href="{{ write_url('san-pham') }}" class="view-all">{{ __('frontend.view_all_categories') }} &rarr;</a>
                 </div>
 
                 <div class="products-carousel-wrapper">
@@ -431,8 +443,8 @@
                                             @endif
                                         </ul>
                                         <div class="card-actions" style="margin-top: auto;">
-                                            <a href="{{ $productUrl }}" class="btn-detail">Xem chi tiết</a>
-                                            <a href="#contact" class="btn-contact">Liên hệ</a>
+                                            <a href="{{ $productUrl }}" class="btn-detail">{{ __('frontend.view_details') }}</a>
+                                            <a href="#contact" class="btn-contact">{{ __('frontend.contact') }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -471,10 +483,6 @@
                         },
                         1024: {
                             slidesPerView: 5,
-                            spaceBetween: 20
-                        },
-                        1200: {
-                            slidesPerView: 6,
                             spaceBetween: 20
                         }
                     }
@@ -536,12 +544,12 @@
     <div class="uk-container uk-container-center">
         <div class="contact-wrapper">
             <div class="contact-info">
-                <h2>Liên Hệ Tư Vấn & Báo Giá</h2>
-                <p>Lisatech luôn sẵn sàng đồng hành cùng bạn!</p>
+                <h2>{{ __('frontend.contact_title') }}</h2>
+                <p>{{ __('frontend.contact_subtitle') }}</p>
                 <ul class="check-list">
-                    <li><i class="fa fa-check"></i> Tư vấn giải pháp phù hợp</li>
-                    <li><i class="fa fa-check"></i> Báo giá nhanh chóng</li>
-                    <li><i class="fa fa-check"></i> Hỗ trợ kỹ thuật tận tâm</li>
+                    <li><i class="fa fa-check"></i> {{ __('frontend.solution_consultation') }}</li>
+                    <li><i class="fa fa-check"></i> {{ __('frontend.quick_quote') }}</li>
+                    <li><i class="fa fa-check"></i> {{ __('frontend.dedicated_support') }}</li>
                 </ul>
                 <div class="contact-methods">
                     <div class="method-item">
@@ -554,7 +562,7 @@
                     <div class="method-item">
                         <div class="icon-circle icon-zalo">Zalo</div>
                         <div class="method-text">
-                            <strong>Chat Zalo ngay!</strong>
+                            <strong>{{ __('frontend.chat_zalo_now') }}</strong>
                         </div>
                     </div>
                 </div>
@@ -564,24 +572,24 @@
                 @csrf
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Họ và tên*</label>
-                        <input type="text" name="name" placeholder="Vui lòng nhập họ tên" required>
+                        <label>{{ __('frontend.fullname') }}</label>
+                        <input type="text" name="name" placeholder="{{ __('frontend.fullname_placeholder') }}" required>
                     </div>
                     <div class="form-group">
-                        <label>Số điện thoại*</label>
-                        <input type="tel" name="phone" placeholder="Vui lòng nhập số điện thoại" required>
+                        <label>{{ __('frontend.phone') }}</label>
+                        <input type="tel" name="phone" placeholder="{{ __('frontend.phone_placeholder') }}" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Email*</label>
-                    <input type="email" name="email" placeholder="Vui lòng nhập email" required>
+                    <label>{{ __('frontend.email') }}</label>
+                    <input type="email" name="email" placeholder="{{ __('frontend.email_placeholder') }}" required>
                 </div>
                 <div class="form-group">
-                    <label>Nội dung*</label>
-                    <textarea name="message" placeholder="Yêu cầu / nội dung cần tư vấn" rows="4" required></textarea>
+                    <label>{{ __('frontend.content') }}</label>
+                    <textarea name="message" placeholder="{{ __('frontend.content_placeholder') }}" rows="4" required></textarea>
                 </div>
-                <button type="submit" class="btn-submit">Gửi Yêu Cầu</button>
-                <p class="form-note">Phản hồi trong vòng 15 phút!</p>
+                <button type="submit" class="btn-submit">{{ __('frontend.send_request') }}</button>
+                <p class="form-note">{{ __('frontend.response_time_note') }}</p>
             </form>
         </div>
     </div>
@@ -642,7 +650,7 @@
             </h2>
 
             <a href="{{ route('post.index') }}" class="news-section__view-all">
-                Xem Tất Bài Viết
+                {{ __('frontend.view_all_posts') }}
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" />
@@ -678,7 +686,7 @@
                                         </span>
 
                                         <a href="{{ $newsUrl }}" class="news-card__more">
-                                            Đọc Thêm
+                                            {{ __('frontend.read_more') }}
                                             <svg viewBox="0 0 24 24" fill="none">
                                                 <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor"
                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -715,7 +723,7 @@
                                     </span>
 
                                     <a href="{{ $newsUrl }}" class="news-card__more">
-                                        Đọc Thêm
+                                        {{ __('frontend.read_more') }}
                                         <svg viewBox="0 0 24 24" fill="none">
                                             <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor"
                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

@@ -24,7 +24,7 @@
 
             {{-- ====== CỘT 1: THÔNG TIN LIÊN HỆ ====== --}}
             <div class="footer-lisa__col">
-                <h3 class="footer-lisa__title">Thông Tin Liên Hệ</h3>
+                <h3 class="footer-lisa__title">{{ __('frontend.contact_info') }}</h3>
 
                 <div class="footer-lisa__contact-block">
                     @if (!empty($companyName))
@@ -51,7 +51,7 @@
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
-                            <span><strong>Văn Phòng Đại Diện Miền Bắc:</strong><br>{{ $address2 }}</span>
+                            <span><strong>{{ __('frontend.northern_office') }}</strong><br>{{ $address2 }}</span>
                         </div>
                     @endif
 
@@ -81,7 +81,7 @@
 
             {{-- ====== CỘT 2: LIÊN KẾT NHANH (TIMELINE) ====== --}}
             <div class="footer-lisa__col">
-                <h3 class="footer-lisa__title">Liên Kết Nhanh</h3>
+                <h3 class="footer-lisa__title">{{ __('frontend.quick_links') }}</h3>
                 @if (!empty($quickLinksNav))
                     <ul class="footer-lisa__nav-list--timeline">
                         @foreach ($quickLinksNav as $item)
@@ -100,7 +100,7 @@
 
             {{-- ====== CỘT 3: CHÍNH SÁCH ====== --}}
             <div class="footer-lisa__col">
-                <h3 class="footer-lisa__title">Chính Sách</h3>
+                <h3 class="footer-lisa__title">{{ __('frontend.policy') }}</h3>
                 @if (!empty($policiesNav))
                     <ul class="footer-lisa__nav-list--dot">
                         @foreach ($policiesNav as $item)
@@ -119,7 +119,7 @@
 
             {{-- ====== CỘT 4: MẠNG XÃ HỘI & ĐĂNG KÝ ====== --}}
             <div class="footer-lisa__col">
-                <h3 class="footer-lisa__title">Kết Nối Với Lisatech</h3>
+                <h3 class="footer-lisa__title">{{ __('frontend.connect_with') }}</h3>
 
                 <div class="footer-lisa__social-icons">
                     <a href="{{ !empty($socialZalo) ? $socialZalo : '#' }}" class="zalo" target="_blank" title="Zalo">
@@ -159,13 +159,13 @@
                 </div>
 
                 <div class="footer-lisa__subscribe">
-                    <h4 class="footer-lisa__subscribe-title">Đăng Ký Nhận Tin</h4>
+                    <h4 class="footer-lisa__subscribe-title">{{ __('frontend.subscribe_newsletter') }}</h4>
                     <form class="footer-lisa__subscribe-form" action="{{ route('contact.save') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="name" value="Đăng ký nhận tin">
+                        <input type="hidden" name="name" value="{{ __('frontend.subscribe_newsletter') }}">
                         <input type="hidden" name="message" value="Đăng ký nhận tin từ footer">
-                        <input type="email" name="email" placeholder="Nhập email để nhận tin" required>
-                        <button type="submit">Đăng Ký</button>
+                        <input type="email" name="email" placeholder="{{ __('frontend.subscribe_placeholder') }}" required>
+                        <button type="submit">{{ __('frontend.subscribe') }}</button>
                     </form>
                 </div>
             </div>
@@ -175,7 +175,7 @@
 
     <div class="footer-lisa__bottom">
         <div class="lisa-container footer-lisa__bottom-inner">
-            &copy; {{ date('Y') }} Lisatech. All rights reserved. | Lisatech - Nâng tầm cuộc sống gia đình Việt
+            &copy; {{ date('Y') }} Lisatech. All rights reserved. | {{ __('frontend.footer_tagline') }}
         </div>
     </div>
 </footer>
@@ -201,7 +201,7 @@
 
             // Gọi API đăng ký (thay URL bằng route thực tế)
             btn.disabled = true;
-            btn.textContent = 'Đang gửi...';
+            btn.textContent = '{{ __('frontend.sending') }}';
 
             fetch('/subscribe', {
                     method: 'POST',
@@ -215,13 +215,13 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    btn.textContent = 'Đã đăng ký!';
+                    btn.textContent = '{{ __('frontend.subscribed') }}';
                     btn.style.background = '#22c55e';
                     input.value = '';
                 })
                 .catch(() => {
                     // Fallback: vẫn hiện thành công với UX tốt
-                    btn.textContent = 'Đã đăng ký!';
+                    btn.textContent = '{{ __('frontend.subscribed') }}';
                     btn.style.background = '#22c55e';
                     input.value = '';
                 })
@@ -229,7 +229,7 @@
                     // Reset sau 3 giây
                     setTimeout(() => {
                         btn.disabled = false;
-                        btn.textContent = 'Đăng Ký';
+                        btn.textContent = '{{ __('frontend.subscribe') }}';
                         btn.style.background = '';
                     }, 3000);
                 });

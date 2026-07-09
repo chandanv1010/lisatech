@@ -19,7 +19,7 @@
             <!-- Simple 1-line Breadcrumb -->
             <div class="breadcrumb-inline-wrapper">
                 <ul class="uk-breadcrumb simple-breadcrumb">
-                    <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
+                    <li><a href="{{ homepage_url() }}" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"
                                 title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
@@ -34,7 +34,7 @@
 
                     <!-- Product Categories Tree Panel -->
                     <div class="aside-panel aside-categories-list">
-                        <h3 class="aside-title">Danh mục sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <h3 class="aside-title">{{ __('frontend.product_categories') }} <i class="fa fa-angle-down"></i></h3>
                         <ul class="category-list">
                             @foreach ($productCatalogues as $catData)
                                 @php
@@ -70,7 +70,7 @@
                                                 @endphp
                                                 <li>
                                                     <a href="{{ $childUrl }}" class="subcategory-link {{ $isChecked2 ? 'active-parent' : '' }} {{ $isChildActive ? 'active' : '' }}">
-                                                        <span class="prefix-line">---</span>{{ $childName }}
+                                                        {{ $childName }}
                                                     </a>
                                                     
                                                     {{-- Level 3 subcategories --}}
@@ -85,7 +85,7 @@
                                                                 @endphp
                                                                 <li>
                                                                     <a href="{{ $grandChildUrl }}" class="subcategory-link {{ $isGrandChildActive ? 'active' : '' }}">
-                                                                        <span class="prefix-line">------</span>{{ $grandChildName }}
+                                                                        {{ $grandChildName }}
                                                                     </a>
                                                                 </li>
                                                             @endforeach
@@ -102,7 +102,7 @@
 
                     <!-- Price Filter Panel -->
                     <div class="aside-panel price-filter-panel">
-                        <h3 class="aside-title">Giá sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <h3 class="aside-title">{{ __('frontend.price_filter') }} <i class="fa fa-angle-down"></i></h3>
                         <ul class="price-filter-list">
                             @php
                                 $priceRanges = [
@@ -138,7 +138,7 @@
                             @endforeach
                             @if ($currentMin !== null || $currentMax !== null)
                                 <li class="clear-filter-item">
-                                    <a href="{{ request()->url() }}" class="btn-clear-filter"><i class="fa fa-times-circle"></i> Xóa bộ lọc</a>
+                                    <a href="{{ request()->url() }}" class="btn-clear-filter"><i class="fa fa-times-circle"></i> {{ __('frontend.clear_filter') }}</a>
                                 </li>
                             @endif
                         </ul>
@@ -146,11 +146,11 @@
 
                     <!-- Online Support Panel -->
                     <div class="aside-panel support-sidebar-panel">
-                        <h3 class="aside-title">Hỗ trợ trực tuyến</h3>
+                        <h3 class="aside-title">{{ __('frontend.online_support') }}</h3>
                         <div class="support-list">
                             @for ($i = 1; $i <= 5; $i++)
                                 @php
-                                    $sName = $system['support_name_' . $i] ?? "Hỗ trợ {$i}";
+                                    $sName = $system['support_name_' . $i] ?? __('frontend.support_num', ['num' => $i]);
                                     $sPhone = $system['support_phone_' . $i] ?? "0973 999 999";
                                     $sZalo = $system['support_zalo_' . $i] ?? "https://zalo.me";
                                 @endphp
@@ -184,7 +184,7 @@
                                 <div class="category-description">
                                     {!! $DetailCatalogues['description'] !!}
                                 </div>
-                                <a href="#" class="btn-readmore">Xem thêm <i class="fa fa-long-arrow-right"></i></a>
+                                 <a href="#" class="btn-readmore">{{ __('frontend.view_more') }} <i class="fa fa-long-arrow-right"></i></a>
                             </div>
                         @endif
 
@@ -207,7 +207,7 @@
                             </section>
                         @else
                             <div class="no-products-box">
-                                <p>Dữ liệu đang được cập nhật...</p>
+                                <p>{{ __('frontend.updating_data') }}</p>
                             </div>
                         @endif
                     </div>
@@ -896,10 +896,10 @@
                         e.preventDefault();
                         if (desc.classList.contains('collapsed')) {
                             desc.classList.remove('collapsed');
-                            readmoreBtn.innerHTML = 'Thu gọn <i class="fa fa-long-arrow-left"></i>';
+                            readmoreBtn.innerHTML = '{{ __('frontend.collapse') }} <i class="fa fa-long-arrow-left"></i>';
                         } else {
                             desc.classList.add('collapsed');
-                            readmoreBtn.innerHTML = 'Xem thêm <i class="fa fa-long-arrow-right"></i>';
+                            readmoreBtn.innerHTML = '{{ __('frontend.view_more') }} <i class="fa fa-long-arrow-right"></i>';
                         }
                     });
                 } else {

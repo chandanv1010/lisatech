@@ -46,8 +46,8 @@
             
             <!-- Simple 1-line Breadcrumb -->
             <div class="breadcrumb-inline-wrapper">
-                <ul class="uk-breadcrumb simple-breadcrumb">
-                    <li><a href="{{ url('/') }}" title="Trang chủ">Trang chủ</a></li>
+                <ul class="uk-list uk-clearfix uk-flex uk-flex-middle">
+                    <li><a href="{{ homepage_url() }}" title="{{ __('frontend.home') }}">{{ __('frontend.home') }}</a></li>
                     @foreach ($Breadcrumb ?? [] as $item)
                         <li><a href="{{ rewrite_url($item['canonical'] ?? '') }}"
                                 title="{{ $item['title'] ?? '' }}">{{ $item['title'] ?? '' }}</a></li>
@@ -63,7 +63,7 @@
 
                     <!-- Product Categories Tree Panel -->
                     <div class="aside-panel aside-categories-list">
-                        <h3 class="aside-title">Danh mục sản phẩm <i class="fa fa-angle-down"></i></h3>
+                        <h3 class="aside-title">{{ __('frontend.product_categories') }} <i class="fa fa-angle-down"></i></h3>
                         <ul class="category-list">
                             @foreach ($productCatalogues as $catData)
                                 @php
@@ -128,11 +128,11 @@
 
                     <!-- Online Support Panel -->
                     <div class="aside-panel support-sidebar-panel">
-                        <h3 class="aside-title">Hỗ trợ trực tuyến</h3>
+                        <h3 class="aside-title">{{ __('frontend.online_support') }}</h3>
                         <div class="support-list">
                             @for ($i = 1; $i <= 5; $i++)
                                 @php
-                                    $sName = $system['support_name_' . $i] ?? "Hỗ trợ {$i}";
+                                    $sName = $system['support_name_' . $i] ?? __('frontend.support_num', ['num' => $i]);
                                     $sPhone = $system['support_phone_' . $i] ?? "0973 999 999";
                                     $sZalo = $system['support_zalo_' . $i] ?? "https://zalo.me";
                                 @endphp
@@ -208,14 +208,14 @@
                                                     <div class="product-priceold" style="text-decoration: line-through; color: #94a3b8; font-size: 16px;">{{ number_format($price) }}đ</div>
                                                 @endif
                                             @else
-                                                <div class="product-pricenew" style="color: #FF9811; font-size: 24px; font-weight: 800;">Liên hệ</div>
+                                                <div class="product-pricenew" style="color: #FF9811; font-size: 24px; font-weight: 800;">{{ __('frontend.contact') }}</div>
                                             @endif
                                         </div>
             
                                         <div class="separator-line"></div>
             
                                         <div class="short-description-section">
-                                            <h4 class="section-title" style="color: #334155; font-size: 15px; font-weight: 700; margin-bottom: 10px;">Mô tả ngắn</h4>
+                                            <h4 class="section-title" style="color: #334155; font-size: 15px; font-weight: 700; margin-bottom: 10px;">{{ __('frontend.short_description') }}</h4>
                                             <div class="desc-content" style="color: #475569; font-size: 14px; line-height: 1.6;">
                                                 {!! $DetailProducts['description'] ?? '' !!}
                                             </div>
@@ -223,7 +223,7 @@
             
                                         <div class="productDetail-buy">
                                             <div class="action-buttons-wrapper" style="margin-top: 25px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                                                <button type="button" class="btn-primary-action btn-lienhe-modal" style="background-color: #FF9811 !important; color: white !important; font-weight: bold; border-radius: 30px; text-transform: uppercase; padding: 12px 35px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,17,0.3); transition: all 0.3s ease;">ĐẶT HÀNG</button>
+                                                <button type="button" class="btn-primary-action btn-lienhe-modal" style="background-color: #FF9811 !important; color: white !important; font-weight: bold; border-radius: 30px; text-transform: uppercase; padding: 12px 35px; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,17,0.3); transition: all 0.3s ease;">{{ __('frontend.order') }}</button>
                                                 
                                                 @if(!empty($DetailProducts['download']))
                                                     <a href="{{ asset($DetailProducts['download']) }}" target="_blank" class="btn-secondary-action" style="background-color: #64748b !important; color: white !important; font-weight: bold; border-radius: 30px; text-transform: uppercase; padding: 12px 35px; text-decoration: none; display: inline-block; transition: all 0.3s ease;" download>DOWNLOAD</a>
@@ -232,12 +232,12 @@
                                         </div>
             
                                         <div class="share-section uk-flex uk-flex-middle" style="margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                                            <span class="share-label" style="color: #64748b; font-size: 13.5px; margin-right: 12px;">Chia sẻ:</span>
+                                            <span class="share-label" style="color: #64748b; font-size: 13.5px; margin-right: 12px;">{{ __('frontend.share') }}:</span>
                                             <div class="share-icons uk-flex">
-                                                <a href="#" class="share-icon icon-link" title="Sao chép liên kết"
+                                                <a href="#" class="share-icon icon-link" title="{{ __('frontend.copy_link') }}"
                                                     onclick="copyLink(event)"><i class="fa fa-link"></i></a>
                                                 <a href="https://zalo.me/share?url={{ urlencode($canonicalUrl) }}" target="_blank"
-                                                    class="share-icon icon-zalo" title="Chia sẻ Zalo">
+                                                    class="share-icon icon-zalo" title="{{ __('frontend.share_zalo') }}">
                                                     <img src="https://chat.zalo.me/favicon.ico" alt="Zalo"
                                                         style="width:18px;height:18px;object-fit:contain;filter:brightness(0) invert(1);">
                                                 </a>
@@ -254,9 +254,9 @@
                                 <!-- Product Tabs Content -->
                                 <section class="product-content uk-margin-large-top">
                                     <ul class="uk-list uk-clearfix tab-control uk-flex" data-uk-switcher="{connect:'#tab-content'}">
-                                        <li class="uk-active">Thông số kỹ thuật</li>
+                                        <li class="uk-active">{{ __('frontend.specifications') }}</li>
                                         @if(!empty($DetailProducts['applications']))
-                                            <li>Ứng dụng</li>
+                                            <li>{{ __('frontend.applications') }}</li>
                                         @endif
                                     </ul>
                                     <ul id="tab-content" class="uk-switcher tab-content">
@@ -281,7 +281,7 @@
                             <section class="related-products-section uk-margin-large-top" style="border-top: 1px solid #edf2f7; padding-top: 40px; margin-top: 50px !important;">
                                 <header class="related-section-head" style="margin-bottom: 25px;">
                                     <h2 class="section-title-cyan" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">
-                                        SẢN PHẨM LIÊN QUAN
+                                        {{ __('frontend.related_products') }}
                                     </h2>
                                 </header>
                                 <section class="panel-body" style="padding: 0 !important;">
@@ -365,7 +365,7 @@
     <!-- Copy Link Toast Notification -->
     <div id="copy-toast"
         style="display:none; position:fixed; bottom:20px; right:20px; background-color:#00cbd6; color:#000; padding:12px 24px; border-radius:4px; font-weight:bold; z-index:9999; box-shadow:0 4px 10px rgba(0,0,0,0.3);">
-        Đã sao chép liên kết thành công!
+        {{ __('frontend.link_copied') }}
     </div>
 
     <style>
@@ -856,25 +856,6 @@
                 $(this).addClass('active');
             });
 
-            // Quantity Adjuster
-            $('.btn-up').click(function() {
-                var input = $('.quantity-input');
-                var val = parseInt(input.val()) || 1;
-                val++;
-                input.val(val < 10 ? '0' + val : val);
-                $('.ajax-addtocart-btn').attr('data-quantity', val);
-            });
-
-            $('.btn-down').click(function() {
-                var input = $('.quantity-input');
-                var val = parseInt(input.val()) || 1;
-                if (val > 1) {
-                    val--;
-                    input.val(val < 10 ? '0' + val : val);
-                    $('.ajax-addtocart-btn').attr('data-quantity', val);
-                }
-            });
-
             // Add to Cart AJAX click listener
             $('.ajax-addtocart-btn').click(function(e) {
                 e.preventDefault();
@@ -882,8 +863,6 @@
                 var id = $(this).attr('data-id');
                 var price = $(this).attr('data-price');
 
-                // Re-trigger click handler setup in public scripts if any, or trigger custom request
-                // Typically this calls /cart/create or ajax route in this codebase
                 $.ajax({
                     url: '{{ route('cart.store') }}',
                     type: 'POST',
@@ -894,15 +873,15 @@
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        // Show a toast or modal
-                        UIkit.modal('#modal-cart').show();
-                        // Load cart content
-                        $('.cart-content').html(response.html ||
-                            '<p style="color:#000;padding:20px;">Đã thêm vào giỏ hàng thành công!</p>'
-                        );
+                        UIkit.notification({
+                            message: '<p style="color:#000;padding:20px;">{{ __('frontend.added_to_cart') }}</p>',
+                            status: 'success',
+                            timeout: 3000,
+                            pos: 'top-right'
+                        });
                     },
                     error: function() {
-                        alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
+                        alert('{{ __('frontend.cart_error') }}');
                     }
                 });
             });
@@ -924,20 +903,14 @@
 
         function copyLink(e) {
             e.preventDefault();
-            var dummy = document.createElement('input'),
-                text = window.location.href;
-            document.body.appendChild(dummy);
-            dummy.value = text;
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
-
-            // Show Toast
-            var toast = document.getElementById('copy-toast');
-            toast.style.display = 'block';
-            setTimeout(function() {
-                toast.style.display = 'none';
-            }, 2500);
+            var url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                var toast = document.getElementById('copy-toast');
+                toast.style.display = 'block';
+                setTimeout(function() {
+                    toast.style.display = 'none';
+                }, 2500);
+            });
         }
     </script>
 
@@ -948,29 +921,28 @@
             <a class="uk-modal-close uk-close" style="color: #ffffff;"></a>
             <h3
                 style="font-family: var(--main-font); color: rgba(14, 60, 125, 1);font-weight: bold; text-transform: uppercase; margin: 0 0 10px 0; font-size: 20px;">
-                Yêu cầu tư vấn sản phẩm</h3>
-            <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 0 0 20px 0;">Vui lòng gửi thông tin, kỹ sư
-                thiết kế của chúng tôi sẽ liên hệ lại ngay để tư vấn cho quý khách.</p>
+                {{ __('frontend.request_consultation') }}</h3>
+            <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 0 0 20px 0;">{{ __('frontend.consultation_note') }}</p>
 
             <form action="{{ route('contact.save') }}" method="post" class="uk-form form-premium">
                 @csrf
                 <input type="hidden" name="address"
-                    value="Yêu cầu tư vấn: {{ $DetailProducts['title'] }} (ID: {{ $DetailProducts['id'] }})">
+                    value="{{ __('frontend.request_consultation') }}: {{ $DetailProducts['title'] }} (ID: {{ $DetailProducts['id'] }})">
 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <input type="text" name="name" required class="form-input"
-                        placeholder="Họ &amp; tên quý khách *"
+                        placeholder="{{ __('frontend.fullname_val') }}"
                         style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 15px;">
                     <input type="text" name="phone" required class="form-input"
-                        placeholder="Số điện thoại di động *"
+                        placeholder="{{ __('frontend.phone_val') }}"
                         style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 15px;">
-                    <input type="email" name="email" class="form-input" placeholder="Địa chỉ Email (nếu có)"
+                    <input type="email" name="email" class="form-input" placeholder="{{ __('frontend.email_val') }}"
                         style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
                 </div>
 
@@ -980,8 +952,7 @@
                 </div>
 
                 <button type="submit" class="btn-submit-premium"
-                    style="width: 100%; padding: 14px; background: linear-gradient(135deg, #00e0ff 0%, #0099ff 100%) !important; color: #030712 !important; font-size: 15px !important; font-weight: 800 !important; text-transform: uppercase; border: none !important; border-radius: 6px !important; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family:var(--second-font), sans-serif;">Gửi
-                    yêu cầu ngay <i class="fa fa-paper-plane"></i></button>
+                    style="width: 100%; padding: 14px; background: linear-gradient(135deg, #00e0ff 0%, #0099ff 100%) !important; color: #030712 !important; font-size: 15px !important; font-weight: 800 !important; text-transform: uppercase; border: none !important; border-radius: 6px !important; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family:var(--second-font), sans-serif;">{{ __('frontend.send_request_now') }} <i class="fa fa-paper-plane"></i></button>
             </form>
         </div>
     </div>

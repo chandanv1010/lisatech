@@ -104,7 +104,8 @@ class ProductCatalogueController extends FrontendController
     {
         $productId = $products->pluck('id')->toArray();
         if (count($productId) && !is_null($productId)) {
-            $products = $this->productService->combineProductAndPromotion($productId, $products);
+            // Temporarily disable price/promotion queries to optimize database performance
+            // $products = $this->productService->combineProductAndPromotion($productId, $products);
             $products = $this->productService->combineProductRelation($products);
         }
 

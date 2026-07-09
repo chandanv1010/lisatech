@@ -1,7 +1,7 @@
 <div id="offcanvas" class="uk-offcanvas">
     <div class="uk-offcanvas-bar karaoke-offcanvas">
         <div class="offcanvas-logo">
-            <a href="{{ url('/') }}" title="{{ $system['seo_meta_title'] ?? '' }}">
+            <a href="{{ homepage_url() }}" title="{{ $system['seo_meta_title'] ?? '' }}">
                 <img src="{{ $system['homepage_logo'] ?? '' }}" alt="{{ $system['seo_meta_title'] ?? '' }}">
             </a>
         </div>

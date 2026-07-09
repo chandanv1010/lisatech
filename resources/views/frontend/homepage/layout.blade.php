@@ -39,6 +39,16 @@
         {!! $schema !!}
     @endif
     {!! $system['script_header'] ?? '' !!}
+    <style>
+        /* Tăng line-height cho text */
+        body, p, li, .desc-content, .article, .content-detail-new {
+            line-height: 1.7 !important;
+        }
+        /* Tăng line-height cho tiêu đề sản phẩm */
+        .productDetail-intro .title, .product-card .product-title, .related-product-card .card-title {
+            line-height: 1.4 !important;
+        }
+    </style>
 </head>
 <body>
     {!! $system['script_body'] ?? '' !!}
