@@ -212,18 +212,34 @@
                     1323 => 'san-pham/bo-luu-dien-riello-ups-italy/c83',
                     1324 => 'ac-quy-pc1157-html',
                 ];
+
+                // Map the custom post IDs to actual product catalogue IDs
+                $catalogueIds = [
+                    1319 => 82,
+                    1320 => 1156,
+                    1321 => 104,
+                    1322 => 1162,
+                    1323 => 83,
+                    1324 => 1157,
+                ];
+                // Fetch the product catalogues in one query
+                $catalogues = \App\Models\ProductCatalogue::whereIn('id', array_values($catalogueIds))->get()->keyBy('id');
             @endphp
 
             @if ($productCatWidget && $productCatWidget->object)
                 @foreach ($productCatWidget->object as $productCat)
                     @php
                         $pcLang = $productCat->languages->first();
-                        // Load icon from DB (icon field or image field), fallback to default
-                        $dbIcon = !empty($productCat->icon) ? $productCat->icon : '';
+                        
+                        $mappedCatId = $catalogueIds[$productCat->id] ?? null;
+                        $realCatalogue = $mappedCatId ? ($catalogues[$mappedCatId] ?? null) : null;
+                        
+                        // Load icon from real ProductCatalogue first, fallback to post icon, fallback to default
+                        $dbIcon = $realCatalogue && !empty($realCatalogue->icon) ? $realCatalogue->icon : (!empty($productCat->icon) ? $productCat->icon : '');
                         $iconPath = !empty($dbIcon) ? $dbIcon : $defaultIcon;
                         
-                        // Load product image from DB, fallback to default shop-1.png
-                        $dbImg = !empty($productCat->image) ? $productCat->image : '';
+                        // Load product image from real ProductCatalogue first, fallback to post image, fallback to default
+                        $dbImg = $realCatalogue && !empty($realCatalogue->image) ? $realCatalogue->image : (!empty($productCat->image) ? $productCat->image : '');
                         $imgPath = !empty($dbImg) ? $dbImg : $defaultProduct;
                         
                         $targetCanonical = $categoryUrlMap[$productCat->id] ?? ($pcLang->canonical ?? null);

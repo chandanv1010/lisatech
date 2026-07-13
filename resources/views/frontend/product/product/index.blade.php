@@ -193,7 +193,7 @@
             
                                     <!-- Right Column: Product Info -->
                                     <section class="productDetail-intro">
-                                        <h1 class="title" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 26px; margin: 0 0 15px 0;">{{ $DetailProducts['title'] }}</h1>
+                                        <h1 class="title" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 26px; margin: 0 0 15px 0; line-height: 1.35;">{{ $DetailProducts['title'] }}</h1>
             
                                         <div class="separator-line"></div>
             
