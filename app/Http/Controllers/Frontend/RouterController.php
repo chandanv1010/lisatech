@@ -80,20 +80,35 @@ class RouterController extends FrontendController
 
     public function getRouter($canonical)
     {
-        $cleanCanonical = preg_replace('/\.html$/', '', trim($canonical, '/'));
+        $cleanCanonical = preg_replace('/\.html$/i', '', trim($canonical, '/'));
+        $cleanCanonicalNoHtml = preg_replace('/-html$/i', '', $cleanCanonical);
 
-        // 1. Tra cứu nguyên bản 100% canonical trong bảng routers theo ngôn ngữ hiện tại
-        $this->router = $this->routerRepository->findByCondition([
-            ['canonical', '=', $cleanCanonical],
-            ['language_id', '=', $this->language]
+        $dashedCanonical = preg_replace('/--+/', '-', str_replace('/', '-', $cleanCanonical));
+        $dashedCanonicalNoHtml = preg_replace('/--+/', '-', str_replace('/', '-', $cleanCanonicalNoHtml));
+
+        $candidates = array_unique([
+            $cleanCanonical,
+            $cleanCanonicalNoHtml,
+            $dashedCanonical,
+            $dashedCanonicalNoHtml
         ]);
 
-        // 2. Nếu không thấy, tra cứu nguyên bản 100% canonical theo ngôn ngữ mặc định (VI)
-        if (empty($this->router)) {
+        foreach ($candidates as $cand) {
             $this->router = $this->routerRepository->findByCondition([
-                ['canonical', '=', $cleanCanonical],
-                ['language_id', '=', 1]
+                ['canonical', '=', $cand],
+                ['language_id', '=', $this->language]
             ]);
+            if (!empty($this->router)) break;
+        }
+
+        if (empty($this->router)) {
+            foreach ($candidates as $cand) {
+                $this->router = $this->routerRepository->findByCondition([
+                    ['canonical', '=', $cand],
+                    ['language_id', '=', 1]
+                ]);
+                if (!empty($this->router)) break;
+            }
         }
     }
 }
