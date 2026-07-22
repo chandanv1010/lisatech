@@ -81,17 +81,24 @@ class RouterController extends FrontendController
     public function getRouter($canonical)
     {
         $cleanCanonical = preg_replace('/\.html$/', '', trim($canonical, '/'));
+        $dashedCanonical = str_replace('/', '-', $cleanCanonical);
 
-        // Tra cứu canonical thuần túy trong bảng routers theo ngôn ngữ hiện tại
+        // 1. Tra cứu canonical thuần túy trong bảng routers theo ngôn ngữ hiện tại
         $this->router = $this->routerRepository->findByCondition([
             ['canonical', '=', $cleanCanonical],
             ['language_id', '=', $this->language]
+        ]) ?: $this->routerRepository->findByCondition([
+            ['canonical', '=', $dashedCanonical],
+            ['language_id', '=', $this->language]
         ]);
 
-        // Nếu không thấy, tra cứu canonical thuần túy theo ngôn ngữ mặc định (VI)
+        // 2. Nếu không thấy, tra cứu canonical thuần túy theo ngôn ngữ mặc định (VI)
         if (empty($this->router)) {
             $this->router = $this->routerRepository->findByCondition([
                 ['canonical', '=', $cleanCanonical],
+                ['language_id', '=', 1]
+            ]) ?: $this->routerRepository->findByCondition([
+                ['canonical', '=', $dashedCanonical],
                 ['language_id', '=', 1]
             ]);
         }
