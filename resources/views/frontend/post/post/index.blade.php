@@ -190,11 +190,15 @@
                             <section class="panel-body" style="padding: 0 !important;">
                                 <h1 class="title" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 30px; line-height: 1.4; margin: 0 0 15px 0;">{{ $DetailArticles['title'] ?? '' }}</h1>
 
-                                <div class="meta uk-flex uk-flex-middle" style="font-size: 13px; color: #64748b; border-bottom: 1px solid #edf2f7; padding-bottom: 12px; margin-bottom: 25px; gap: 20px;">
-                                    <div class="time"><i class="fa fa-calendar" style="color:#0b4a92;"></i> {{ __('frontend.updated_at') }}
-                                        {{ $DetailArticles['created'] ?? '' }}</div>
-                                    <div class="viewed"><i class="fa fa-eye" style="color:#0b4a92;"></i> {{ __('frontend.views') }}
-                                        {{ $DetailArticles['viewed'] ?? 0 }}</div>
+                                <div class="meta" style="display: flex !important; align-items: center !important; justify-content: flex-start !important; background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 6px !important; padding: 10px 16px !important; min-height: 44px !important; margin-bottom: 25px !important; gap: 24px !important; font-size: 13px !important; color: #475569 !important; box-sizing: border-box !important;">
+                                    <div class="time" style="display: inline-flex !important; align-items: center !important; line-height: 1 !important; margin: 0 !important; padding: 0 !important;">
+                                        <i class="fa fa-calendar" style="color:#0b4a92; margin-right: 6px !important; font-size: 14px !important;"></i>
+                                        <span>{{ __('frontend.updated_at') }} {{ $DetailArticles['created'] ?? '' }}</span>
+                                    </div>
+                                    <div class="viewed" style="display: inline-flex !important; align-items: center !important; line-height: 1 !important; margin: 0 !important; padding: 0 !important;">
+                                        <i class="fa fa-eye" style="color:#0b4a92; margin-right: 6px !important; font-size: 14px !important;"></i>
+                                        <span>{{ __('frontend.views') }} {{ $DetailArticles['viewed'] ?? 0 }}</span>
+                                    </div>
                                 </div>
 
                                 <article class="article">

@@ -22,6 +22,19 @@ class RouterController extends FrontendController
 
     public function index(string $canonical = '', Request $request)
     {
+        // 1. Policy 301 Redirect check (-ac{id} -> -a{id})
+        if (preg_match('/-ac(\d+)(\.html)?$/i', $canonical, $matches)) {
+            $oldId = $matches[1];
+            $newCanonicalPattern = preg_replace('/-ac\d+/i', '-a' . $oldId, $canonical);
+            $cleanNew = preg_replace('/\.html$/', '', trim($newCanonicalPattern, '/'));
+            $targetRouter = \Illuminate\Support\Facades\DB::table('routers')
+                ->where('canonical', $cleanNew)
+                ->first();
+            if ($targetRouter) {
+                return redirect()->to(url($targetRouter->canonical . config('apps.general.suffix', '.html')), 301);
+            }
+        }
+
         $this->getRouter($canonical);
         if (!is_null($this->router) && !empty($this->router)) {
             $method = 'index';
@@ -32,8 +45,12 @@ class RouterController extends FrontendController
             if (method_exists($controller, 'setSystem')) {
                 $controller->setSystem();
             }
-            echo $controller->{$method}($this->router->module_id, $request);
+            return $controller->{$method}($this->router->module_id, $request);
         } else {
+            // Language Fallback for EN or failed requests
+            if ($request->has('lang') || session('frontend_locale') === 'en') {
+                return redirect()->route('home.index', ['lang' => session('frontend_locale', 'en')]);
+            }
             abort(404);
         }
     }
@@ -52,29 +69,31 @@ class RouterController extends FrontendController
             if (method_exists($controller, 'setSystem')) {
                 $controller->setSystem();
             }
-            echo $controller->{$method}($this->router->module_id, $request, $page);
+            return $controller->{$method}($this->router->module_id, $request, $page);
         } else {
+            if ($request->has('lang') || session('frontend_locale') === 'en') {
+                return redirect()->route('home.index', ['lang' => session('frontend_locale', 'en')]);
+            }
             abort(404);
         }
     }
 
     public function getRouter($canonical)
     {
-        $this->router = $this->routerRepository->findByCondition(
-            [
-                ['canonical', '=', $canonical],
-                ['language_id', '=', $this->language]
-            ]
-        );
+        $cleanCanonical = preg_replace('/\.html$/', '', trim($canonical, '/'));
 
-        if (is_null($this->router) || empty($this->router)) {
-            $this->router = $this->routerRepository->findByCondition(
-                [
-                    ['canonical', '=', $canonical],
-                    ['language_id', '=', 1]
-                ]
-            );
+        // Tra cứu canonical thuần túy trong bảng routers theo ngôn ngữ hiện tại
+        $this->router = $this->routerRepository->findByCondition([
+            ['canonical', '=', $cleanCanonical],
+            ['language_id', '=', $this->language]
+        ]);
+
+        // Nếu không thấy, tra cứu canonical thuần túy theo ngôn ngữ mặc định (VI)
+        if (empty($this->router)) {
+            $this->router = $this->routerRepository->findByCondition([
+                ['canonical', '=', $cleanCanonical],
+                ['language_id', '=', 1]
+            ]);
         }
     }
-
 }

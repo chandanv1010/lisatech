@@ -14705,3 +14705,223 @@ div#tocDiv {
 }
 
 /* karaoke-about:end */
+
+/* ===================================================================
+   FIX LỖI CẮT CHỮ DÒNG 2 SẢN PHẨM NỔI BẬT & MÔ TẢ
+   =================================================================== */
+.products-section .product-card,
+.product-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 14px 12px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.products-section .product-card .product-img,
+.product-card .product-img {
+    width: 100% !important;
+    height: 155px !important;
+    object-fit: contain !important;
+    margin-bottom: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+.products-section .product-card .product-title,
+.product-card .product-title,
+.product-item .product .title,
+.product-feature .title,
+.product-item .title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    color: #0e3c7d !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
+    
+    /* Strictly 2 lines max, exact 39px height so line 3 never overflows */
+    height: 39px !important;
+    min-height: 39px !important;
+    max-height: 39px !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    word-break: break-word !important;
+}
+
+.products-section .product-card .product-title a,
+.product-card .product-title a {
+    color: #0e3c7d !important;
+    text-decoration: none !important;
+    display: block !important;
+    line-height: 1.4 !important;
+}
+
+.products-section .product-card .product-features,
+.product-card .product-features {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 14px 0 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    color: #64748b !important;
+    
+    /* Exactly 2 bullet lines, generous 44px height to fit cleanly without clipping */
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    overflow: hidden !important;
+}
+
+.products-section .product-card .product-features li,
+.product-card .product-features li {
+    margin-bottom: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    line-height: 1.45 !important;
+}
+
+.products-section .product-card .card-actions,
+.product-card .card-actions {
+    display: flex !important;
+    gap: 6px !important;
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* UI-02 Meta Bar Centering */
+.article-detail .meta,
+.panel-body .meta,
+.meta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 10px 16px !important;
+    min-height: 44px !important;
+    margin-bottom: 25px !important;
+    box-sizing: border-box !important;
+    font-size: 13px !important;
+    color: #475569 !important;
+    line-height: 1 !important;
+}
+
+.article-detail .meta > div,
+.panel-body .meta > div,
+.meta > div,
+.meta .time,
+.meta .viewed {
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+    margin: 0 24px 0 0 !important;
+    padding: 0 !important;
+}
+
+.meta .time i,
+.meta .viewed i,
+.meta i {
+    margin-right: 6px !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+}
+
+/* UI-03 Modal Design: White Background, Dark Text, Blue Button rgb(14, 60, 125) */
+#modal-contact-product .uk-modal-dialog,
+#quote-modal .uk-modal-dialog,
+.lisatech-modal .uk-modal-dialog {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    max-width: 520px !important;
+    padding: 35px 30px !important;
+    box-shadow: 0 20px 40px rgba(14, 60, 125, 0.15) !important;
+    color: #0f172a !important;
+}
+
+#modal-contact-product h3,
+#quote-modal h3,
+.lisatech-modal h3,
+.lisatech-modal .modal-title {
+    color: rgb(14, 60, 125) !important;
+    font-size: 21px !important;
+    font-weight: 800 !important;
+    margin: 0 0 8px 0 !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+}
+
+#modal-contact-product p,
+#quote-modal p,
+.lisatech-modal p {
+    color: #64748b !important;
+    font-size: 13.5px !important;
+    margin: 0 0 24px 0 !important;
+    text-align: center !important;
+}
+
+#modal-contact-product input,
+#modal-contact-product textarea,
+#quote-modal input,
+#quote-modal textarea,
+.lisatech-modal input,
+.lisatech-modal textarea {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    margin-bottom: 14px !important;
+    width: 100 !important;
+    box-sizing: border-box !important;
+}
+
+#modal-contact-product textarea,
+#quote-modal textarea,
+.lisatech-modal textarea {
+    background: #f8fafc !important;
+}
+
+#modal-contact-product button[type="submit"],
+#modal-contact-product .btn-submit-premium,
+#quote-modal .btn-submit-quote,
+.lisatech-modal .btn-submit-quote {
+    background: rgb(14, 60, 125) !important;
+    color: #ffffff !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 14px 24px !important;
+    width: 100% !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(14, 60, 125, 0.25) !important;
+}
+
+#modal-contact-product .uk-close,
+#quote-modal .uk-close,
+.lisatech-modal .uk-close {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    top: -14px !important;
+    right: -14px !important;
+}
+
+

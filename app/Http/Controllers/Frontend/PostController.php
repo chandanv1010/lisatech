@@ -50,7 +50,21 @@ class postController extends FrontendController
         $viewed = $post->viewed;
         $updateViewed = Post::where('id', $id)->update(['viewed' => $viewed + 1]); 
         $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($post->post_catalogue_id, $this->language);
-        if($postCatalogue->id == 22 || $postCatalogue->id == 24 || $postCatalogue->id === 44){
+        if (is_null($postCatalogue)) {
+            $postCatalogue = $this->postCatalogueRepository->getPostCatalogueById($post->post_catalogue_id, 1);
+        }
+        if (is_null($postCatalogue)) {
+            $postCatalogue = (object) [
+                'id' => 0,
+                'name' => 'Bài viết',
+                'canonical' => 'bai-viet',
+                'parentid' => 0,
+                'lft' => 0,
+                'rgt' => 0
+            ];
+        }
+
+        if (isset($postCatalogue->id) && ($postCatalogue->id == 22 || $postCatalogue->id == 24 || $postCatalogue->id === 44)) {
             $postCatalogue->children = $this->postCatalogueRepository->findByCondition(
                 [
                     ['publish' , '=', 2],
@@ -150,6 +164,10 @@ class postController extends FrontendController
 
         $itemBreadcrumbElements = rtrim($itemBreadcrumbElements, ',');
 
+        $sectionName = (isset($postCatalogue->languages) && $postCatalogue->languages->first()) 
+            ? ($postCatalogue->languages->first()->pivot->name ?? ($postCatalogue->name ?? 'Bài viết')) 
+            : ($postCatalogue->name ?? 'Bài viết');
+
         $schema = "
             <script type=\"application/ld+json\">
                 {
@@ -190,7 +208,7 @@ class postController extends FrontendController
                         \"@type\": \"Organization\",
                         \"@id\": \" " . $canonical . " \",
                     ],
-                    \"articleSection\": \"  " . $postCatalogue->languages->first()->pivot->name .  "  \",
+                    \"articleSection\": \"  " . $sectionName .  "  \",
                     \" keywords \": \"  \",
                     \" timeRequired \": \"  \",
                     \"about\": [

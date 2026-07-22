@@ -442,25 +442,31 @@
                                         @if (!empty($productImage))
                                             <img src="{{ asset(ltrim($productImage, '/')) }}" alt="{{ $productName }}" class="product-img">
                                         @endif
-                                        <h3 class="product-title">
-                                            <a href="{{ $productUrl }}" title="{{ $productName }}">
-                                                {{ $productName }}
-                                            </a>
-                                        </h3>
-                                        <ul class="product-features">
-                                            @if (!empty($productDescription))
-                                                @php
-                                                    $features = array_filter(array_map('trim', explode("\n", strip_tags($productDescription))));
-                                                    $features = array_slice($features, 0, 2);
-                                                @endphp
-                                                @foreach ($features as $feature)
-                                                    <li>{{ $feature }}</li>
-                                                @endforeach
-                                            @endif
-                                        </ul>
+                                    @php
+                                        $productName = html_entity_decode(strip_tags($data['name'] ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                        $productName = str_replace(["\xC2\xA0", "&nbsp;", "&nbsp"], ' ', $productName);
+                                    @endphp
+                                    <h3 class="product-title">
+                                        <a href="{{ $productUrl }}" title="{{ $productName }}">
+                                            {{ $productName }}
+                                        </a>
+                                    </h3>
+                                    <ul class="product-features">
+                                        @if (!empty($productDescription))
+                                            @php
+                                                $cleanDesc = html_entity_decode(strip_tags($productDescription), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                $cleanDesc = str_replace(["\xC2\xA0", "&nbsp;", "&nbsp"], ' ', $cleanDesc);
+                                                $features = array_filter(array_map('trim', explode("\n", $cleanDesc)));
+                                                $features = array_slice($features, 0, 2);
+                                            @endphp
+                                            @foreach ($features as $feature)
+                                                <li>{{ $feature }}</li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
                                         <div class="card-actions" style="margin-top: auto;">
                                             <a href="{{ $productUrl }}" class="btn-detail">{{ __('frontend.view_details') }}</a>
-                                            <a href="#contact" class="btn-contact">{{ __('frontend.contact') }}</a>
+                                            <a href="#quote-modal" data-uk-modal class="btn-contact">{{ __('frontend.contact') }}</a>
                                         </div>
                                     </div>
                                 </div>

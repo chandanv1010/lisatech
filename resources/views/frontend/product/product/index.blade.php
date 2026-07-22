@@ -915,44 +915,44 @@
     </script>
 
     <!-- Modal Contact Product -->
-    <div id="modal-contact-product" class="uk-modal">
+    <div id="modal-contact-product" class="uk-modal lisatech-modal">
         <div class="uk-modal-dialog"
-            style="background: #0b0b0b; border: 1px solid rgba(0, 224, 255, 0.2); border-radius: 8px; max-width: 500px; padding: 30px;">
-            <a class="uk-modal-close uk-close" style="color: #ffffff;"></a>
+            style="background: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 16px !important; max-width: 520px !important; padding: 35px 30px !important; box-shadow: 0 20px 40px rgba(14, 60, 125, 0.15) !important; position: relative !important;">
+            <a class="uk-modal-close uk-close" style="background: #ef4444 !important; color: #ffffff !important; opacity: 1 !important; border-radius: 50% !important; width: 32px !important; height: 32px !important; display: flex !important; align-items: center !important; justify-content: center !important; top: -14px !important; right: -14px !important; text-decoration: none !important; position: absolute !important; padding: 0 !important; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3) !important; z-index: 1010 !important;"></a>
             <h3
-                style="font-family: var(--main-font); color: rgba(14, 60, 125, 1);font-weight: bold; text-transform: uppercase; margin: 0 0 10px 0; font-size: 20px;">
+                style="color: rgb(14, 60, 125) !important; font-weight: 800 !important; text-transform: uppercase !important; margin: 0 0 8px 0 !important; font-size: 21px !important; letter-spacing: -0.3px !important; text-align: center !important;">
                 {{ __('frontend.request_consultation') }}</h3>
-            <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin: 0 0 20px 0;">{{ __('frontend.consultation_note') }}</p>
+            <p style="color: #64748b !important; font-size: 13.5px !important; margin: 0 0 24px 0 !important; text-align: center !important; line-height: 1.5 !important;">{{ __('frontend.consultation_note') }}</p>
 
-            <form action="{{ route('contact.save') }}" method="post" class="uk-form form-premium">
+            <form action="{{ route('contact.save') }}" method="post" class="uk-form">
                 @csrf
                 <input type="hidden" name="address"
                     value="{{ __('frontend.request_consultation') }}: {{ $DetailProducts['title'] }} (ID: {{ $DetailProducts['id'] }})">
 
-                <div class="form-group" style="margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 14px !important;">
                     <input type="text" name="name" required class="form-input"
-                        placeholder="{{ __('frontend.fullname_val') }}"
-                        style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
+                        placeholder="{{ __('frontend.fullname_val') }} *"
+                        style="width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 12px 16px !important; border-radius: 8px !important; box-sizing: border-box !important; font-size: 14px !important; outline: none !important;">
                 </div>
 
-                <div class="form-group" style="margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 14px !important;">
                     <input type="text" name="phone" required class="form-input"
-                        placeholder="{{ __('frontend.phone_val') }}"
-                        style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
+                        placeholder="{{ __('frontend.phone_val') }} *"
+                        style="width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 12px 16px !important; border-radius: 8px !important; box-sizing: border-box !important; font-size: 14px !important; outline: none !important;">
                 </div>
 
-                <div class="form-group" style="margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom: 14px !important;">
                     <input type="email" name="email" class="form-input" placeholder="{{ __('frontend.email_val') }}"
-                        style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; box-sizing:border-box; font-family:var(--second-font), sans-serif;">
+                        style="width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 12px 16px !important; border-radius: 8px !important; box-sizing: border-box !important; font-size: 14px !important; outline: none !important;">
                 </div>
 
-                <div class="form-group" style="margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom: 22px !important;">
                     <textarea name="message" required class="form-textarea"
-                        style="width:100%; height:100px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px; border-radius:6px; resize:none; box-sizing:border-box; line-height:1.5; font-family:var(--second-font), sans-serif;">Tôi muốn nhận tư vấn & báo giá chi tiết cho sản phẩm: {{ $DetailProducts['title'] }} (Link: {{ $canonicalUrl }})</textarea>
+                        style="width: 100% !important; height: 105px !important; background: #f8fafc !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 12px 16px !important; border-radius: 8px !important; resize: none !important; box-sizing: border-box !important; line-height: 1.5 !important; font-size: 13.5px !important; font-weight: 500 !important; outline: none !important;">Tôi muốn nhận tư vấn & báo giá chi tiết cho sản phẩm: {{ $DetailProducts['title'] }} (Link: {{ $canonicalUrl }})</textarea>
                 </div>
 
                 <button type="submit" class="btn-submit-premium"
-                    style="width: 100%; padding: 14px; background: linear-gradient(135deg, #00e0ff 0%, #0099ff 100%) !important; color: #030712 !important; font-size: 15px !important; font-weight: 800 !important; text-transform: uppercase; border: none !important; border-radius: 6px !important; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family:var(--second-font), sans-serif;">{{ __('frontend.send_request_now') }} <i class="fa fa-paper-plane"></i></button>
+                    style="width: 100% !important; padding: 14px !important; background: rgb(14, 60, 125) !important; color: #ffffff !important; font-size: 15px !important; font-weight: 700 !important; text-transform: uppercase !important; border: none !important; border-radius: 8px !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; letter-spacing: 0.5px !important; box-shadow: 0 4px 12px rgba(14, 60, 125, 0.25) !important;">{{ __('frontend.send_request_now') }} <i class="fa fa-paper-plane"></i></button>
             </form>
         </div>
     </div>

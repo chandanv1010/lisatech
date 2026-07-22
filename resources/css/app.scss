@@ -1481,10 +1481,11 @@ ul {
     }
 
     .product-title {
-        font-size: 15px;
+        font-size: 14px;
         color: var(--color-primary);
-        margin-bottom: 12px;
-        height: 44px;
+        margin-bottom: 10px;
+        height: 48px;
+        min-height: 48px;
         font-weight: 700;
         line-height: 1.4;
         overflow: hidden;
@@ -3602,3 +3603,367 @@ ul {
         }
     }
 }
+
+/* ===================================================================
+   LISATECH SPECIFIC UI/UX BUG FIXES & ENHANCEMENTS
+   =================================================================== */
+
+/* UI-01: Trang chủ - "Sản Phẩm Nổi Bật" hiển thị trọn vẹn tiêu đề 2 dòng và mô tả ngắn */
+.products-section .product-card,
+.product-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 14px 12px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.products-section .product-card .product-img,
+.product-card .product-img {
+    width: 100% !important;
+    height: 155px !important;
+    object-fit: contain !important;
+    margin-bottom: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+.products-section .product-card .product-title,
+.product-card .product-title,
+.product-item .product .title,
+.product-feature .title,
+.product-item .title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    color: #0e3c7d !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 !important;
+    
+    /* Strictly 2 lines max, exact 39px height so line 3 never overflows */
+    height: 39px !important;
+    min-height: 39px !important;
+    max-height: 39px !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    word-break: break-word !important;
+}
+
+.products-section .product-card .product-title a,
+.product-card .product-title a {
+    color: #0e3c7d !important;
+    text-decoration: none !important;
+    display: block !important;
+    line-height: 1.4 !important;
+}
+
+.products-section .product-card .product-features,
+.product-card .product-features {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 14px 0 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    color: #64748b !important;
+    
+    /* Exactly 2 bullet lines, generous 44px height to fit cleanly without clipping */
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    overflow: hidden !important;
+}
+
+.products-section .product-card .product-features li,
+.product-card .product-features li {
+    margin-bottom: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: block !important;
+    line-height: 1.45 !important;
+}
+
+.products-section .product-card .card-actions,
+.product-card .card-actions {
+    display: flex !important;
+    gap: 6px !important;
+    margin-top: auto !important;
+    flex-shrink: 0 !important;
+}
+
+.product-item .product,
+.product-item {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* UI-02: Phần thông tin bài viết căn chính giữa ô chứa */
+.featured-news-item,
+.article-item,
+.post-item-horizontal {
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 0;
+}
+.featured-news-item .thumb,
+.article-item .thumb {
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+.featured-news-item .title,
+.article-item .info {
+    margin: 0 !important;
+    align-self: center;
+}
+
+.article-detail .meta,
+.panel-body .meta,
+.meta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 10px 16px !important;
+    min-height: 44px !important;
+    margin-bottom: 25px !important;
+    box-sizing: border-box !important;
+    font-size: 13px !important;
+    color: #475569 !important;
+    line-height: 1 !important;
+}
+
+.article-detail .meta > div,
+.panel-body .meta > div,
+.meta > div,
+.meta .time,
+.meta .viewed {
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.meta .time i,
+.meta .viewed i,
+.meta i {
+    margin-right: 6px !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+}
+
+/* UI-03: Popup Đặt Hàng / Yêu Cầu Báo Giá Nền Trắng, Chữ Đen & Nút Xanh rgb(14, 60, 125) */
+.lisatech-modal,
+#modal-contact-product,
+#quote-modal {
+    .uk-modal-dialog {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        padding: 35px 30px !important;
+        box-shadow: 0 20px 40px rgba(14, 60, 125, 0.15) !important;
+        border: 1px solid #e2e8f0 !important;
+        max-width: 520px !important;
+        color: #0f172a !important;
+    }
+    h3, .modal-title {
+        color: rgb(14, 60, 125) !important;
+        font-size: 21px !important;
+        font-weight: 800 !important;
+        margin-bottom: 8px !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+        letter-spacing: -0.3px !important;
+    }
+    p {
+        color: #64748b !important;
+        font-size: 13.5px !important;
+        margin-bottom: 24px !important;
+        text-align: center !important;
+        line-height: 1.5 !important;
+    }
+    .uk-form input, .uk-form textarea, .uk-form select,
+    .form-input, .form-textarea {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        border-radius: 8px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        margin-bottom: 14px !important;
+        width: 100% !important;
+        box-shadow: none !important;
+
+        &:focus {
+            border-color: rgb(14, 60, 125) !important;
+            outline: none !important;
+        }
+    }
+    textarea, .form-textarea {
+        background: #f8fafc !important;
+    }
+    .btn-submit-quote,
+    .btn-submit-premium,
+    button[type="submit"] {
+        background: rgb(14, 60, 125) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+        padding: 14px 24px !important;
+        border-radius: 8px !important;
+        border: none !important;
+        width: 100% !important;
+        cursor: pointer !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        box-shadow: 0 4px 12px rgba(14, 60, 125, 0.25) !important;
+        transition: all 0.2s ease !important;
+
+        &:hover {
+            background: #0b2d5e !important;
+            box-shadow: 0 6px 16px rgba(14, 60, 125, 0.35) !important;
+        }
+    }
+    .uk-close {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+        opacity: 1 !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        top: -14px !important;
+        right: -14px !important;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3) !important;
+    }
+    .alert-success-quote {
+        display: none;
+        background: #f0fdf4 !important;
+        color: #166534 !important;
+        border: 1px solid #bbf7d0 !important;
+        padding: 12px 16px !important;
+        border-radius: 8px !important;
+        margin-top: 15px !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+    }
+}
+
+/* UI-04: Header, Logo & Menu 3 cấp */
+.main-header-new .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.main-header-new .logo {
+    flex-shrink: 0;
+    margin-right: 25px;
+    z-index: 10;
+}
+.main-header-new .logo img {
+    max-height: 55px;
+    width: auto;
+    object-fit: contain;
+}
+.main-nav > li {
+    position: relative;
+}
+.main-nav > li > a {
+    white-space: nowrap;
+    padding: 15px 12px !important;
+    font-weight: 600;
+}
+/* Level 2 & Level 3 dropdowns */
+.main-nav .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    min-width: 230px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    padding: 8px 0;
+    display: none;
+    z-index: 1300;
+}
+.main-nav li:hover > .dropdown-menu {
+    display: block;
+}
+.main-nav .dropdown-menu li {
+    position: relative;
+}
+.main-nav .dropdown-menu li a {
+    display: block;
+    padding: 9px 18px;
+    color: #334155;
+    font-size: 14px;
+
+    &:hover {
+        background: #f1f5f9;
+        color: var(--color-primary);
+    }
+}
+/* Level 3 flyout */
+.main-nav .dropdown-menu .menu-level__3 {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: #ffffff;
+    min-width: 220px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    display: none;
+}
+.main-nav .dropdown-menu li:hover > .menu-level__3 {
+    display: block;
+}
+
+/* UI-05: Sidebar Treeview collapsible */
+.aside-category .list-cat li {
+    border-bottom: 1px solid #f1f5f9;
+
+    a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        color: #334155;
+        font-weight: 500;
+
+        &:hover {
+            color: var(--color-primary);
+            background: #f8fafc;
+        }
+    }
+}
+.aside-category .list-cat .children {
+    padding-left: 16px;
+    background: #fafafa;
+
+    li a {
+        font-size: 13.5px;
+        padding: 8px 12px;
+        color: #64748b;
+    }
+}
+.btn_dropdown_sp {
+    padding: 2px 6px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &.active {
+        transform: rotate(45deg);
+        color: var(--color-primary);
+    }
+}

@@ -155,33 +155,35 @@ class LegacyFrontend
 
     public static function productAsideCategories(int $language = 1, int $limit = 29): array
     {
-        $parentField = self::columnExists('product_catalogues', 'parent_id') ? 'parent_id' : 'parentid';
+        return cache()->remember("product_aside_categories_{$language}_{$limit}", 3600, function() use ($language, $limit) {
+            $parentField = self::columnExists('product_catalogues', 'parent_id') ? 'parent_id' : 'parentid';
 
-        $parents = ProductCatalogue::query()
-            ->select([
-                'product_catalogues.*',
-                'product_catalogue_language.name',
-                'product_catalogue_language.canonical',
-                'product_catalogue_language.description',
-            ])
-            ->join('product_catalogue_language', 'product_catalogue_language.product_catalogue_id', '=', 'product_catalogues.id')
-            ->where('product_catalogue_language.language_id', $language)
-            ->where("product_catalogues.{$parentField}", 0)
-            ->where('product_catalogues.publish', 2)
-            ->where('product_catalogues.order', '>', 0)
-            ->whereNull('product_catalogues.deleted_at')
-            ->orderBy('product_catalogues.order', 'asc')
-            ->orderBy('product_catalogues.id', 'desc')
-            ->limit($limit)
-            ->get()
-            ->map(fn ($catalogue) => self::productCatalogueArray($catalogue))
-            ->all();
+            $parents = ProductCatalogue::query()
+                ->select([
+                    'product_catalogues.*',
+                    'product_catalogue_language.name',
+                    'product_catalogue_language.canonical',
+                    'product_catalogue_language.description',
+                ])
+                ->join('product_catalogue_language', 'product_catalogue_language.product_catalogue_id', '=', 'product_catalogues.id')
+                ->where('product_catalogue_language.language_id', $language)
+                ->where("product_catalogues.{$parentField}", 0)
+                ->where('product_catalogues.publish', 2)
+                ->where('product_catalogues.order', '>', 0)
+                ->whereNull('product_catalogues.deleted_at')
+                ->orderBy('product_catalogues.order', 'asc')
+                ->orderBy('product_catalogues.id', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(fn ($catalogue) => self::productCatalogueArray($catalogue))
+                ->all();
 
-        foreach ($parents as $key => $parent) {
-            $parents[$key]['child'] = self::productChildren((int) $parent['id'], $language, $limit);
-        }
+            foreach ($parents as $key => $parent) {
+                $parents[$key]['child'] = self::productChildren((int) $parent['id'], $language, $limit);
+            }
 
-        return $parents;
+            return $parents;
+        });
     }
 
     public static function headerCommitments(int $language = 1): array
@@ -560,9 +562,12 @@ class LegacyFrontend
 
     private static function pivotValue($model, string $field): ?string
     {
-        $language = $model?->languages?->first();
+        if (is_object($model) && property_exists($model, 'languages') && $model->languages) {
+            $language = is_iterable($model->languages) ? $model->languages->first() : null;
+            return $language?->pivot?->{$field} ?? ($model->{$field} ?? null);
+        }
 
-        return $language?->pivot?->{$field};
+        return is_object($model) ? ($model->{$field} ?? null) : null;
     }
 
     private static function translatedValue($model, string $field): ?string

@@ -302,22 +302,32 @@
             <div class="products-grid">
                 @if (isset($widgets['featured-products']) && $widgets['featured-products']->object)
                     @foreach ($widgets['featured-products']->object as $product)
-                        @php $pLang = $product->languages->first(); @endphp
+                        @php 
+                            $pLang = $product->languages->first(); 
+                            $pName = html_entity_decode(strip_tags($pLang->name ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $pName = str_replace(["\xC2\xA0", "&nbsp;", "&nbsp"], ' ', $pName);
+                            $pUrl = write_url($pLang->canonical ?? '#');
+                            $pDesc = $pLang->description ?? '';
+                            $cleanDesc = html_entity_decode(strip_tags($pDesc), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $cleanDesc = str_replace(["\xC2\xA0", "&nbsp;", "&nbsp"], ' ', $cleanDesc);
+                            $features = array_filter(array_map('trim', explode("\n", $cleanDesc)));
+                            $features = array_slice($features, 0, 2);
+                        @endphp
                         <div class="product-card">
-                            <img src="{{ $product->image ?? 'path/to/product.png' }}" alt="{{ $pLang->name ?? '' }}"
-                                class="product-img">
-                            <h3 class="product-title">{{ $pLang->name ?? '' }}</h3>
+                            <a href="{{ $pUrl }}" title="{{ $pName }}">
+                                <img src="{{ $product->image ?? 'path/to/product.png' }}" alt="{{ $pName }}" class="product-img">
+                            </a>
+                            <h3 class="product-title">
+                                <a href="{{ $pUrl }}" title="{{ $pName }}">{{ $pName }}</a>
+                            </h3>
                             <ul class="product-features">
-                                @if (!empty($pLang->description))
-                                    @foreach (explode("\n", $pLang->description) as $feature)
-                                        <li>{{ trim($feature) }}</li>
-                                    @endforeach
-                                @endif
+                                @foreach ($features as $feature)
+                                    <li>{{ $feature }}</li>
+                                @endforeach
                             </ul>
                             <div class="card-actions">
-                                <a href="{{ $pLang->canonical ?? '#' }}" class="btn-detail">Xem chi
-                                    tiết</a>
-                                <a href="#contact" class="btn-contact">Liên hệ</a>
+                                <a href="{{ $pUrl }}" class="btn-detail">Xem chi tiết</a>
+                                <a href="#quote-modal" data-uk-modal class="btn-contact">Liên hệ</a>
                             </div>
                         </div>
                     @endforeach
