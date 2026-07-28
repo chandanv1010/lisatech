@@ -624,6 +624,7 @@ class LegacyFrontend
             ->join('post_language', 'post_language.post_id', '=', 'posts.id')
             ->where('post_language.language_id', $language)
             ->where("posts.{$publishField}", 2)
+            ->where('posts.post_catalogue_id', '>', 0)
             ->whereNull('posts.deleted_at');
     }
 
