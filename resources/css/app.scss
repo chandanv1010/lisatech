@@ -438,7 +438,7 @@ ul {
                 }
 
                 &.children>a {
-                    padding-right: 24px;
+                    padding-right: 24px !important;
 
                     &:after {
                         content: '\f107';
@@ -1274,9 +1274,10 @@ ul {
 
             .product-category__icon {
                 transform: rotate(-8deg);
+                background-color: var(--color-secondary);
                 
                 img {
-                    filter: brightness(0) saturate(100%) invert(56%) sepia(91%) saturate(2284%) hue-rotate(1deg) brightness(101%) contrast(99%);
+                    filter: brightness(0) invert(1);
                 }
             }
         }
@@ -1285,17 +1286,21 @@ ul {
     &__icon {
         width: 48px;
         height: 48px;
-
+        background-color: var(--color-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-bottom: 18px;
 
         transition: all .35s;
 
         img {
-            width: 100%;
-            height: 100%;
+            width: 50%;
+            height: 50%;
             object-fit: contain;
             display: block;
-            filter: brightness(0) saturate(100%) invert(20%) sepia(85%) saturate(2250%) hue-rotate(205deg) brightness(95%) contrast(105%);
+            filter: brightness(0) invert(1);
             transition: filter 0.35s ease;
         }
     }
