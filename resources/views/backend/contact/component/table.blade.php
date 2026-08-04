@@ -5,8 +5,10 @@
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
             <th>Họ Tên</th>
+            <th>Loại</th>
             <th>Ngày tạo</th>
             <th>Số điện thoại</th>
+            <th>Email</th>
             <th>Địa chỉ</th>
             <th>Lời nhắn</th>
             <th class="text-center">Thao tác</th>
@@ -24,10 +26,16 @@
                         {{ $contact->name }}
                     </td>
                     <td>
+                        {{ config('apps.general.contactType')[$contact->type] ?? 'Không rõ' }}
+                    </td>
+                    <td>
                         {{ convertDateTime($contact->created_at,'d/m/Y') }}
                     </td>
                     <td>
                         {{ $contact->phone }}
+                    </td>
+                    <td>
+                        {{ $contact->email }}
                     </td>
                     <td>
                         {{ $contact->address }}

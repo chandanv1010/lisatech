@@ -96,6 +96,8 @@
 
                         <form action="{{ route('contact.save') }}" method="post" class="uk-form form-premium-light">
                             @csrf
+                            <input type="hidden" name="type" value="{{ config('apps.general.contactTypeBusiness') }}">
+
                             @if (isset($errors) && $errors->any())
                                 <div style="padding:15px; background:#fef2f2; border:1px solid #fca5a5; color:#991b1b; border-radius:8px; margin-bottom:20px; font-size:13px;">
                                     @foreach ($errors->all() as $error)

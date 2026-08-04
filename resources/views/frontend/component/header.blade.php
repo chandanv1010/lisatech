@@ -235,6 +235,8 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
         </p>
         <form id="form-quote-modal" action="{{ route('contact.save') }}" method="POST" class="uk-form">
             @csrf
+            <input type="hidden" name="type" value="{{ config('apps.general.contactTypeQuote') }}">
+
             <div style="margin-bottom: 14px !important;">
                 <input type="text" name="name" placeholder="Họ và tên của bạn *" required style="width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #0f172a !important; padding: 12px 16px !important; border-radius: 8px !important; box-sizing: border-box !important; font-size: 14px !important; outline: none !important;">
             </div>

@@ -27,7 +27,9 @@ class ContactService extends BaseService
     }
 
     public function paginate($request){
-        $condition['keyword'] = addslashes($request->input('keyword'));
+        // Default to '' before addslashes(): on a first page load there is no
+        // keyword in the query string, and PHP 8.4 deprecates passing null.
+        $condition['keyword'] = addslashes($request->input('keyword') ?? '');
         $perPage = $request->integer('perpage');
         $contacts = $this->contactRepository->pagination(
             $this->paginateSelect(), 
@@ -106,15 +108,19 @@ class ContactService extends BaseService
     }
 
     private function paginateSelect(){
+        // No 'publish' here: the contacts table has never had that column in any
+        // migration, so selecting it made the whole "Quản lý liên hệ" page fail
+        // with "Unknown column 'publish' in 'field list'". It was a copy-paste
+        // leftover from the services whose models really are publishable.
         return [
             'id',
             'name',
             'address',
             'phone',
+            'email',
             'product_id',
             'post_id',
             'gender',
-            'publish',
             'created_at',
             'type',
             'message'

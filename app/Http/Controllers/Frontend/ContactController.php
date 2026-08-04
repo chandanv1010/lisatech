@@ -60,7 +60,12 @@ class ContactController extends FrontendController
     public function save(Request $request){
         try {
             DB::beginTransaction();
-            $payload = $request->only(['email', 'name', 'phone', 'address', 'message']);
+            // 'type' has to be in the whitelist too, otherwise every submission
+            // lands with type = NULL and the admin cannot tell a quote request
+            // apart from a sales enquiry. Fall back to the business-enquiry code
+            // for forms that post no type of their own.
+            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
             Contact::create($payload);
             DB::commit();
             return response()->json([
@@ -76,7 +81,12 @@ class ContactController extends FrontendController
     public function saveContact(Request $request){
         try {
             DB::beginTransaction();
-            $payload = $request->only(['email', 'name', 'phone', 'address', 'message']);
+            // 'type' has to be in the whitelist too, otherwise every submission
+            // lands with type = NULL and the admin cannot tell a quote request
+            // apart from a sales enquiry. Fall back to the business-enquiry code
+            // for forms that post no type of their own.
+            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
             Contact::create($payload);
             DB::commit();
             return redirect()->back()->with('success', 'Gửi đăng ký thành công. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất');
