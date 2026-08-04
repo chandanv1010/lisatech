@@ -30,7 +30,7 @@ return [
         [
             'title' => 'QL Sản Phẩm',
             'icon' => 'fa fa-cube',
-            'name' => ['product','attribute'],
+            'name' => ['product'],
             'subModule' => [
                 [
                     'title' => 'QL Nhóm Sản Phẩm',
@@ -40,14 +40,16 @@ return [
                     'title' => 'QL Sản phẩm',
                     'route' => 'product/index'
                 ],
-                [
-                    'title' => 'QL Loại thuộc tính',
-                    'route' => 'attribute/catalogue/index'
-                ],
-                [
-                    'title' => 'QL thuộc tính',
-                    'route' => 'attribute/index'
-                ],
+                // Hidden on request — not used day to day. The routes still work if
+                // the URL is entered directly; only the sidebar links are gone.
+                // [
+                //     'title' => 'QL Loại thuộc tính',
+                //     'route' => 'attribute/catalogue/index'
+                // ],
+                // [
+                //     'title' => 'QL thuộc tính',
+                //     'route' => 'attribute/index'
+                // ],
 
             ]
         ],
@@ -62,40 +64,42 @@ return [
                 ],
             ]
         ],
-        [
-            'title' => 'QL Nhóm Khách hàng',
-            'icon' => 'fa fa-user',
-            'name' => ['customer'],
-            'subModule' => [
-                [
-                    'title' => 'QL Nhóm Khách hàng',
-                    'route' => asset('customer/catalogue/index')
-                ],
-                [
-                    'title' => 'QL Khách hàng',
-                    'route' => 'customer/index'
-                ],
-            ]
-        ],
-        [
-            'title' => 'QL Marketing',
-            'icon' => 'fa fa-money',
-            'name' => ['promotion', 'source'],
-            'subModule' => [
-                [
-                    'title' => 'QL Khuyến mại',
-                    'route' => 'promotion/index'
-                ],
-                [
-                    'title' => 'QL Voucher',
-                    'route' => 'voucher/index'
-                ],
-                [
-                    'title' => 'QL nguồn khách',
-                    'route' => 'source/index'
-                ],
-            ]
-        ],
+        // Hidden on request — the whole "QL Nhóm Khách hàng" section.
+        // [
+        //     'title' => 'QL Nhóm Khách hàng',
+        //     'icon' => 'fa fa-user',
+        //     'name' => ['customer'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'QL Nhóm Khách hàng',
+        //             'route' => asset('customer/catalogue/index')
+        //         ],
+        //         [
+        //             'title' => 'QL Khách hàng',
+        //             'route' => 'customer/index'
+        //         ],
+        //     ]
+        // ],
+        // Hidden on request — the whole "QL Marketing" section.
+        // [
+        //     'title' => 'QL Marketing',
+        //     'icon' => 'fa fa-money',
+        //     'name' => ['promotion', 'source'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'QL Khuyến mại',
+        //             'route' => 'promotion/index'
+        //         ],
+        //         [
+        //             'title' => 'QL Voucher',
+        //             'route' => 'voucher/index'
+        //         ],
+        //         [
+        //             'title' => 'QL nguồn khách',
+        //             'route' => 'source/index'
+        //         ],
+        //     ]
+        // ],
         [
             'title' => 'QL Bài viết',
             'icon' => 'fa fa-file',
@@ -111,17 +115,18 @@ return [
                 ]
             ]
         ],
-        [
-            'title' => 'QL Bình Luận',
-            'icon' => 'fa fa-comment',
-            'name' => ['reviews'],
-            'subModule' => [
-                [
-                    'title' => 'QL Bình Luận',
-                    'route' => 'review/index'
-                ]
-            ]
-        ],
+        // Hidden on request — the whole "QL Bình Luận" section.
+        // [
+        //     'title' => 'QL Bình Luận',
+        //     'icon' => 'fa fa-comment',
+        //     'name' => ['reviews'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'QL Bình Luận',
+        //             'route' => 'review/index'
+        //         ]
+        //     ]
+        // ],
         [
             'title' => 'QL Liên Hệ',
             'icon' => 'fa fa-github',
@@ -174,17 +179,18 @@ return [
                 ],
             ]
         ],
-        [
-            'title' => 'QL Giới thiệu',
-            'icon' => 'fa fa-info-circle',
-            'name' => ['introduce'],
-            'subModule' => [
-                [
-                    'title' => 'Cài đặt Giới thiệu',
-                    'route' => 'introduce/index'
-                ],
-            ]
-        ],
+        // Hidden on request — the whole "QL Giới thiệu" section.
+        // [
+        //     'title' => 'QL Giới thiệu',
+        //     'icon' => 'fa fa-info-circle',
+        //     'name' => ['introduce'],
+        //     'subModule' => [
+        //         [
+        //             'title' => 'Cài đặt Giới thiệu',
+        //             'route' => 'introduce/index'
+        //         ],
+        //     ]
+        // ],
         [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-file',
