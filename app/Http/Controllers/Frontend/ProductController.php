@@ -104,13 +104,9 @@ class ProductController extends FrontendController
         $breadcrumb = $this->productCatalogueRepository->breadcrumb($productCatalogue, $this->language);
         /* ------------------- */
         $product = $this->productService->getAttribute($product, $this->language);
-        $category = recursive(
-            $this->productCatalogueRepository->all([
-                'languages' => function ($query) use ($language) {
-                    $query->where('language_id', $language);
-                }
-            ], categorySelectRaw('product'))
-        );
+        // $category was a second full load of product_catalogues, read only by
+        // frontend/product/aside.blade.php — a view that is not included anywhere,
+        // so the tree was built and discarded on every product page.
         $productCatalogues = recursive($this->productCatalogueRepository->all(['languages']));
 
         $wishlist = Cart::instance('wishlist')->content();
@@ -156,7 +152,6 @@ class ProductController extends FrontendController
             'customer',
             'voucher_product',
             'product',
-            'category',
             'widgets',
             'wishlist',
             'cartSeen',

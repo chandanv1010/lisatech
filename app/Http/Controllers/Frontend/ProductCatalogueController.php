@@ -58,8 +58,10 @@ class ProductCatalogueController extends FrontendController
             abort(404);
         }
         $parent = null;
-        $descendantTrees = null;
-        $descendantTrees = $this->productCatalogueService->getChildren();
+        // getChildren() used to run here for $descendantTrees. It loaded every
+        // product catalogue *with its products relation* and summed per-category
+        // product counts, and no view ever read the result — the whole tree was
+        // built and thrown away on every catalogue page.
         $filters = $this->filter($productCatalogue);
         $breadcrumb = $this->productCatalogueRepository->breadcrumb($productCatalogue, $this->language);
         $products = $this->productService->paginate(
@@ -86,7 +88,6 @@ class ProductCatalogueController extends FrontendController
         $legacy = LegacyFrontend::productCataloguePayload($productCatalogue, $products, $breadcrumb, $this->language);
         $template = 'frontend.product.catalogue.index';
         return view($template, compact(
-            'descendantTrees',
             'config',
             'seo',
             'system',
