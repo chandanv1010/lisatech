@@ -47,8 +47,8 @@ class CompareService
         return [
             ['key' => 'price', 'label' => 'Giá bán', 'type' => 'html'],
             ['key' => 'code', 'label' => 'Mã sản phẩm'],
-            ['key' => 'ml', 'label' => 'Dung tích'],
-            ['key' => 'percent', 'label' => 'Độ cồn'],
+            // 'Dung tích' (ml) and 'Độ cồn' (percent) dropped: wine-shop leftovers,
+            // empty on every LiSA product so they only ever rendered as '-'.
             ['key' => 'made_in', 'label' => 'Xuất xứ'],
             ['key' => 'stock', 'label' => 'Tồn kho'],
             ['key' => 'warranty', 'label' => 'Bảo hành'],
@@ -115,8 +115,6 @@ class CompareService
             'fields' => [
                 'price' => $price['html'],
                 'code' => $product->code ?: '-',
-                'ml' => $product->ml ? ($product->ml . ' ml') : '-',
-                'percent' => $product->percent ? $product->percent . '%' : '-',
                 'made_in' => $product->made_in ?: '-',
                 'stock' => !is_null($product->stock) ? number_format($product->stock) . ' sp' : '-',
                 'warranty' => $product->warranty ?: '-',

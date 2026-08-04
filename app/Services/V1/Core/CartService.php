@@ -513,8 +513,8 @@ class CartService
                 }
             }
             
-            // Áp dụng giá combo nếu có >= 5 chai cùng sản phẩm
-            $this->applyComboPrice();
+            // Giá trong giỏ phải khớp khuyến mại đang chạy
+            $this->syncCartItemPrices();
             
             return true;
         } catch (\Exception $e) {
@@ -530,8 +530,8 @@ class CartService
             $payload = $request->input();
             Cart::instance('shopping')->update($payload['rowId'], $payload['qty']);
             
-            // Áp dụng giá combo nếu có >= 5 chai cùng sản phẩm
-            $this->applyComboPrice();
+            // Giá trong giỏ phải khớp khuyến mại đang chạy
+            $this->syncCartItemPrices();
             
             $cartItem = Cart::instance('shopping')->get($payload['rowId']);
             $cartCaculate = $this->cartAndPromotion();
@@ -557,8 +557,8 @@ class CartService
             }
             Cart::instance('shopping')->remove($payload['rowId']);
             
-            // Áp dụng giá combo nếu có >= 5 chai cùng sản phẩm (sau khi xóa)
-            $this->applyComboPrice();
+            // Giá trong giỏ phải khớp khuyến mại đang chạy
+            $this->syncCartItemPrices();
             
             $cartCaculate = $this->cartAndPromotion();
             if ($cartCaculate['cartTotal'] == 0) {
@@ -1168,60 +1168,38 @@ class CartService
     }
 
     /**
-     * Áp dụng giá combo cho sản phẩm khi mua >= 5 chai
-     * Logic: Nhóm cart items theo product_id, nếu cùng product_id có >= 5 chai thì áp dụng combo_price
-     * Nếu < 5 chai, restore lại giá gốc (bao gồm promotion nếu có)
+     * Đồng bộ giá của các item trong giỏ với giá hiện hành của sản phẩm
+     * (đã tính khuyến mại), để giá không bị cũ khi khuyến mại thay đổi.
+     *
+     * Trước đây hàm này còn áp "giá combo 5 chai" (products.combo_price) — di sản
+     * của shop rượu mà codebase này dùng lại. Đã bỏ: không sản phẩm nào của LiSA
+     * có combo_price, và giao diện quản trị cũng không còn ô để nhập nó nữa.
      */
-    public function applyComboPrice()
+    public function syncCartItemPrices()
     {
         $carts = Cart::instance('shopping')->content();
-        
-        // Nhóm cart items theo product_id
-        $productGroups = [];
+
+        // Gom cart item theo product_id để mỗi sản phẩm chỉ phải tính giá một lần
+        // (item id có thể là "123" hoặc "123_variant_uuid").
+        $itemsByProduct = [];
         foreach ($carts as $item) {
-            // Lấy product_id từ item id (có thể là "123" hoặc "123_variant_uuid")
-            $productId = explode('_', $item->id)[0];
-            
-            if (!isset($productGroups[$productId])) {
-                $productGroups[$productId] = [
-                    'items' => [],
-                    'totalQty' => 0
-                ];
-            }
-            
-            $productGroups[$productId]['items'][] = $item;
-            $productGroups[$productId]['totalQty'] += $item->qty;
+            $itemsByProduct[explode('_', $item->id)[0]][] = $item;
         }
-        
-        // Kiểm tra và áp dụng giá combo hoặc restore giá gốc
-        foreach ($productGroups as $productId => $group) {
-            // Lấy thông tin product đầy đủ
+
+        foreach ($itemsByProduct as $productId => $items) {
             $product = $this->productRepository->findById($productId);
-            
+
             if (!$product) continue;
-            
-            // Lấy giá có áp dụng promotion (nếu có)
+
             $product = $this->productService->combineProductAndPromotion([$productId], $product, true);
             $priceData = getPrice($product);
-            $normalPrice = ($priceData['priceSale'] > 0) ? $priceData['priceSale'] : $priceData['price'];
-            
-            // Nếu >= 5 chai và có combo_price → dùng combo_price
-            if ($group['totalQty'] >= 5 && !empty($product->combo_price) && $product->combo_price > 0) {
-                foreach ($group['items'] as $item) {
+            $currentPrice = ($priceData['priceSale'] > 0) ? $priceData['priceSale'] : $priceData['price'];
+
+            foreach ($items as $item) {
+                if ($item->price != $currentPrice) {
                     Cart::instance('shopping')->update($item->rowId, [
-                        'price' => $product->combo_price
+                        'price' => $currentPrice
                     ]);
-                }
-            } 
-            // Nếu < 5 chai → restore lại giá gốc (có thể là promotion price)
-            else {
-                foreach ($group['items'] as $item) {
-                    // Chỉ update nếu giá hiện tại khác với giá cần apply
-                    if ($item->price != $normalPrice) {
-                        Cart::instance('shopping')->update($item->rowId, [
-                            'price' => $normalPrice
-                        ]);
-                    }
                 }
             }
         }

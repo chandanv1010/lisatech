@@ -23,8 +23,6 @@
                             $canonical = write_url($wishlistProduct->languages->first()->pivot->canonical);
                             $image = $wishlistProduct->image;
                             $price = getPrice($wishlistProduct);
-                            $ml = $wishlistProduct->ml;
-                            $percent = $wishlistProduct->percent;
                         @endphp
 
                         <li class="wishlist-item">
@@ -37,21 +35,15 @@
                                     <img src="{{ $image }}" alt="{{ $title }}">
                                 </a>
                                 <div class="info">
-                                    <div class="wine-info uk-flex uk-flex-center">
-                                        <span class="ml">{{ $ml }}ml</span>
-                                        <span>{{ $percent }}%</span>
-                                    </div>
+                                    {{-- Wine-shop leftovers removed: the "{ml}ml {percent}%" badge,
+                                         the "/ chai" suffix on the price and the "/ 5 chai" combo
+                                         line. None of them apply to LiSA's products. --}}
                                     <h3 class="title">
                                         <a href="{{ $canonical }}" title="{{ $title }}">{{ $title }}</a>
                                     </h3>
                                     <div class="price">
-                                        {!! str_replace('₫', '₫ / chai', $price['html']) !!}
+                                        {!! $price['html'] !!}
                                     </div>
-                                    @if(!empty($wishlistProduct->combo_price) && $wishlistProduct->combo_price > 0)
-                                    <div class="combo-price" style="font-size: 12px; color: #666; margin-top: 5px;">
-                                        Giá chỉ từ: <span style="color: #0C4A1A; font-weight: 600;">{{ number_format($wishlistProduct->combo_price, 0, ',', '.') }}₫ / 5 chai</span>
-                                    </div>
-                                    @endif
                                 </div>
                             </div>
                         </li>
