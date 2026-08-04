@@ -33,7 +33,7 @@
     <meta name="twitter:description" content="{{ $seo['meta_description'] ?? '' }}">
     <meta name="twitter:image" content="{{ $seo['meta_image'] ?? $system['seo_meta_images'] ?? $system['seo_meta_image'] ?? '' }}">
 
-    <link rel="icon" href="{{ $system['homepage_favicon'] ?? '' }}" type="image/png" sizes="30x30">
+    @include('component.favicon')
     @include('frontend.component.head')
     @if(isset($schema))
         {!! $schema !!}

@@ -18,7 +18,7 @@
     <meta property="og:image" content="{{ $seo['meta_image'] ?? $system['seo_meta_image'] ?? $system['homepage_logo'] ?? '' }}">
     <meta property="og:description" content="{{ $seo['meta_description'] ?? '' }}">
     <meta property="og:site_name" content="{{ $system['homepage_brandname'] ?? $system['homepage_company'] ?? '' }}">
-    <link rel="shortcut icon" href="{{ $system['homepage_favicon'] ?? '' }}" type="image/x-icon">
+    @include('component.favicon')
     <link href="{{ asset('templates/mobile/uikit/css/uikit.docs.simp.min.css') }}" rel="stylesheet">
     <link href="{{ asset('templates/mobile/plugins/flex-slider/flexslider.css') }}" rel="stylesheet">
     <link href="{{ asset('templates/mobile/css/style.css') }}" rel="stylesheet">
