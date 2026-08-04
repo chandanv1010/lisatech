@@ -14,8 +14,14 @@ class PostCatalogue extends Model
 {
     use HasFactory, SoftDeletes, QueryScopes, HasLanguagesFallback;
 
+    // 'parentid' and 'pubish' are the names this table actually has — the
+    // original migration mis-spelled both. PostCatalogueService rewrites the
+    // payload to them when the modern columns are absent, so they have to be
+    // mass-assignable or Eloquent drops them and the row silently falls back to
+    // parentid = 0 (reads as a root group) and pubish = 1 ("Không xuất bản").
     protected $fillable = [
         'parent_id',
+        'parentid',
         'lft',
         'rgt',
         'level',
@@ -23,6 +29,7 @@ class PostCatalogue extends Model
         'icon',
         'album',
         'publish',
+        'pubish',
         'follow',
         'order',
         'user_id',

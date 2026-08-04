@@ -14,10 +14,15 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes, QueryScopes, HasLanguagesFallback;
 
+    // 'pubish' is the name this table actually has — the original migration
+    // mis-spelled it. PostService rewrites the payload to it when 'publish' is
+    // absent, so it has to be mass-assignable or Eloquent drops it and every
+    // post saves as pubish = 1, i.e. "Không hoạt động", whatever was chosen.
     protected $fillable = [
         'image',
         'album',
         'publish',
+        'pubish',
         'follow',
         'order',
         'user_id',
