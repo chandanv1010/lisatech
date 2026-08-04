@@ -107,22 +107,12 @@
                 </div>
             </div>
         </div>
-        <div class="row mb15">
-            <div class="col-lg-6">
-                <div class="form-row">
-                    <label for="">Độ rượu</label>
-                    <input type="text" name="percent" value="{{ old('percent', $product->percent ?? null) }}"
-                        class="form-control ">
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="form-row">
-                    <label for="">Thể tích</label>
-                    <input type="text" name="ml" value="{{ old('ml', $product->ml ?? null) }}"
-                        class="form-control ">
-                </div>
-            </div>
-        </div>
+        {{-- "Độ rượu", "Thể tích" and "Giá combo 5 chai" removed: they are leftovers
+             from the wine shop this codebase was reused from and mean nothing for
+             LiSA's products. No product carried a value in any of them. The columns
+             stay in the database, and because the payload is built with
+             $request->only(), an update that no longer posts these keys leaves any
+             existing value untouched rather than wiping it. --}}
         <div class="row mb15">
             <div class="col-lg-12">
                 <div class="form-row">
@@ -130,16 +120,6 @@
                     <input type="text" name="price"
                         value="{{ old('price', isset($product) ? number_format($product->price, 0, ',', '.') : '') }}"
                         class="form-control int">
-                </div>
-            </div>
-        </div>
-        <div class="row mb15">
-            <div class="col-lg-12">
-                <div class="form-row">
-                    <label for="">Giá combo 5 chai</label>
-                    <input type="text" name="combo_price"
-                        value="{{ old('combo_price', isset($product) ? number_format($product->combo_price, 0, ',', '.') : '') }}"
-                        class="form-control int" placeholder="Giá khi mua từ 5 chai trở lên">
                 </div>
             </div>
         </div>

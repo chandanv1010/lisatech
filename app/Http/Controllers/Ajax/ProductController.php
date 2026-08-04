@@ -174,8 +174,6 @@ class ProductController extends Controller
                 $review['star'] = ($product->review_count == 0) ? '0' : $product->review_average / 5 * 100;
                 // $lecturer_image = $product->lecturers->image;
                 // $lecturer_name = $product->lecturers->name;
-                $ml = $product->ml;
-                $percent = $product->percent;
                 $madeIn = $product->made_in;
 
                 if (isset($product->attribute_concat)) {
@@ -190,10 +188,6 @@ class ProductController extends Controller
                             </a>
 
                             <div class="info">
-                                <div class="wine-info uk-flex uk-flex-center">
-                                    <span class="ml">{$ml}ml</span>
-                                    <span>{$percent}%</span>
-                                </div>
 
                                 <h3 class="title">
                                     <a href="{$canonical}" title="{$name}">{$name}</a>
