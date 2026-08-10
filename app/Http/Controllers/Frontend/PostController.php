@@ -116,7 +116,7 @@ class postController extends FrontendController
                               ->where('post_catalogue_post.post_catalogue_id', $catalogueId);
                       });
                 })
-                ->orderBy('posts.order', 'asc')
+                ->orderBy('posts.order', 'desc')
                 ->orderBy('posts.id', 'desc')
                 ->limit(6)
                 ->get();
@@ -126,7 +126,7 @@ class postController extends FrontendController
             $excludeIds = array_merge([$post->id], $relatedPosts->pluck('id')->toArray());
             $additional = LegacyFrontend::postsQuery($this->language)
                 ->whereNotIn('posts.id', $excludeIds)
-                ->orderBy('posts.order', 'asc')
+                ->orderBy('posts.order', 'desc')
                 ->orderBy('posts.id', 'desc')
                 ->limit(6 - $relatedPosts->count())
                 ->get();

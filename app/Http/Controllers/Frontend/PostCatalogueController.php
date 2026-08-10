@@ -66,7 +66,7 @@ class PostCatalogueController extends FrontendController
             $postCatalogue,
             $page,
             ['path' => $postCatalogue->canonical],
-            ['posts.recommend', 'desc']
+            [['posts.order', 'desc'], ['posts.id', 'desc']]
         );
 
         // dd($posts->toArray());

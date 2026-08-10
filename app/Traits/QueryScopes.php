@@ -98,7 +98,17 @@ trait QueryScopes
 
     public function scopeCustomOrderBy($query, $orderBy){
         if(isset($orderBy) && !empty($orderBy)){
-            $query->orderBy($orderBy[0], $orderBy[1]);
+            if (is_array($orderBy)) {
+                if (isset($orderBy[0]) && is_array($orderBy[0])) {
+                    foreach ($orderBy as $orderItem) {
+                        if (isset($orderItem[0], $orderItem[1])) {
+                            $query->orderBy($orderItem[0], $orderItem[1]);
+                        }
+                    }
+                } elseif (isset($orderBy[0], $orderBy[1])) {
+                    $query->orderBy($orderBy[0], $orderBy[1]);
+                }
+            }
         }
         return $query;
     }
