@@ -53,7 +53,13 @@ class LegacyFrontend
             $path .= $suffixValue;
         }
 
-        $url = ($fullDomain ? rtrim(config('app.url'), '/') : rtrim(url('/'), '/')) . '/' . $path;
+        $baseUrl = $fullDomain ? rtrim(config('app.url'), '/') : rtrim(url('/'), '/');
+
+        if (request()->secure() || request()->header('X-Forwarded-Proto') === 'https' || Str::startsWith(url('/'), 'https://')) {
+            $baseUrl = preg_replace('/^http:/i', 'https:', $baseUrl);
+        }
+
+        $url = $baseUrl . '/' . $path;
 
         if (session('frontend_locale') === 'en' || request()->query('lang') === 'en') {
             if (strpos($url, '?') !== false) {
@@ -562,22 +568,30 @@ class LegacyFrontend
 
     private static function pivotValue($model, string $field): ?string
     {
-        if (is_object($model) && property_exists($model, 'languages') && $model->languages) {
-            $language = is_iterable($model->languages) ? $model->languages->first() : null;
-            return $language?->pivot?->{$field} ?? ($model->{$field} ?? null);
+        if (is_object($model) && !empty($model->languages)) {
+            $languages = $model->languages;
+            $language = is_iterable($languages) ? $languages->first() : $languages;
+            $val = $language?->pivot?->{$field} ?? null;
+            if ($val !== null && trim((string)$val) !== '') {
+                return (string) $val;
+            }
         }
 
-        return is_object($model) ? ($model->{$field} ?? null) : null;
+        if (is_object($model) && isset($model->{$field}) && trim((string)$model->{$field}) !== '') {
+            return (string) $model->{$field};
+        }
+
+        if (is_array($model) && isset($model[$field]) && trim((string)$model[$field]) !== '') {
+            return (string) $model[$field];
+        }
+
+        return null;
     }
 
     private static function translatedValue($model, string $field): ?string
     {
         if (!$model) {
             return null;
-        }
-
-        if (method_exists($model, 'getAttributes') && array_key_exists($field, $model->getAttributes())) {
-            return $model->getAttribute($field);
         }
 
         return self::pivotValue($model, $field);

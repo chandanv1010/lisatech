@@ -74,7 +74,7 @@ return [
     'subscribe_newsletter' => 'Subscribe to Newsletter',
     'subscribe' => 'Subscribe',
     'subscribe_placeholder' => 'Enter your email to subscribe',
-    'footer_tagline' => 'Lisatech - Elevating Family Life',
+    'footer_tagline' => 'Lisatech - Desiring Always',
     'sending' => 'Sending...',
     'subscribed' => 'Subscribed!',
 

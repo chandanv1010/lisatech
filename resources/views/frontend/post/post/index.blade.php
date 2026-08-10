@@ -230,8 +230,8 @@
                     <header class="panel-head-clean" style="margin-bottom: 25px;">
                         <h2 class="heading-clean" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">{{ __('frontend.other_posts') }}</h2>
                     </header>
-                    <div class="grid-8-posts" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 25px;">
-                        @foreach (collect($articles_same)->take(8) as $postItem)
+                    <div class="grid-8-posts" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px;">
+                        @foreach (collect($articles_same)->take(6) as $postItem)
                             @php
                                 $title = $postItem['title'] ?? '';
                                 $href = rewrite_url($postItem['canonical'] ?? '');

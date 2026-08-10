@@ -154,16 +154,23 @@
         @if (isset($widgets['customer-types']) && $widgets['customer-types']->object)
             @foreach ($widgets['customer-types']->object as $index => $customerType)
                 @php
-                    $link = is_array($customerType->album ?? [])
-                        ? $customerType->album[0] ?? []
-                        : (json_decode($customerType->album ?? '{}', true) ?:
-                        []);
-                    $isActive = $index === 1;
+                    $albumData = is_array($customerType->album ?? null)
+                        ? $customerType->album
+                        : (json_decode($customerType->album ?? '{}', true) ?: []);
+                    $customLink = $albumData['link'] ?? ($albumData[0]['link'] ?? null);
+                    
                     $ctLang = $customerType->languages->first();
-                    $customerTypeName = $ctLang->name ?? '';
-                    $customerTypeDesc = $ctLang->description ?? '';
+                    $canonical = $ctLang->pivot->canonical ?? $customerType->canonical ?? '';
+                    
+                    $href = (!empty($customLink) && $customLink !== '#') 
+                        ? $customLink 
+                        : write_url('lien-he.html');
+                    
+                    $isActive = $index === 1;
+                    $customerTypeName = $ctLang->pivot->name ?? $ctLang->name ?? '';
+                    $customerTypeDesc = $ctLang->pivot->description ?? $ctLang->description ?? '';
                 @endphp
-                <a href="{{ $link['link'] ?? '#' }}"
+                <a href="{{ $href }}"
                     class="customer-type__item {{ $isActive ? 'customer-type__item--active' : '' }}">
                     <div class="customer-type__icon">
                         <i class="fa {{ $customerType->icon ?? 'fa-star' }}"></i>
@@ -668,10 +675,23 @@
     <div class="uk-container uk-container-center">
         <div class="news-section__header">
             <h2 class="news-section__title">
-                {{ $widgets['news']->name ?? 'Tin Tức & Insights' }}
+                Tin Tức
             </h2>
 
-            <a href="{{ route('post.index') }}" class="news-section__view-all">
+            @php
+                $newsViewAllUrl = write_url('bai-viet/tin-tuc/c61');
+                if (isset($widgets['news']) && !empty($widgets['news']->object)) {
+                    $firstObj = is_iterable($widgets['news']->object) ? (is_array($widgets['news']->object) ? ($widgets['news']->object[0] ?? null) : $widgets['news']->object->first()) : null;
+                    if ($firstObj) {
+                        $catCanonical = $firstObj->languages->first()->pivot->canonical ?? $firstObj->canonical ?? '';
+                        if (!empty($catCanonical)) {
+                            $newsViewAllUrl = write_url($catCanonical);
+                        }
+                    }
+                }
+            @endphp
+
+            <a href="{{ $newsViewAllUrl }}" class="news-section__view-all">
                 {{ __('frontend.view_all_posts') }}
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2"

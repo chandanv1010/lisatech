@@ -628,19 +628,40 @@ if(!function_exists('renderQuickBuy')){
 
 if(!function_exists('cutnchar')){
 	function cutnchar($str = NULL, $n = 320){
-		if(strlen($str) < $n) return $str;
-		$html = substr($str, 0, $n);
-		$html = substr($html, 0, strrpos($html,' '));
+		if($str === null || $str === '') return '';
+
+		// Decode HTML entities (e.g. &nbsp;, &amp;, &quot;, etc.)
+		$str = html_entity_decode($str, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+		// Strip any HTML tags
+		$str = strip_tags($str);
+
+		// Replace non-breaking space variants and &nbsp; with standard spaces
+		$str = str_replace(["&nbsp;", "\xc2\xa0"], ' ', $str);
+
+		// Normalize multiple spaces/newlines to a single space
+		$str = preg_replace('/\s+/', ' ', $str);
+
+		// Remove spacing before punctuation marks
+		$str = preg_replace('/\s+([,.:;!?])/', '$1', $str);
+
+		$str = trim($str);
+
+		if(mb_strlen($str, 'UTF-8') <= $n) return $str;
+
+		$html = mb_substr($str, 0, $n, 'UTF-8');
+		$lastSpace = mb_strrpos($html, ' ', 0, 'UTF-8');
+		if($lastSpace !== false && $lastSpace > 0){
+			$html = mb_substr($html, 0, $lastSpace, 'UTF-8');
+		}
+
 		return $html.'...';
 	}
 }
 
 if(!function_exists('cut_string_and_decode')){
 	function cut_string_and_decode($str = NULL, $n = 200){
-        $str = html_entity_decode($str);
-        $str = strip_tags($str);
-        $str = cutnchar($str, $n);
-        return $str;
+		return cutnchar($str, $n);
 	}
 }
 

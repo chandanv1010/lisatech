@@ -41,6 +41,7 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('/thumb', [App\Http\Controllers\ImageResizerController::class, 'resize'])->name('thumb');
 
     Route::get('sitemap.xml', [\App\Http\Controllers\Frontend\SitemapController::class, 'index'])->name('sitemap');
+    Route::get('robots.txt', [\App\Http\Controllers\Frontend\SitemapController::class, 'robots'])->name('robots');
     Route::get('tim-kiem', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search');
     Route::get('tim-kiem/trang-{page}', [FeProductCatalogueController::class, 'search'])->name('product.catalogue.search.page')->where('page', '[0-9]+');
     Route::get('yeu-thich' . config('apps.general.suffix'), [FeProductCatalogueController::class, 'wishlist'])->name('product.wishlist.index');

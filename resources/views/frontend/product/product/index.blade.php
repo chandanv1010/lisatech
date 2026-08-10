@@ -276,8 +276,8 @@
                             </section>
                         </section>
 
-                        <!-- Related Products Section (Concept Image 3) -->
-                        @if (!empty($products_same))
+                        <!-- Related Products Section -->
+                        @if (!empty($products_same) && count($products_same))
                             <section class="related-products-section uk-margin-large-top" style="border-top: 1px solid #edf2f7; padding-top: 40px; margin-top: 50px !important;">
                                 <header class="related-section-head" style="margin-bottom: 25px;">
                                     <h2 class="section-title-cyan" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">
@@ -285,29 +285,12 @@
                                     </h2>
                                 </header>
                                 <section class="panel-body" style="padding: 0 !important;">
-                                    <div class="uk-grid lib-grid-15 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-related-products">
+                                    <div class="uk-grid lib-grid-20 uk-grid-width-1-2 uk-grid-width-medium-1-3 list-product"
+                                        data-uk-grid-match="{target:'.product-card-inner .product-title-text'}">
                                         @foreach ($products_same as $prod)
-                                            @php
-                                                $pTitle = $prod['title'] ?? '';
-                                                $pHref = rewrite_url($prod['canonical'] ?? '');
-                                                $pImage = getthumb($prod['images'] ?? ($prod['image'] ?? ''));
-                                                $pDesc = cutnchar(strip_tags($prod['description'] ?? ''), 120);
-                                            @endphp
-                                            <div class="related-item-wrapper" style="margin-bottom: 20px;">
-                                                <div class="related-product-card" style="background: #fff; border: 1px solid #edf2f7; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.02); height: 100%; transition: all 0.3s ease;">
-                                                    <div class="card-thumb img-shine" style="position: relative; overflow: hidden; aspect-ratio: 4/3;">
-                                                        <a class="img-cover" href="{{ $pHref }}"
-                                                            title="{{ $pTitle }}" style="display: block; width: 100%; height: 100%;">
-                                                            <img src="{{ $pImage }}" alt="{{ $pTitle }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
-                                                        </a>
-                                                    </div>
-                                                    <div class="card-info" style="padding: 15px;">
-                                                        <h3 class="card-title" style="margin: 0 0 10px 0; font-size: 14.5px; font-weight: 700; line-height: 1.4;"><a href="{{ $pHref }}"
-                                                                title="{{ $pTitle }}" style="color: #334155; text-decoration: none; transition: color 0.2s;">{{ $pTitle }}</a></h3>
-                                                        <p class="card-desc" style="color: #64748b; font-size: 12.5px; line-height: 1.5; margin: 0;">{{ $pDesc }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @include('frontend.component.legacy-product-item', [
+                                                'product' => $prod,
+                                            ])
                                         @endforeach
                                     </div>
                                 </section>

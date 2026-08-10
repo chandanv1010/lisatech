@@ -102,7 +102,38 @@ class postController extends FrontendController
         $system = $this->system;
         $seo = seo($post);
         
-        $lastestNews = LegacyFrontend::postsQuery($this->language)->orderBy('posts.order', 'desc')->orderBy('posts.id', 'desc')->limit(8)->get();
+        $catalogueId = $postCatalogue->id ?? $post->post_catalogue_id ?? 0;
+        $relatedPosts = collect();
+        if ($catalogueId > 0) {
+            $relatedPosts = LegacyFrontend::postsQuery($this->language)
+                ->where('posts.id', '!=', $post->id)
+                ->where(function ($q) use ($catalogueId) {
+                    $q->where('posts.post_catalogue_id', $catalogueId)
+                      ->orWhereExists(function ($sub) use ($catalogueId) {
+                          $sub->select(\Illuminate\Support\Facades\DB::raw(1))
+                              ->from('post_catalogue_post')
+                              ->whereColumn('post_catalogue_post.post_id', 'posts.id')
+                              ->where('post_catalogue_post.post_catalogue_id', $catalogueId);
+                      });
+                })
+                ->orderBy('posts.order', 'asc')
+                ->orderBy('posts.id', 'desc')
+                ->limit(6)
+                ->get();
+        }
+
+        if ($relatedPosts->count() < 6) {
+            $excludeIds = array_merge([$post->id], $relatedPosts->pluck('id')->toArray());
+            $additional = LegacyFrontend::postsQuery($this->language)
+                ->whereNotIn('posts.id', $excludeIds)
+                ->orderBy('posts.order', 'asc')
+                ->orderBy('posts.id', 'desc')
+                ->limit(6 - $relatedPosts->count())
+                ->get();
+            $relatedPosts = $relatedPosts->merge($additional);
+        }
+
+        $lastestNews = $relatedPosts;
 
 
         $template = 'frontend.post.post.index';

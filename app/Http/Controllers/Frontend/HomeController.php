@@ -78,7 +78,7 @@ class HomeController extends FrontendController
             'meta_keyword' => $this->system['seo_meta_keyword'] ?? '',
             'meta_description' => $this->system['seo_meta_description'] ?? '',
             'meta_image' => $this->system['seo_meta_images'] ?? $this->system['homepage_logo'] ?? '',
-            'canonical' => config('app.url'),
+            'canonical' => write_url('', true, false),
         ];
         $schema = $this->schema($seo);
         $legacy = LegacyFrontend::homePayload($this->language);

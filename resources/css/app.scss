@@ -1092,7 +1092,7 @@ ul {
 
 // type 
 .customer-type {
-    padding: 48px 0;
+    padding: 20px 0;
 
     &__container {
         max-width: var(--container-max-width);
@@ -1195,13 +1195,13 @@ ul {
 
 // category 
 .product-category {
-    padding: 40px 0;
+    padding: 20px 0;
 
     &__heading {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 28px;
+        margin-bottom: 16px;
         gap: 20px;
     }
 
@@ -1361,7 +1361,7 @@ ul {
 
 .solutions-section {
     font-family: var(--font-base);
-    padding: 40px 0;
+    padding: 20px 0;
     /* Có thể điều chỉnh khoảng cách trên/dưới tùy thiết kế tổng thể */
     background-color: var(--color-white);
 
@@ -1376,7 +1376,7 @@ ul {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 16px;
 
         .title {
             font-size: 22px;
@@ -1583,14 +1583,14 @@ ul {
 
 /* --- Layout Section --- */
 .products-section {
-    padding: 60px 0 15px 0;
+    padding: 20px 0 10px 0;
     background-color: var(--color-white);
 
     .products-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
+        margin-bottom: 16px;
 
         .title {
             font-size: 24px;
@@ -1683,13 +1683,13 @@ ul {
 
 
 .services-section {
-    padding: 15px 15px 60px 15px;
+    padding: 10px 15px 20px 15px;
     background-color: #fff;
 
     .section-title {
         color: var(--color-primary);
         font-size: 24px;
-        margin-bottom: 30px;
+        margin-bottom: 16px;
         font-weight: 700;
     }
 
@@ -1763,7 +1763,7 @@ ul {
 
 .contact-section {
     background-color: var(--color-primary);
-    padding: 40px 0;
+    padding: 20px 0;
     color: var(--color-white);
 
     .container {
@@ -1937,12 +1937,12 @@ ul {
 }
 
 .why-lisatech {
-    padding: 60px 0;
+    padding: 24px 0;
 
     .section-title {
         color: var(--color-primary);
         font-size: 28px;
-        margin-bottom: 30px;
+        margin-bottom: 16px;
         font-weight: 700;
     }
 
@@ -1993,15 +1993,13 @@ ul {
 }
 
 .news-section {
-
-    padding: 40px 0;
+    padding: 20px 0;
 
     &__header {
-
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
 
     }
 

@@ -446,11 +446,24 @@
     <div class="uk-container uk-container-center">
         <div class="news-section__header">
             <h2 class="news-section__title">
-                {{ $widgets['news']->name ?? 'Tin Tức & Insights' }}
+                Tin Tức
             </h2>
 
-            <a href="{{ route('post.index') }}" class="news-section__view-all">
-                Xem Tất Bài Viết
+            @php
+                $newsViewAllUrl = write_url('bai-viet/tin-tuc/c61');
+                if (isset($widgets['news']) && !empty($widgets['news']->object)) {
+                    $firstObj = is_iterable($widgets['news']->object) ? (is_array($widgets['news']->object) ? ($widgets['news']->object[0] ?? null) : $widgets['news']->object->first()) : null;
+                    if ($firstObj) {
+                        $catCanonical = $firstObj->languages->first()->pivot->canonical ?? $firstObj->canonical ?? '';
+                        if (!empty($catCanonical)) {
+                            $newsViewAllUrl = write_url($catCanonical);
+                        }
+                    }
+                }
+            @endphp
+
+            <a href="{{ $newsViewAllUrl }}" class="news-section__view-all">
+                {{ __('frontend.view_all_posts') }}
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" />

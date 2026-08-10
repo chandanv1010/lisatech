@@ -17,14 +17,14 @@ class SitemapController extends Controller
 
         // 1. Static Pages
         $urls[] = [
-            'loc' => url('/'),
+            'loc' => write_url('', true, false),
             'lastmod' => date('Y-m-d'),
             'changefreq' => 'daily',
             'priority' => '1.0',
         ];
 
         $urls[] = [
-            'loc' => route('contact.index'),
+            'loc' => write_url('lien-he.html', true, false),
             'lastmod' => date('Y-m-d'),
             'changefreq' => 'weekly',
             'priority' => '0.8',
@@ -103,6 +103,15 @@ class SitemapController extends Controller
 
         return response($xml, 200, [
             'Content-Type' => 'application/xml',
+        ]);
+    }
+
+    public function robots(): Response
+    {
+        $sitemapUrl = write_url('sitemap.xml', true, false);
+        $content = "User-agent: *\nDisallow:\n\nSitemap: {$sitemapUrl}\n";
+        return response($content, 200, [
+            'Content-Type' => 'text/plain',
         ]);
     }
 }

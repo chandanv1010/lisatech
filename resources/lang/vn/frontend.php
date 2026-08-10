@@ -61,7 +61,7 @@ return [
     'updating_data' => 'Dữ liệu đang được cập nhật...',
     'toc' => 'Mục lục bài viết',
     'most_read' => 'Bài đọc nhiều',
-    'other_posts' => 'Các bài viết khác',
+    'other_posts' => 'Tin Tức Liên Quan',
     'updated_at' => 'Cập nhật:',
     'views' => 'Lượt xem:',
     
@@ -74,7 +74,7 @@ return [
     'subscribe_newsletter' => 'Đăng Ký Nhận Tin',
     'subscribe' => 'Đăng Ký',
     'subscribe_placeholder' => 'Nhập email để nhận tin',
-    'footer_tagline' => 'Lisatech - Nâng tầm cuộc sống gia đình Việt',
+    'footer_tagline' => 'Lisatech - Desiring Always',
     'sending' => 'Đang gửi...',
     'subscribed' => 'Đã đăng ký!',
 
