@@ -198,7 +198,7 @@ class ProductCatalogueService extends BaseService
                 $payload[$field] = '';
             }
         }
-        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['canonical'] = format_canonical($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['product_catalogue_id'] = $productCatalogue->id;
         return $payload;

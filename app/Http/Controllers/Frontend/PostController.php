@@ -116,21 +116,9 @@ class postController extends FrontendController
                               ->where('post_catalogue_post.post_catalogue_id', $catalogueId);
                       });
                 })
-                ->orderBy('posts.order', 'desc')
                 ->orderBy('posts.id', 'desc')
-                ->limit(6)
+                ->limit(5)
                 ->get();
-        }
-
-        if ($relatedPosts->count() < 6) {
-            $excludeIds = array_merge([$post->id], $relatedPosts->pluck('id')->toArray());
-            $additional = LegacyFrontend::postsQuery($this->language)
-                ->whereNotIn('posts.id', $excludeIds)
-                ->orderBy('posts.order', 'desc')
-                ->orderBy('posts.id', 'desc')
-                ->limit(6 - $relatedPosts->count())
-                ->get();
-            $relatedPosts = $relatedPosts->merge($additional);
         }
 
         $lastestNews = $relatedPosts;

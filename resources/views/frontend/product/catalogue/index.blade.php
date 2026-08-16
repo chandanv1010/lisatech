@@ -148,11 +148,16 @@
                     <div class="aside-panel support-sidebar-panel">
                         <h3 class="aside-title">{{ __('frontend.online_support') }}</h3>
                         <div class="support-list">
+                            @php
+                                $defaultNames = [1 => 'Nguyên', 2 => 'Quân', 3 => 'Hằng', 4 => 'Vân', 5 => ''];
+                                $defaultPhones = [1 => '0939971988', 2 => '0944 411 023', 3 => '0369363224', 4 => '0359977896', 5 => ''];
+                                $defaultZalos = [1 => 'https://zalo.me/0939971988', 2 => 'https://zalo.me/0944411023', 3 => 'https://zalo.me/0369363224', 4 => 'https://zalo.me/0359977896', 5 => ''];
+                            @endphp
                             @for ($i = 1; $i <= 5; $i++)
                                 @php
-                                    $sName = $system['support_name_' . $i] ?? __('frontend.support_num', ['num' => $i]);
-                                    $sPhone = $system['support_phone_' . $i] ?? "0973 999 999";
-                                    $sZalo = $system['support_zalo_' . $i] ?? "https://zalo.me";
+                                    $sName = $system['support_name_' . $i] ?? ($defaultNames[$i] ?? '');
+                                    $sPhone = $system['support_phone_' . $i] ?? ($defaultPhones[$i] ?? '');
+                                    $sZalo = $system['support_zalo_' . $i] ?? ($defaultZalos[$i] ?? '');
                                 @endphp
                                 @if (!empty($sName) && !empty($sPhone))
                                     <div class="support-item">

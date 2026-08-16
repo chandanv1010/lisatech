@@ -205,6 +205,45 @@
                                     <div class="content-detail-new">{!! $contentWithToc ?? ($DetailArticles['content'] ?? '') !!}</div>
                                 </article>
 
+                                <!-- Top 5 Related Posts in Category -->
+                                @if (!empty($articles_same) && count($articles_same))
+                                    <section class="article-related-grid" style="border-top: 1px solid #edf2f7; padding-top: 30px; margin-top: 35px;">
+                                        <header class="panel-head-clean" style="margin-bottom: 20px;">
+                                            <h2 class="heading-clean" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 18px; text-transform: uppercase; margin: 0;">{{ __('frontend.other_posts') }}</h2>
+                                        </header>
+                                        <div class="grid-related-posts" style="display: flex; flex-direction: column; gap: 15px;">
+                                            @foreach (collect($articles_same)->take(5) as $postItem)
+                                                @php
+                                                    $title = $postItem['title'] ?? '';
+                                                    $href = rewrite_url($postItem['canonical'] ?? '');
+                                                    $image = getthumb($postItem['images'] ?? null);
+                                                    $description = cutnchar(strip_tags($postItem['description'] ?? ''), 150);
+                                                    $created = $postItem['created'] ?? '';
+                                                @endphp
+                                                <div class="post-card-horizontal" style="display: flex; gap: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; align-items: flex-start;">
+                                                    @if (!empty($image))
+                                                        <div class="image-wrapper" style="width: 120px; height: 80px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid #edf2f7;">
+                                                            <a href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
+                                                                <img src="{{ $image }}" alt="{{ $title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                    <div class="post-info" style="flex: 1;">
+                                                        <h3 class="title" style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; line-height: 1.4;"><a href="{{ $href }}"
+                                                                title="{{ $title }}" style="color: #0b4a92; text-decoration: none;">{{ $title }}</a></h3>
+                                                        @if (!empty($created))
+                                                            <div class="post-date" style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;"><i class="fa fa-calendar" style="margin-right: 4px;"></i>{{ $created }}</div>
+                                                        @endif
+                                                        @if (!empty($description))
+                                                            <p class="description" style="color: #64748b; font-size: 13px; line-height: 1.4; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ $description }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </section>
+                                @endif
+
                                 <div class="share-box uk-flex uk-flex-middle mb10"
                                     style="margin-top: 30px; border-top: 1px solid #edf2f7; padding-top: 20px;">
                                     <div class="facebook">
@@ -223,35 +262,6 @@
                 </div>
 
             </div>
-
-            <!-- Full-Width Related Articles -->
-            @if (!empty($articles_same) && count($articles_same))
-                <section class="uk-panel article-related-grid uk-margin-large-top" style="border-top: 1px solid #edf2f7; padding-top: 40px; margin-top: 50px !important;">
-                    <header class="panel-head-clean" style="margin-bottom: 25px;">
-                        <h2 class="heading-clean" style="color: #0b4a92; font-family: var(--font-base, 'Inter', sans-serif); font-weight: 800; font-size: 22px; text-transform: uppercase;">{{ __('frontend.other_posts') }}</h2>
-                    </header>
-                    <div class="grid-8-posts" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 25px;">
-                        @foreach (collect($articles_same)->take(6) as $postItem)
-                            @php
-                                $title = $postItem['title'] ?? '';
-                                $href = rewrite_url($postItem['canonical'] ?? '');
-                                $image = getthumb($postItem['images'] ?? null);
-                                $description = cutnchar(strip_tags($postItem['description'] ?? ''), 120);
-                            @endphp
-                            <div class="post-card" style="display: flex; flex-direction: column;">
-                                <div class="image-wrapper" style="border: 1px solid #edf2f7; border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; margin-bottom: 12px;">
-                                    <a href="{{ $href }}" title="{{ $title }}" style="display: block; width: 100%; height: 100%;">
-                                        <img src="{{ $image }}" alt="{{ $title }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                                    </a>
-                                </div>
-                                <h3 class="title" style="margin: 0 0 8px 0; font-size: 14.5px; font-weight: 700; line-height: 1.4;"><a href="{{ $href }}"
-                                        title="{{ $title }}" style="color: #334155; text-decoration: none; transition: color 0.2s;">{{ $title }}</a></h3>
-                                <p class="description" style="color: #64748b; font-size: 12.5px; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ $description }}</p>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
 
         </div>
     </section>

@@ -153,7 +153,7 @@ class AttributeService extends BaseService
                 $payload[$field] = '';
             }
         }
-        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['canonical'] = format_canonical($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['attribute_id'] = $attributeId;
         return $payload;

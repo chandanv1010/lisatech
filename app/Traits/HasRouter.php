@@ -7,7 +7,7 @@ use App\Models\Router;
 trait HasRouter {
     public function createRouterPayload(string $canonical = '', int $modelId, int $languageId, string $controllerName = ''){
         return  [
-            'canonical' => Str::slug($canonical),
+            'canonical' => format_canonical($canonical),
             'module_id' => $modelId,
             'language_id' => $languageId,
             'controllers' => 'App\Http\Controllers\Frontend\\'.$controllerName.'',
@@ -19,7 +19,7 @@ trait HasRouter {
         $payload = [
             $this->context['languageId'] => [
                 'name' => $request->input('name'),
-                'canonical' => Str::snake($request->input('canonical')),
+                'canonical' => format_canonical($request->input('canonical')),
                 'description' => $request->input('description'),
                 'content' => $request->input('content'),
                 'meta_title' => $request->input('meta_title'),

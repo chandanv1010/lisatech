@@ -365,7 +365,7 @@ class ProductService extends BaseService
                 $payload[$field] = '';
             }
         }
-        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['canonical'] = format_canonical($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['product_id'] = $productId;
         return $payload;

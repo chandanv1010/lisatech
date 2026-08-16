@@ -60,14 +60,31 @@ class ContactController extends FrontendController
     public function save(Request $request){
         try {
             DB::beginTransaction();
-            // 'type' has to be in the whitelist too, otherwise every submission
-            // lands with type = NULL and the admin cannot tell a quote request
-            // apart from a sales enquiry. Fall back to the business-enquiry code
-            // for forms that post no type of their own.
             $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload['name'] = $payload['name'] ?? $request->input('fullname') ?? 'Khách hàng';
             $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
-            Contact::create($payload);
+            $contact = Contact::create($payload);
             DB::commit();
+
+            try {
+                $recipients = array_values(array_unique(filter_var_array([
+                    'contact@lisatech.vn',
+                    'lisatech3103@gmail.com',
+                ], FILTER_VALIDATE_EMAIL)));
+                if (!empty($recipients)) {
+                    \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\ContactMail([
+                        'name' => $contact->name ?? '',
+                        'email' => $contact->email ?? '',
+                        'phone' => $contact->phone ?? '',
+                        'address' => $contact->address ?? '',
+                        'message' => $contact->message ?? '',
+                        'created_at' => $contact->created_at ?? now(),
+                    ]));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Contact mail error: ' . $e->getMessage());
+            }
+
             return response()->json([
                 'message' => 'success',
             ]);
@@ -81,14 +98,31 @@ class ContactController extends FrontendController
     public function saveContact(Request $request){
         try {
             DB::beginTransaction();
-            // 'type' has to be in the whitelist too, otherwise every submission
-            // lands with type = NULL and the admin cannot tell a quote request
-            // apart from a sales enquiry. Fall back to the business-enquiry code
-            // for forms that post no type of their own.
             $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload['name'] = $payload['name'] ?? $request->input('fullname') ?? 'Khách hàng';
             $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
-            Contact::create($payload);
+            $contact = Contact::create($payload);
             DB::commit();
+
+            try {
+                $recipients = array_values(array_unique(filter_var_array([
+                    'contact@lisatech.vn',
+                    'lisatech3103@gmail.com',
+                ], FILTER_VALIDATE_EMAIL)));
+                if (!empty($recipients)) {
+                    \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\ContactMail([
+                        'name' => $contact->name ?? '',
+                        'email' => $contact->email ?? '',
+                        'phone' => $contact->phone ?? '',
+                        'address' => $contact->address ?? '',
+                        'message' => $contact->message ?? '',
+                        'created_at' => $contact->created_at ?? now(),
+                    ]));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Contact mail error: ' . $e->getMessage());
+            }
+
             return redirect()->back()->with('success', 'Gửi đăng ký thành công. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất');
         } catch (\Throwable $th) {
             DB::rollBack();

@@ -206,7 +206,7 @@ class PostService extends BaseService
             if (!SchemaCache::hasColumn('post_language', 'canonical')) {
                 unset($payload['canonical']);
             } else {
-                $payload['canonical'] = Str::slug($payload['canonical']);
+                $payload['canonical'] = format_canonical($payload['canonical']);
             }
         }
         $payload['language_id'] =  $languageId;

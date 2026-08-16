@@ -53,7 +53,7 @@ class BaseService
 
     public function formatRouterPayload($model, $request, $controllerName, $languageId){
         $router = [
-            'canonical' => Str::slug($request->input('canonical')),
+            'canonical' => format_canonical($request->input('canonical')),
             'module_id' => $model->id,
             'language_id' => $languageId,
             'controllers' => 'App\Http\Controllers\Frontend\\'.$controllerName.'',

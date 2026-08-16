@@ -227,7 +227,7 @@ class PostCatalogueService extends BaseService
                 $payload[$field] = '';
             }
         }
-        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['canonical'] = format_canonical($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['post_catalogue_id'] = $postCatalogue->id;
         return $payload;

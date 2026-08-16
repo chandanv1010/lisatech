@@ -151,7 +151,7 @@ class LanguageService extends BaseService
                 ]
             );
             $router = [
-                'canonical' => Str::slug($request->input('translate_canonical')),
+                'canonical' => format_canonical($request->input('translate_canonical')),
                 'module_id' => $model->id,
                 'language_id' => $option['languageId'],
                 'controllers' => 'App\Http\Controllers\Frontend\\'.$controllerName.'',

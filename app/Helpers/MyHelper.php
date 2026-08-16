@@ -2,6 +2,17 @@
 
 use App\Enums\PromotionEnum;
 
+if (!function_exists('format_canonical')) {
+    function format_canonical($canonical) {
+        if (empty($canonical)) return '';
+        $segments = explode('/', trim($canonical, '/'));
+        $slugified = array_map(function($segment) {
+            return \Illuminate\Support\Str::slug($segment);
+        }, $segments);
+        return implode('/', array_filter($slugified));
+    }
+}
+
 if(!function_exists('convertRevenueChartData')){
     function convertRevenueChartData($chartData, $data = 'monthly_revenue', $label = 'month' , $text = 'Tháng'){
         $newArray = [];

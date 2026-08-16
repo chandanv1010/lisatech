@@ -162,7 +162,7 @@ class AttributeCatalogueService extends BaseService
                 $payload[$field] = '';
             }
         }
-        $payload['canonical'] = Str::slug($payload['canonical']);
+        $payload['canonical'] = format_canonical($payload['canonical']);
         $payload['language_id'] =  $languageId;
         $payload['attribute_catalogue_id'] = $attributeCatalogue->id;
         return $payload;
