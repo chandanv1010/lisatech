@@ -20,7 +20,7 @@
 
         $('input[name=canonical]').on('keyup', function(){
             let input = $(this)
-            let value = HT.removeUtf8(input.val())
+            let value = HT.removeUtf8Canonical(input.val())
             $('.canonical').html(BASE_URL + value + SUFFIX) 
         })
 
@@ -75,6 +75,13 @@
         str = str.replace(/-+-/g, "-");
         str = str.replace(/^\-+|\-+$/g, "");
         return str;
+    }
+
+    HT.removeUtf8Canonical = (str) => {
+        if (!str) return '';
+        let parts = str.split('/');
+        let cleanedParts = parts.map(part => HT.removeUtf8(part));
+        return cleanedParts.join('/');
     }
 
 

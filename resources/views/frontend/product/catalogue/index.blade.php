@@ -149,15 +149,25 @@
                         <h3 class="aside-title">{{ __('frontend.online_support') }}</h3>
                         <div class="support-list">
                             @php
-                                $defaultNames = [1 => 'Nguyên', 2 => 'Quân', 3 => 'Hằng', 4 => 'Vân', 5 => ''];
-                                $defaultPhones = [1 => '0939971988', 2 => '0944 411 023', 3 => '0369363224', 4 => '0359977896', 5 => ''];
-                                $defaultZalos = [1 => 'https://zalo.me/0939971988', 2 => 'https://zalo.me/0944411023', 3 => 'https://zalo.me/0369363224', 4 => 'https://zalo.me/0359977896', 5 => ''];
+                                $defaultSupports = [
+                                    1 => ['name' => 'Nguyên', 'phone' => '0939971988', 'zalo' => 'https://zalo.me/0939971988'],
+                                    2 => ['name' => 'Quân', 'phone' => '0944 411 023', 'zalo' => 'https://zalo.me/0944411023'],
+                                    3 => ['name' => 'Hằng', 'phone' => '0369363224', 'zalo' => 'https://zalo.me/0369363224'],
+                                    4 => ['name' => 'Vân', 'phone' => '0359977896', 'zalo' => 'https://zalo.me/0359977896'],
+                                ];
                             @endphp
-                            @for ($i = 1; $i <= 5; $i++)
+                            @for ($i = 1; $i <= 4; $i++)
                                 @php
-                                    $sName = $system['support_name_' . $i] ?? ($defaultNames[$i] ?? '');
-                                    $sPhone = $system['support_phone_' . $i] ?? ($defaultPhones[$i] ?? '');
-                                    $sZalo = $system['support_zalo_' . $i] ?? ($defaultZalos[$i] ?? '');
+                                    $rawName = $system['support_name_' . $i] ?? '';
+                                    $rawPhone = $system['support_phone_' . $i] ?? '';
+                                    $rawZalo = $system['support_zalo_' . $i] ?? '';
+
+                                    $isDummyName = empty($rawName) || str_contains(mb_strtolower($rawName), 'hỗ trợ');
+                                    $isDummyPhone = empty($rawPhone) || str_contains($rawPhone, '0973 999 999') || str_contains($rawPhone, '0973999999');
+
+                                    $sName = $isDummyName ? $defaultSupports[$i]['name'] : $rawName;
+                                    $sPhone = $isDummyPhone ? $defaultSupports[$i]['phone'] : $rawPhone;
+                                    $sZalo = (empty($rawZalo) || $isDummyPhone) ? $defaultSupports[$i]['zalo'] : $rawZalo;
                                 @endphp
                                 @if (!empty($sName) && !empty($sPhone))
                                     <div class="support-item">
