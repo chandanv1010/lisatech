@@ -66,24 +66,15 @@ class ContactController extends FrontendController
             $contact = Contact::create($payload);
             DB::commit();
 
-            try {
-                $recipients = array_values(array_unique(filter_var_array([
-                    'contact@lisatech.vn',
-                    'lisatech3103@gmail.com',
-                ], FILTER_VALIDATE_EMAIL)));
-                if (!empty($recipients)) {
-                    \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\ContactMail([
-                        'name' => $contact->name ?? '',
-                        'email' => $contact->email ?? '',
-                        'phone' => $contact->phone ?? '',
-                        'address' => $contact->address ?? '',
-                        'message' => $contact->message ?? '',
-                        'created_at' => $contact->created_at ?? now(),
-                    ]));
-                }
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Contact mail error: ' . $e->getMessage());
-            }
+            \App\Services\V1\Core\ContactService::sendNotificationMail([
+                'name' => $contact->name ?? '',
+                'email' => $contact->email ?? '',
+                'phone' => $contact->phone ?? '',
+                'address' => $contact->address ?? '',
+                'message' => $contact->message ?? '',
+                'type_name' => 'Liên hệ từ trang Liên hệ',
+                'created_at' => $contact->created_at ?? now(),
+            ]);
 
             return response()->json([
                 'message' => 'success',
@@ -104,24 +95,15 @@ class ContactController extends FrontendController
             $contact = Contact::create($payload);
             DB::commit();
 
-            try {
-                $recipients = array_values(array_unique(filter_var_array([
-                    'contact@lisatech.vn',
-                    'lisatech3103@gmail.com',
-                ], FILTER_VALIDATE_EMAIL)));
-                if (!empty($recipients)) {
-                    \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\ContactMail([
-                        'name' => $contact->name ?? '',
-                        'email' => $contact->email ?? '',
-                        'phone' => $contact->phone ?? '',
-                        'address' => $contact->address ?? '',
-                        'message' => $contact->message ?? '',
-                        'created_at' => $contact->created_at ?? now(),
-                    ]));
-                }
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Contact mail error: ' . $e->getMessage());
-            }
+            \App\Services\V1\Core\ContactService::sendNotificationMail([
+                'name' => $contact->name ?? '',
+                'email' => $contact->email ?? '',
+                'phone' => $contact->phone ?? '',
+                'address' => $contact->address ?? '',
+                'message' => $contact->message ?? '',
+                'type_name' => 'Gửi đăng ký liên hệ',
+                'created_at' => $contact->created_at ?? now(),
+            ]);
 
             return redirect()->back()->with('success', 'Gửi đăng ký thành công. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất');
         } catch (\Throwable $th) {

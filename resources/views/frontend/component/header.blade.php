@@ -136,7 +136,7 @@ $currentLanguage = collect($languageOptions)->firstWhere('code', $currentLangCod
                     <ul class="main-nav">
                         {!! $menu['main'] !!}
                     </ul>
-                    <a href="{{ route('contact.index') }}" class="header-cta">
+                    <a href="{{ route('fe.contact.index') }}" class="header-cta">
                         <i class="fa fa-phone"></i>
                         <span>{{ __('frontend.contact_business') }}</span>
                     </a>

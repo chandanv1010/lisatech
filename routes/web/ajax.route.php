@@ -55,7 +55,10 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('ajax/dashboard/findProductObject', [AjaxDashboardController::class, 'findProductObject'])->name('ajax.findProductObject');
     Route::post('ajax/cart/pay', [AjaxCartController::class, 'pay'])->name('ajax.cart.pay');
 
-    Route::post('ajax/contact/saveContact', [ContactController::class, 'create'])->name('ajax.cart.pay');
+    Route::post('ajax/contact/saveContact', [ContactController::class, 'create'])->name('ajax.contact.saveContact');
+    Route::post('ajax/contact/advise', [ContactController::class, 'advise'])->name('ajax.contact.advise');
+    Route::post('ajax/contact/requestConsult', [ContactController::class, 'requestConsult'])->name('ajax.contact.requestConsult');
+    Route::post('ajax/contact/quickConsult', [ContactController::class, 'quickConsult'])->name('ajax.contact.quickConsult');
     Route::post('ajax/order/buy/now', [ContactController::class, 'buyNow'])->name('ajax.buy.now');
 
     Route::post('ajax/review/create', [AjaxReviewController::class, 'create'])->name('ajax.review.create');

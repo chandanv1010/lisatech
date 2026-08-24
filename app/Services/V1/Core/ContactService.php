@@ -45,24 +45,31 @@ class ContactService extends BaseService
         try{
             $payload = $request->except('_token');
 
-            $payload['name'] = $request->input('name') ?? $request->input('fullname');
+            $payload['name'] = $request->input('name') ?? $request->input('fullname') ?? 'Khách hàng';
             $contact = $this->contactRepository->create($payload);
             $product_name = ($contact->product_id != null) ? $this->productRepository->getProductById($contact->product_id, 1)->name : null;
             $post_name = ($contact->post_id != null) ?  $this->postRepository->getPostById($contact->post_id, 1)->name : null;
-            $to = '';
-            $cc = 'tuannc.dev@gmail.com';
+
+            $typeName = isset(config('apps.general.contactType')[$contact->type]) 
+                ? config('apps.general.contactType')[$contact->type] 
+                : 'Yêu cầu tư vấn / Liên hệ';
+
             $data = [
-                'name' => $contact->name, 
-                'created_at' => $contact->created_at,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
+                'name' => $contact->name ?? 'Khách hàng',
+                'email' => $contact->email ?? '',
+                'phone' => $contact->phone ?? '',
+                'address' => $contact->address ?? '',
+                'message' => $contact->message ?? '',
+                'type_name' => $typeName,
                 'type' => $contact->type ?? null,
-                'product_id' => $request->product_id,
+                'product_id' => $contact->product_id ?? null,
                 'product_name' => $product_name ?? $post_name,
-                'post_id' => $post_name, 
+                'post_id' => $post_name,
+                'created_at' => $contact->created_at ?? now(),
             ];
 
-            // \Mail::to($to)->cc($cc)->send(new ContactMail($data));
+            self::sendNotificationMail($data);
+
             DB::commit();
             return [
                 'code' => 10,
@@ -70,11 +77,41 @@ class ContactService extends BaseService
             ];
         }catch(\Exception $e ){
             DB::rollBack();
-            echo $e->getMessage();die();
+            \Illuminate\Support\Facades\Log::error('ContactService create error: ' . $e->getMessage());
             return [
                 'code' => 11,
                 'message' => 'Có vấn đề xảy ra! Hãy thử lại'
             ];
+        }
+    }
+
+    public static function sendNotificationMail($data)
+    {
+        try {
+            $recipients = array_values(array_unique(filter_var_array([
+                'tuannc.dev@gmail.com',
+                'contact@lisatech.vn',
+                'lisatech3103@gmail.com',
+                config('mail.from.address'),
+            ], FILTER_VALIDATE_EMAIL)));
+
+            if (!empty($recipients)) {
+                \Illuminate\Support\Facades\Mail::to($recipients)->send(new \App\Mail\ContactMail([
+                    'name' => $data['name'] ?? 'Khách hàng',
+                    'email' => $data['email'] ?? '',
+                    'phone' => $data['phone'] ?? '',
+                    'address' => $data['address'] ?? '',
+                    'message' => $data['message'] ?? '',
+                    'product_name' => $data['product_name'] ?? null,
+                    'type_name' => $data['type_name'] ?? null,
+                    'type' => $data['type'] ?? null,
+                    'product_id' => $data['product_id'] ?? null,
+                    'post_id' => $data['post_id'] ?? null,
+                    'created_at' => $data['created_at'] ?? now(),
+                ]));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Contact mail notification error: ' . $e->getMessage());
         }
     }
 

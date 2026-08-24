@@ -74,132 +74,175 @@ class ContactController extends Controller
     public function create(Request $request){
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|regex:/^0[0-9]{9}$/',
-            'scholarshipType' => 'required|integer|min:1',
-            'address' => 'required|string|max:500',
+            'email' => 'nullable|email',
+            'phone' => 'required|string',
+            'scholarshipType' => 'nullable|integer|min:1',
+            'address' => 'nullable|string|max:500',
+            'message' => 'nullable|string',
         ]);
 
-        $scholar = Scholar::with(['languages'])->find($validated['scholarshipType']);
+        $scholarName = null;
+        if (!empty($validated['scholarshipType'])) {
+            $scholar = Scholar::with(['languages'])->find($validated['scholarshipType']);
+            if ($scholar && $scholar->languages->first()) {
+                $scholarName = $scholar->languages->first()->pivot->name;
+            }
+        }
 
         try {
             DB::beginTransaction();
-            DB::table('contacts')->insert([
+            $msg = $validated['message'] ?? '';
+            if ($scholarName) {
+                $msg .= '<div>Loại học bổng/chương trình: ' . $scholarName . '</div>';
+            }
+
+            $id = DB::table('contacts')->insertGetId([
                 'name' => $validated['name'],
-                'email' => $validated['email'],
+                'email' => $validated['email'] ?? '',
                 'phone' => $validated['phone'],
-                'address' => $validated['address'],
-                'message' => '<div>
-                    <h1>Đăng ký nhận thông tin chương trình ưu đãi</h1>
-                    <div>Loại học bổng: '.$scholar->languages->first()->pivot->name.'</div>
-                </div>',
+                'address' => $validated['address'] ?? '',
+                'message' => $msg,
                 'created_at' => now(),
                 'updated_at' => now() 
             ]);
             DB::commit();
-            return response()->json([
-                'message' => 'Xử lý yêu cầu thành công',
-                'code' => '200'
+
+            ContactService::sendNotificationMail([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? '',
+                'phone' => $validated['phone'],
+                'address' => $validated['address'] ?? '',
+                'message' => $msg,
+                'type_name' => 'Đăng ký nhận thông tin liên hệ / Khóa học',
+                'created_at' => now(),
             ]);
 
+            return response()->json([
+                'message' => 'Xử lý yêu cầu thành công',
+                'code' => '200',
+                'flag' => true
+            ]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th->getMessage());
+            \Illuminate\Support\Facades\Log::error('Ajax ContactController create error: ' . $th->getMessage());
             return response()->json([
-                'message' => 'Có vấn đề xảy ra trong quá trình xử lý',
-                'code' => '500'
+                'message' => 'Có vấn đề xảy ra trong quá trình xử lý: ' . $th->getMessage(),
+                'code' => '500',
+                'flag' => false
             ]);
         }
-
     }
 
      public function createScholar(Request $request){
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|regex:/^0[0-9]{9}$/',
-            'destination_area' => 'required|',
-            'apply_for' => 'required',
+            'email' => 'nullable|email',
+            'phone' => 'required|string',
+            'destination_area' => 'nullable',
+            'apply_for' => 'nullable',
+            'address' => 'nullable|string',
         ]);
-
-        // dd(12312423);
-
-        // $scholar = Scholar::with(['languages'])->find($validated['scholarshipType']);
 
         try {
             DB::beginTransaction();
+            $msg = '<div>
+                <h1>Đăng ký nhận tư vấn học bổng</h1>
+                <div>Loại học bổng: '.($validated['apply_for'] ?? '').'</div>
+                <div>Khu vực: '.($validated['destination_area'] ?? '').'</div>
+            </div>';
+
             DB::table('contacts')->insert([
                 'name' => $validated['name'],
-                'email' => $validated['email'],
+                'email' => $validated['email'] ?? '',
                 'phone' => $validated['phone'],
                 'address' => $validated['address'] ?? '',
-                'message' => '<div>
-                    <h1>Đăng ký nhận tư vấn học bổng</h1>
-                    <div>Loại học bổng: '.$validated['apply_for'].'</div>
-                    <div>Khu vực: '.$validated['destination_area'].'</div>
-                </div>',
+                'message' => $msg,
                 'created_at' => now(),
                 'updated_at' => now() 
             ]);
             DB::commit();
-            return response()->json([
-                'message' => 'Xử lý yêu cầu thành công',
-                'code' => '200'
+
+            ContactService::sendNotificationMail([
+                'name' => $validated['name'],
+                'email' => $validated['email'] ?? '',
+                'phone' => $validated['phone'],
+                'address' => $validated['address'] ?? '',
+                'message' => $msg,
+                'type_name' => 'Đăng ký tư vấn học bổng',
+                'created_at' => now(),
             ]);
 
+            return response()->json([
+                'message' => 'Xử lý yêu cầu thành công',
+                'code' => '200',
+                'flag' => true
+            ]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th->getMessage());
+            \Illuminate\Support\Facades\Log::error('Ajax createScholar error: ' . $th->getMessage());
             return response()->json([
                 'message' => 'Có vấn đề xảy ra trong quá trình xử lý',
-                'code' => '500'
+                'code' => '500',
+                'flag' => false
             ]);
         }
-
     }
 
     public function buyNow(Request $request){
          $validated = $request->validate([
                 'order_name'        => 'required|string|max:255',
-                'order_email'       => 'required|email',
-                'order_phone'       => 'required|regex:/^0[0-9]{9}$/',
-                'order_address'     => 'required|string|max:255',
+                'order_email'       => 'nullable|email',
+                'order_phone'       => 'required|string',
+                'order_address'     => 'nullable|string|max:255',
                 'order_title_prd'   => 'required|string|max:255',
                 'order_message'     => 'nullable|string',
             ]);
         try {
             DB::beginTransaction();
 
+            $msg = '
+                <div>
+                    <h1>Đặt mua / Tư vấn sản phẩm</h1>
+                    <div>Sản phẩm: ' . $validated['order_title_prd'] . '</div>
+                    <div>Lời nhắn: ' . ($validated['order_message'] ?? '') . '</div>
+                </div>';
+
             DB::table('contacts')->insert([
                 'name'       => $validated['order_name'],
-                'email'      => $validated['order_email'],
+                'email'      => $validated['order_email'] ?? '',
                 'phone'      => $validated['order_phone'],
-                'address'    => $validated['order_address'],
-                'message'    => '
-                    <div>
-                        <h1>Đặt mua sản phẩm</h1>
-                        <div>Sản phẩm: ' . $validated['order_title_prd'] . '</div>
-                        <div>Lời nhắn: ' . ($validated['order_message'] ?? '') . '</div>
-                    </div>',
+                'address'    => $validated['order_address'] ?? '',
+                'message'    => $msg,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             DB::commit();
 
+            ContactService::sendNotificationMail([
+                'name'         => $validated['order_name'],
+                'email'        => $validated['order_email'] ?? '',
+                'phone'        => $validated['order_phone'],
+                'address'      => $validated['order_address'] ?? '',
+                'message'      => $validated['order_message'] ?? '',
+                'product_name' => $validated['order_title_prd'],
+                'type_name'    => 'Đặt mua / Yêu cầu báo giá sản phẩm',
+                'created_at'   => now(),
+            ]);
+
             return response()->json([
                 'message' => 'Xử lý yêu cầu thành công',
-                'code'    => 200
+                'code'    => 'success'
             ]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-
+            \Illuminate\Support\Facades\Log::error('Ajax buyNow error: ' . $th->getMessage());
             return response()->json([
                 'message' => 'Có vấn đề xảy ra trong quá trình xử lý: ' . $th->getMessage(),
-                'code'    => 500
+                'code'    => 'error'
             ]);
         }
 

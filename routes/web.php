@@ -36,7 +36,7 @@ Route::group(['middleware' => ['locale']], function () {
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
 
-    Route::get('lien-he.html', [FeContactController::class, 'index'])->name('contact.index');
+    Route::get('lien-he.html', [FeContactController::class, 'index'])->name('fe.contact.index');
     Route::post('lien-he.html', [FeContactController::class, 'saveContact'])->name('contact.save');
     Route::get('/thumb', [App\Http\Controllers\ImageResizerController::class, 'resize'])->name('thumb');
 
