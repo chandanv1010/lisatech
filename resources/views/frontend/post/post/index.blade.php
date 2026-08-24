@@ -29,6 +29,7 @@
             // If no children, show siblings (children of the parent)
             if ($postCatalogue->parentid > 0) {
                 $parentCat = \App\Models\PostCatalogue::where('id', $postCatalogue->parentid)
+                    ->where('pubish', 2)
                     ->with([
                         'languages' => function ($q) use ($languageId) {
                             $q->where('language_id', $languageId);

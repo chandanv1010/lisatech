@@ -26,13 +26,13 @@ class PostRepository extends BaseRepository
 
     
 
-    public function getPostById(int $id = 0, $language_id = 0){
+    public function getPostById(int $id = 0, $language_id = 0, $condition = []){
         $publishColumn = SchemaCache::hasColumn('posts', 'publish') ? 'posts.publish' : 'posts.pubish';
         $canonicalSelect = SchemaCache::hasColumn('post_language', 'canonical') 
             ? 'tb2.canonical' 
             : DB::raw("(select canonical from routers where routers.module_id = posts.id and routers.controllers like '%PostController%' and routers.language_id = " . (int)$language_id . " limit 1) as canonical");
 
-        return $this->model->select([
+        $query = $this->model->select([
                 'posts.id',
                 'posts.post_catalogue_id',
                 'posts.image',
@@ -62,8 +62,21 @@ class PostRepository extends BaseRepository
         )
         ->join('post_language as tb2', 'tb2.post_id', '=','posts.id')
         ->with('post_catalogues')
-        ->where('tb2.language_id', '=', $language_id)
-        ->find($id);
+        ->where('tb2.language_id', '=', $language_id);
+
+        if (is_array($condition) && count($condition)) {
+            if (isset($condition[0]) && is_array($condition[0])) {
+                foreach ($condition as $cond) {
+                    $field = ($cond[0] === 'publish') ? str_replace('posts.', '', $publishColumn) : $cond[0];
+                    $query->where('posts.' . $field, $cond[1], $cond[2]);
+                }
+            } else if (count($condition) >= 3) {
+                $field = ($condition[0] === 'publish') ? str_replace('posts.', '', $publishColumn) : $condition[0];
+                $query->where('posts.' . $field, $condition[1], $condition[2]);
+            }
+        }
+
+        return $query->find($id);
     }
 
 }

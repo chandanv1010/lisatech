@@ -197,7 +197,7 @@ class ProductRepository extends BaseRepository
             $columns[] = DB::raw("'' as iframe");
         }
 
-        return $this->model->select($columns)
+        $query = $this->model->select($columns)
             ->join('product_language as tb2', 'tb2.product_id', '=', 'products.id')
             ->with([
                 'product_catalogues',
@@ -212,8 +212,19 @@ class ProductRepository extends BaseRepository
                     $query->where('status', '=', 1);
                 },
             ])
-            ->where('tb2.language_id', '=', $language_id)
-            ->find($id);
+            ->where('tb2.language_id', '=', $language_id);
+
+        if (is_array($condition) && count($condition)) {
+            if (isset($condition[0]) && is_array($condition[0])) {
+                foreach ($condition as $cond) {
+                    $query->where('products.' . $cond[0], $cond[1], $cond[2]);
+                }
+            } else if (count($condition) >= 3) {
+                $query->where('products.' . $condition[0], $condition[1], $condition[2]);
+            }
+        }
+
+        return $query->find($id);
     }
 
     public function findProductForPromotion($condition = [], $relation = [])

@@ -1,12 +1,21 @@
 @php
+    if (is_array($product) && isset($product['publish']) && (int)$product['publish'] !== 2) {
+        return;
+    }
+    if (is_object($product) && isset($product->publish) && (int)$product->publish !== 2) {
+        return;
+    }
+
     $title = is_array($product) ? ($product['title'] ?? $product['name'] ?? '') : ($product->title ?? $product->name ?? '');
     if (empty($title) && is_object($product) && method_exists($product, 'languages') && $product->languages) {
         $title = $product->languages->first()?->pivot?->name ?? '';
     }
     if (empty($title) && is_array($product) && !empty($product['id'])) {
-        $prodObj = \App\Models\Product::with('languages')->find($product['id']);
+        $prodObj = \App\Models\Product::with('languages')->where('publish', 2)->find($product['id']);
         if ($prodObj) {
             $title = $prodObj->languages->first()?->pivot?->name ?? $prodObj->name ?? '';
+        } else {
+            return;
         }
     }
 

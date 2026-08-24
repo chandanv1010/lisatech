@@ -103,7 +103,7 @@
                     @endphp
                     
                     <ul class="category-list">
-                        @foreach ($widgets['hero-sidebar']->object as $item)
+                        @foreach ($widgets['hero-sidebar']->object->filter(fn($i) => ((int)($i->publish ?? $i->pubish ?? 2)) === 2) as $item)
                             @php
                                 $lang = $item->languages->first();
                                 $name = $lang->name ?? '';
@@ -152,7 +152,7 @@
 <section class="customer-type">
     <div class="customer-type__container">
         @if (isset($widgets['customer-types']) && $widgets['customer-types']->object)
-            @foreach ($widgets['customer-types']->object as $index => $customerType)
+            @foreach ($widgets['customer-types']->object->filter(fn($i) => ((int)($i->pubish ?? $i->publish ?? 2)) === 2) as $index => $customerType)
                 @php
                     $albumData = is_array($customerType->album ?? null)
                         ? $customerType->album
@@ -230,11 +230,11 @@
                     1324 => 1157,
                 ];
                 // Fetch the product catalogues in one query
-                $catalogues = \App\Models\ProductCatalogue::whereIn('id', array_values($catalogueIds))->get()->keyBy('id');
+                $catalogues = \App\Models\ProductCatalogue::whereIn('id', array_values($catalogueIds))->where('publish', 2)->get()->keyBy('id');
             @endphp
 
             @if ($productCatWidget && $productCatWidget->object)
-                @foreach ($productCatWidget->object as $productCat)
+                @foreach ($productCatWidget->object->filter(fn($i) => ((int)($i->pubish ?? $i->publish ?? 2)) === 2) as $productCat)
                     @php
                         $pcLang = $productCat->languages->first();
                         
@@ -384,7 +384,7 @@
             }
         };
 
-        $featuredProducts = $widgets['featured-products']->object ?? collect();
+        $featuredProducts = ($widgets['featured-products']->object ?? collect())->filter(fn($i) => ((int)($i->publish ?? $i->pubish ?? 2)) === 2);
         if ($featuredProducts->count() < 16) {
             $langId = config('app.language_id', 1);
             $pool = App\Models\Product::where('publish', 2)
@@ -531,7 +531,7 @@
                 @if ($widgets['services']->model === 'PostCatalogue' && $widgets['services']->object)
                     @foreach ($widgets['services']->object as $catalogue)
                         @php
-                            $posts = $catalogue->posts ?? collect();
+                            $posts = ($catalogue->posts ?? collect())->filter(fn($i) => ((int)($i->pubish ?? $i->publish ?? 2)) === 2);
                         @endphp
                         @foreach ($posts as $post)
                             @php
@@ -632,7 +632,7 @@
                 @if ($widgets['why-lisatech']->model === 'PostCatalogue' && $widgets['why-lisatech']->object)
                     @foreach ($widgets['why-lisatech']->object as $catalogue)
                         @php
-                            $posts = $catalogue->posts ?? collect();
+                            $posts = ($catalogue->posts ?? collect())->filter(fn($i) => ((int)($i->pubish ?? $i->publish ?? 2)) === 2);
                         @endphp
                         @foreach ($posts as $post)
                             @php
@@ -705,7 +705,7 @@
                 @if ($widgets['news']->model === 'PostCatalogue' && $widgets['news']->object)
                     @foreach ($widgets['news']->object as $catalogue)
                         @php
-                            $posts = $catalogue->posts ?? collect();
+                            $posts = ($catalogue->posts ?? collect())->filter(fn($i) => ((int)($i->pubish ?? $i->publish ?? 2)) === 2);
                             $posts = $posts->take(4);
                         @endphp
                         @foreach ($posts as $news)
