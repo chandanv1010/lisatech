@@ -24,6 +24,14 @@
 			'3' => 'Yêu cầu báo giá',
 			'4' => 'Liên hệ kinh doanh',
 		],
+		// contacts.status — 1 xếp trước 2 nên chỉ cần sắp xếp tăng dần là
+		// liên hệ chưa xử lý tự lên đầu danh sách.
+		'contactStatus' => [
+			'1' => 'Chưa xử lý',
+			'2' => 'Đã xử lý',
+		],
+		'contactStatusPending' => 1,
+		'contactStatusDone' => 2,
 		'contactTypeQuote' => 3,
 		'contactTypeBusiness' => 4,
 		'suffix' => '.html',

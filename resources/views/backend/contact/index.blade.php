@@ -9,6 +9,7 @@
             <div class="ibox-content">
                 <!-- @include('backend.contact.component.filter') -->
                 @include('backend.contact.component.table')
+                @include('backend.contact.component.script')
             </div>
         </div>
     </div>

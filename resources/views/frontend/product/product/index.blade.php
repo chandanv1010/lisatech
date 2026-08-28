@@ -924,8 +924,11 @@
 
             <form action="{{ route('contact.save') }}" method="post" class="uk-form">
                 @csrf
-                <input type="hidden" name="address"
-                    value="{{ __('frontend.request_consultation') }}: {{ $DetailProducts['title'] }} (ID: {{ $DetailProducts['id'] }})">
+                {{-- Trước đây chỗ này nhồi "Yêu cầu tư vấn sản phẩm: <tên> (ID: n)"
+                     vào trường address, nên trong trang quản trị nội dung tư vấn
+                     hiện ra ở cột Địa chỉ. Bảng contacts vốn đã có sẵn cột
+                     product_id đúng cho việc này. --}}
+                <input type="hidden" name="product_id" value="{{ $DetailProducts['id'] }}">
 
                 <div class="form-group" style="margin-bottom: 14px !important;">
                     <input type="text" name="name" required class="form-input"

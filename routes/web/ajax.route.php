@@ -48,6 +48,11 @@ Route::group(['middleware' => ['admin', 'locale', 'backend_default_locale']], fu
     Route::post('ajax/sort', [HandlerController::class, 'sort'])->name('ajax.sort');
     Route::post('ajax/changeStatusField', [HandlerController::class, 'changeFieldStatus'])->name('ajax.changeFieldStatus');
     Route::get('ajax/dashboard/findModelObject', [AjaxDashboardController::class, 'findModelObject'])->name('ajax.dashboard.findModelObject');
+    // Đánh dấu liên hệ đã xử lý. Nằm trong nhóm admin chứ không nằm cùng các
+    // route ajax/contact/* phía dưới - những cái đó là form công khai của
+    // khách, còn cái này phải đăng nhập mới gọi được.
+    Route::post('ajax/contact/updateStatus', [\App\Http\Controllers\Backend\V1\ContactController::class, 'updateStatus'])->name('ajax.contact.updateStatus');
+
 });
 
 Route::group(['middleware' => ['locale']], function () {

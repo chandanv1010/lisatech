@@ -60,7 +60,7 @@ class ContactController extends FrontendController
     public function save(Request $request){
         try {
             DB::beginTransaction();
-            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type', 'product_id']);
             $payload['name'] = $payload['name'] ?? $request->input('fullname') ?? 'Khách hàng';
             $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
             $contact = Contact::create($payload);
@@ -89,7 +89,7 @@ class ContactController extends FrontendController
     public function saveContact(Request $request){
         try {
             DB::beginTransaction();
-            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type']);
+            $payload = $request->only(['email', 'name', 'phone', 'address', 'message', 'type', 'product_id']);
             $payload['name'] = $payload['name'] ?? $request->input('fullname') ?? 'Khách hàng';
             $payload['type'] = (int) ($payload['type'] ?? config('apps.general.contactTypeBusiness'));
             $contact = Contact::create($payload);

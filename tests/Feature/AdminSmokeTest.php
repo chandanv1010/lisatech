@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AdminSmokeTest extends TestCase
@@ -22,11 +23,22 @@ class AdminSmokeTest extends TestCase
     /** Bug 1 — "Quản lý liên hệ" used to 500 on "Unknown column 'publish'". */
     public function test_contact_index_loads_and_lists_contacts(): void
     {
+        // Lấy tên theo đúng thứ tự mà trang dùng, thay vì ghi cứng một cái tên.
+        // Danh sách giờ xếp liên hệ chưa xử lý lên đầu, nên bất kỳ ai bấm
+        // "đã xử lý" cho một liên hệ là nó rời trang một - và một bài test ghi
+        // cứng tên sẽ đỏ lên vì tính năng chạy đúng, chứ không phải vì hỏng.
+        $dauTien = DB::table('contacts')
+            ->whereNull('deleted_at')
+            ->orderBy('status')
+            ->orderByDesc('id')
+            ->value('name');
+
         $res = $this->actingAs($this->admin())->get('/contact/index');
 
         $res->assertStatus(200);
-        // The newest real submission must actually be on the page.
-        $res->assertSee('Trần Văn An', false);
+        // Một liên hệ có thật phải hiện ra trên trang.
+        $this->assertNotNull($dauTien);
+        $res->assertSee($dauTien, false);
         // And the admin must be able to tell the channel apart at a glance.
         $res->assertSee('Loại', false);
         $res->assertSee('Website cũ', false);

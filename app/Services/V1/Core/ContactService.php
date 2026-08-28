@@ -36,7 +36,17 @@ class ContactService extends BaseService
             $condition, 
             $perPage,
             ['path' => 'contact/index'], 
+            // Liên hệ chưa xử lý phải nằm trên đầu. Quy ước 1 = chưa, 2 = rồi
+            // nên xếp tăng dần là đủ, không cần biểu thức sắp xếp đặc biệt.
+            // Trong mỗi nhóm thì mới nhất lên trước, giữ đúng nếp cũ của trang.
+            [['status', 'ASC'], ['id', 'DESC']],
         );
+
+        // Nạp sẵn bằng vài truy vấn, thay vì để mỗi dòng trong bảng tự đi hỏi
+        // cơ sở dữ liệu một lần. Tên sản phẩm nằm ở bảng ngôn ngữ nên phải
+        // nạp kèm quan hệ đó.
+        $contacts->getCollection()->load(['handler', 'products.languages']);
+
         return $contacts;
     }
 
@@ -130,6 +140,62 @@ class ContactService extends BaseService
         }
     }
 
+    /**
+     * Đổi trạng thái xử lý của một liên hệ.
+     *
+     * Người xử lý được ghi cùng lúc chứ không phải chọn tay: người bấm nút
+     * chính là người xử lý. Chuyển ngược về "chưa xử lý" thì xoá luôn tên đi,
+     * vì giữ lại sẽ thành lời khai sai rằng ai đó đang phụ trách việc này.
+     *
+     * @param  int  $userId  người đang đăng nhập
+     * @return array|null  dữ liệu để bảng cập nhật lại đúng dòng vừa đổi
+     */
+    public function updateHandlingStatus(int $id, int $status, ?int $userId): ?array
+    {
+        // PHP tự chuyển khoá mảng dạng số về kiểu integer, nên khoá của
+        // contactStatus là 1 và 2 chứ không phải '1' và '2'. So sánh chặt với
+        // chuỗi ở đây sẽ không bao giờ khớp và mọi cập nhật đều bị từ chối.
+        $trangThaiHopLe = array_map('intval', array_keys(config('apps.general.contactStatus', [])));
+
+        if (!in_array($status, $trangThaiHopLe, true)) {
+            return null;
+        }
+
+        $daXuLy = $status === (int) config('apps.general.contactStatusDone');
+
+        DB::beginTransaction();
+
+        try {
+            $contact = $this->contactRepository->findById($id);
+
+            if ($contact === null) {
+                DB::rollBack();
+
+                return null;
+            }
+
+            $contact->status = $status;
+            $contact->handled_by = $daXuLy ? $userId : null;
+            $contact->save();
+
+            DB::commit();
+
+            $contact->load('handler');
+
+            return [
+                'id' => $contact->id,
+                'status' => (int) $contact->status,
+                'status_label' => config('apps.general.contactStatus')[$contact->status] ?? '',
+                'handler_name' => $contact->handler->name ?? '',
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('ContactService updateStatus error: ' . $e->getMessage());
+
+            return null;
+        }
+    }
+
     public function destroy($id){
         DB::beginTransaction();
         try{
@@ -160,7 +226,11 @@ class ContactService extends BaseService
             'gender',
             'created_at',
             'type',
-            'message'
+            'message',
+            'status',
+            // Cần có mặt ở đây thì quan hệ handler mới nạp được: truy vấn này
+            // chọn cột tường minh, thiếu khoá ngoại là quan hệ trả về rỗng.
+            'handled_by',
         ];
     }
 }

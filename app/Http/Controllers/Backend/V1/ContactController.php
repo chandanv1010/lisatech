@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 use App\Services\V1\Core\ContactService;
 use App\Repositories\Core\ContactRepository;
@@ -43,6 +44,36 @@ class ContactController extends Controller
             'config',
             'contacts'
         ));
+    }
+
+    /**
+     * Đánh dấu một liên hệ đã xử lý hay chưa.
+     *
+     * Dùng chung quyền với trang danh sách: ai xem được danh sách thì đánh dấu
+     * được, không phát sinh thêm một quyền nữa để rồi không ai gán.
+     */
+    public function updateStatus(Request $request)
+    {
+        $this->authorize('modules', 'contact.index');
+
+        $ketQua = $this->contactService->updateHandlingStatus(
+            (int) $request->input('id'),
+            (int) $request->input('status'),
+            Auth::id(),
+        );
+
+        if ($ketQua === null) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Không cập nhật được trạng thái. Hãy thử lại.',
+            ], 422);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'Cập nhật trạng thái thành công',
+            'data' => $ketQua,
+        ]);
     }
 
     public function delete($id){
