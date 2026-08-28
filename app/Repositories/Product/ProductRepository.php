@@ -191,6 +191,14 @@ class ProductRepository extends BaseRepository
                 'tb2.canonical',
             ];
 
+        // Thiếu cột này là lý do ô "Ứng dụng" luôn trắng khi mở lại trang sửa:
+        // giá trị ghi xuống được, nhưng truy vấn không lấy lên nên CKEditor
+        // hiện rỗng, rồi lần lưu kế tiếp ghi đè chính nó bằng chuỗi rỗng.
+        // Trang chi tiết phía khách cũng đọc $DetailProducts['applications'].
+        if (SchemaCache::hasColumn('product_language', 'applications')) {
+            $columns[] = 'tb2.applications';
+        }
+
         if (SchemaCache::hasColumn('products', 'iframe')) {
             $columns[] = 'products.iframe';
         } else {
