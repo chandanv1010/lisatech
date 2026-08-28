@@ -5,23 +5,38 @@
 <nav class="navbar-default navbar-static-side" role="navigation">
     <div class="sidebar-collapse">
         <ul class="nav metismenu" id="side-menu">
+            {{--
+                Khối tài khoản. Trước đây là dữ liệu mẫu của theme: ảnh
+                profile_small.jpg, tên "David Williams", chức danh "Art Director",
+                cùng ba liên kết trỏ tới profile.html / contacts.html /
+                mailbox.html - những trang không tồn tại trong dự án.
+
+                Giờ hiện tên và nhóm quyền của chính người đang đăng nhập. Bỏ
+                ảnh đại diện vì bảng users có cột image nhưng gần như không ai
+                đặt, nên nó chỉ hiện ra một ô ảnh vỡ.
+            --}}
+            @php
+                $taiKhoan = auth()->user();
+                $nhomQuyen = optional(optional($taiKhoan)->user_catalogues)->name;
+            @endphp
             <li class="nav-header">
-                <div class="dropdown profile-element"> <span>
-                        <img alt="image" class="img-circle" src="backend/img/profile_small.jpg" />
-                         </span>
+                <div class="dropdown profile-element">
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                        <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">David Williams</strong>
-                         </span> <span class="text-muted text-xs block">Art Director <b class="caret"></b></span> </span> </a>
+                        <span class="clear">
+                            <span class="block m-t-xs">
+                                <strong class="font-bold">{{ optional($taiKhoan)->name }}</strong>
+                            </span>
+                            <span class="text-muted text-xs block">
+                                {{ $nhomQuyen ?? '' }} <b class="caret"></b>
+                            </span>
+                        </span>
+                    </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a href="profile.html">Profile</a></li>
-                        <li><a href="contacts.html">Contacts</a></li>
-                        <li><a href="mailbox.html">Mailbox</a></li>
-                        <li class="divider"></li>
-                        <li><a href="{{ route('auth.logout') }}">Logout</a></li>
+                        <li><a href="{{ route('auth.logout') }}">Đăng xuất</a></li>
                     </ul>
                 </div>
                 <div class="logo-element">
-                    IN+
+                    {{ mb_strtoupper(mb_substr(config('app.name', 'CMS'), 0, 3)) }}
                 </div>
             </li>
             @foreach(__('sidebar.module') as $key => $val)

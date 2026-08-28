@@ -15,3 +15,6 @@
 /db_old/
 /public/canonical_comparison.html
 /public/seo_sync_report.html
+
+# Symlink do "php artisan storage:link" sinh ra, tuy tung may
+/public/storage
