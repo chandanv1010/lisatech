@@ -45,7 +45,12 @@ class BaseRepository
                 ->customOrderBy($orderBy ?? null)
                 // ->toSql();
                 ->paginate($perPage)
-                ->withQueryString()->withPath(env('APP_URL').$extend['path']);
+                // url() thay vì nối chuỗi thẳng: env('APP_URL').'contact/index'
+                // cho ra "http://host:8001contact/index" - thiếu hẳn dấu gạch
+                // chéo, nên mọi liên kết phân trang đều dẫn tới hư không.
+                // Ngoài ra env() đọc lúc chạy sẽ trả null khi cấu hình đã được
+                // cache trên máy chủ thật, lúc đó đường dẫn còn mất luôn tên miền.
+                ->withQueryString()->withPath(url($extend['path'] ?? ''));
     }
 
     public function create(array $payload = []){
