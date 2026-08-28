@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use DateTime;
@@ -38,7 +39,15 @@ class AppServiceProvider extends ServiceProvider
 
         /** @noinspection PhpUndefinedMethodInspection */
 
-
+        // Sanctum nạp migration của nó thẳng từ vendor, nên xoá file trong
+        // database/migrations không loại được. Bảng personal_access_tokens đã
+        // có sẵn trong cơ sở dữ liệu dựng từ dump, nên mỗi lần chạy migrate
+        // trên máy chủ nó lại đòi CREATE TABLE và ngã với lỗi "already exists".
+        //
+        // Dự án này không dựng cơ sở dữ liệu bằng migration, nên bảo Sanctum
+        // đứng ngoài là đúng bản chất. Gọi trong register() vì provider của nó
+        // đăng ký migration lúc boot, mà boot chạy sau toàn bộ register.
+        Sanctum::ignoreMigrations();
     }
 
     /**
