@@ -298,6 +298,10 @@
         .category-title {
             color: #0b4a92;
             font-size: 26px !important;
+            /* Theme dat h1..h6 { line-height: 20px } co dinh trong style.css, nho hon
+               ca font-size 26px nen tieu de nhieu dong bi dinh vao nhau. Dat lai theo
+               ti le de moi dong co khoang cach dung. */
+            line-height: 1.35 !important;
             font-weight: 800 !important;
             text-transform: uppercase !important;
             margin-top: 0 !important;
@@ -305,6 +309,9 @@
             font-family: var(--font-base, 'Inter', sans-serif);
             border-bottom: 2px solid #edf2f7;
             padding-bottom: 15px;
+            /* Tieu de dai khong co dau cach dai (vd ma san pham) van xuong dong dung */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .category-description-wrapper {
@@ -868,6 +875,14 @@
         }
 
         @media (max-width: 767px) {
+            /* Tieu de danh muc: giam co chu cho vua man hinh, giu line-height theo ti le */
+            .category-title {
+                font-size: 19px !important;
+                line-height: 1.35 !important;
+                margin-bottom: 14px !important;
+                padding-bottom: 10px;
+            }
+
             /* Optimize image height to avoid extremely tall product cards on 2-column grid */
             .product-thumb-container {
                 height: 160px !important;

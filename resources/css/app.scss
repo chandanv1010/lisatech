@@ -3970,3 +3970,134 @@ ul {
         color: var(--color-primary);
     }
 }
+
+/* ============================================================
+   TABLE TRONG NOI DUNG SOAN THAO (san pham / bai viet / danh muc)
+   ------------------------------------------------------------
+   Noi dung nhap tu CKEditor chi co border tho cua trinh soan thao.
+   Style lai theo dung bo bien mau cua site (--color-primary /
+   --color-secondary / --color-border) de dong bo voi giao dien.
+
+   CHI nham vao BANG DU LIEU THAT: dieu kien `:has(td + td)` /
+   `:has(th + th)` nghia la bang phai co it nhat 2 cot. Rat nhieu
+   noi dung cu dung <table> 1 o lam khung layout bao quanh doan van
+   — neu style ca nhung bang do thi doan van se bi vien khung, hong
+   giao dien.
+   ============================================================ */
+
+@mixin editor-table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin: 22px 0;
+    line-height: 1.6;
+    color: var(--color-text-main, #334155);
+    background: var(--color-white, #fff);
+    border: 1px solid var(--color-border, rgba(14, 60, 125, .12)) !important;
+    border-radius: 8px;
+    overflow: hidden;
+    border-spacing: 0;
+    /* CKEditor set font-family: Arial inline -> keo ve font cua site */
+    font-family: var(--font-base, 'Inter', sans-serif) !important;
+}
+
+/* CKEditor gan inline style (padding/border/font) len tung o. Inline style
+   thang moi rule thuong, nen phai !important thi style moi ap dung dong bo. */
+@mixin editor-cell {
+    border: 1px solid var(--color-border, rgba(14, 60, 125, .12)) !important;
+    padding: 11px 14px !important;
+    font-family: var(--font-base, 'Inter', sans-serif) !important;
+    text-align: left;
+    vertical-align: middle;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+@mixin editor-head {
+    background: var(--color-primary, #0e3c7d) !important;
+    color: var(--color-white, #fff) !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    border-color: rgba(255, 255, 255, .18) !important;
+    white-space: nowrap;
+}
+
+.content-detail-new,
+.desc-content,
+.category-description {
+
+    table:has(td + td),
+    table:has(th + th) {
+        @include editor-table;
+
+        th,
+        td {
+            @include editor-cell;
+        }
+
+        /* Hang tieu de: du CKEditor dung <thead> hay chi <th> o hang dau */
+        thead th,
+        thead td,
+        tr:first-child th {
+            @include editor-head;
+
+            /* Giu chu trang ke ca khi CKEditor set mau inline ben trong o */
+            * {
+                color: var(--color-white, #fff) !important;
+                background: transparent !important;
+            }
+        }
+
+        /* Ke soc cho de doc theo hang */
+        tbody tr:nth-child(even) {
+            background: rgba(14, 60, 125, .035);
+        }
+
+        tbody tr:hover {
+            background: rgba(250, 147, 1, .09);
+        }
+
+        caption {
+            caption-side: bottom;
+            padding-top: 10px;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--color-text-light, #64748b);
+            text-align: left;
+        }
+    }
+}
+
+/* Bang rong hon khung thi cuon ngang trong hop rieng, khong day ca trang
+   bi tran ngang. function.js da tu boc moi <table> bang .uk-overflow-container. */
+.content-detail-new .uk-overflow-container,
+.desc-content .uk-overflow-container,
+.category-description .uk-overflow-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767px) {
+    .content-detail-new,
+    .desc-content,
+    .category-description {
+
+        table:has(td + td),
+        table:has(th + th) {
+            font-size: 13px;
+            margin: 16px 0;
+
+            th,
+            td {
+                padding: 8px 10px !important;
+            }
+
+            thead th,
+            thead td,
+            tr:first-child th {
+                font-size: 12.5px !important;
+            }
+        }
+    }
+}
