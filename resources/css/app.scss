@@ -2908,6 +2908,26 @@ ul {
         }
     }
 
+    // Dau xac nhan da thong bao Bo Cong Thuong, dat duoi form dang ky nhan tin
+    &__gov-badge {
+        display: inline-block;
+        margin-top: 18px;
+        line-height: 0;
+
+        img {
+            width: 180px;
+            height: auto;
+            max-width: 100%;
+            // Anh goc co nen trang, bo tron goc cho hop voi nen xanh cua footer
+            border-radius: 4px;
+            transition: opacity 0.2s;
+        }
+
+        &:hover img {
+            opacity: 0.85;
+        }
+    }
+
     // --- 7. BOTTOM BAR ---
     &__bottom {
         background-color: rgba(0, 45, 108, 1);
@@ -3969,7 +3989,7 @@ ul {
         transform: rotate(45deg);
         color: var(--color-primary);
     }
-}
+}
 
 /* ============================================================
    TABLE TRONG NOI DUNG SOAN THAO (san pham / bai viet / danh muc)

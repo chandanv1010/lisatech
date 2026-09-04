@@ -167,6 +167,15 @@
                         <input type="email" name="email" placeholder="{{ __('frontend.subscribe_placeholder') }}" required>
                         <button type="submit">{{ __('frontend.subscribe') }}</button>
                     </form>
+
+                    {{-- Dau xac nhan da thong bao voi Bo Cong Thuong --}}
+                    <a class="footer-lisa__gov-badge"
+                       href="https://online.gov.vn/nen-tang/37d6f6f1-57b4-4974-bf44-e35d157cfcef"
+                       target="_blank" rel="noopener nofollow"
+                       title="Đã thông báo Bộ Công Thương">
+                        <img src="https://fileserver.online.gov.vn/uploads/Resources/iconxacnhan/DaThongBao.png"
+                             alt="Đã thông báo Bộ Công Thương" width="180" height="68" loading="lazy">
+                    </a>
                 </div>
             </div>
 
