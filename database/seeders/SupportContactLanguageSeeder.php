@@ -101,7 +101,54 @@ class SupportContactLanguageSeeder extends Seeder
             $written++;
         }
 
-        $this->command?->info("Support contacts: ghi {$written} key, bo qua {$skipped} key da co du lieu that.");
+        $cleared = $this->clearLeftoverPlaceholders(array_keys($values));
+
+        $this->command?->info(
+            "Support contacts: ghi {$written} key, bo qua {$skipped} key da co du lieu that, "
+            . "xoa {$cleared} key con placeholder."
+        );
+    }
+
+    /**
+     * Xoa cac o support_* con lai dang giu placeholder.
+     *
+     * Blade da bo logic doan placeholder va hien thi thang du lieu trong DB, nen
+     * neu de lai "Ho tro 5" / "0973 999 999" thi khach se nhin thay rac. Dat ve
+     * rong de o do khong duoc render.
+     *
+     * @param array $handled Cac keyword vua duoc ghi du lieu that, khong dung den.
+     */
+    private function clearLeftoverPlaceholders(array $handled): int
+    {
+        $rows = DB::table('systems')
+            ->where('language_id', self::TARGET_LANGUAGE)
+            ->where('keyword', 'LIKE', 'support_name_%')
+            ->orWhere(function ($q) {
+                $q->where('language_id', self::TARGET_LANGUAGE)
+                    ->where(function ($w) {
+                        $w->where('keyword', 'LIKE', 'support_phone_%')
+                            ->orWhere('keyword', 'LIKE', 'support_zalo_%');
+                    });
+            })
+            ->get();
+
+        $cleared = 0;
+        foreach ($rows as $row) {
+            if (in_array($row->keyword, $handled, true)) {
+                continue;
+            }
+            if (trim((string) $row->content) === '' || !$this->isPlaceholder($row->content)) {
+                continue;
+            }
+
+            DB::table('systems')
+                ->where('keyword', $row->keyword)
+                ->where('language_id', self::TARGET_LANGUAGE)
+                ->update(['content' => '']);
+            $cleared++;
+        }
+
+        return $cleared;
     }
 
     /**

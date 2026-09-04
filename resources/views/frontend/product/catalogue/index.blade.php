@@ -143,48 +143,8 @@
                             @endif
                         </ul>
                     </div>
-
                     <!-- Online Support Panel -->
-                    <div class="aside-panel support-sidebar-panel">
-                        <h3 class="aside-title">{{ __('frontend.online_support') }}</h3>
-                        <div class="support-list">
-                            @php
-                                $defaultSupports = [
-                                    1 => ['name' => 'Nguyên', 'phone' => '0939971988', 'zalo' => 'https://zalo.me/0939971988'],
-                                    2 => ['name' => 'Quân', 'phone' => '0944 411 023', 'zalo' => 'https://zalo.me/0944411023'],
-                                    3 => ['name' => 'Hằng', 'phone' => '0369363224', 'zalo' => 'https://zalo.me/0369363224'],
-                                    4 => ['name' => 'Vân', 'phone' => '0359977896', 'zalo' => 'https://zalo.me/0359977896'],
-                                ];
-                            @endphp
-                            @for ($i = 1; $i <= 4; $i++)
-                                @php
-                                    $rawName = $system['support_name_' . $i] ?? '';
-                                    $rawPhone = $system['support_phone_' . $i] ?? '';
-                                    $rawZalo = $system['support_zalo_' . $i] ?? '';
-
-                                    $isDummyName = empty($rawName) || str_contains(mb_strtolower($rawName), 'hỗ trợ');
-                                    $isDummyPhone = empty($rawPhone) || str_contains($rawPhone, '0973 999 999') || str_contains($rawPhone, '0973999999');
-
-                                    $sName = $isDummyName ? $defaultSupports[$i]['name'] : $rawName;
-                                    $sPhone = $isDummyPhone ? $defaultSupports[$i]['phone'] : $rawPhone;
-                                    $sZalo = (empty($rawZalo) || $isDummyPhone) ? $defaultSupports[$i]['zalo'] : $rawZalo;
-                                @endphp
-                                @if (!empty($sName) && !empty($sPhone))
-                                    <div class="support-item">
-                                        <div class="support-info-left">
-                                            <h4 class="support-name">{{ $sName }}</h4>
-                                            <p class="support-hotline">Hotline: {{ $sPhone }}</p>
-                                        </div>
-                                        @if (!empty($sZalo))
-                                            <a href="{{ $sZalo }}" target="_blank" class="support-zalo-link" title="Chat Zalo">
-                                                <img src="{{ asset('frontend/resources/img/zalo-icon.png') }}" alt="Zalo" class="zalo-icon-img" onerror="this.onerror=null;this.src='https://zalo.me/favicon.ico'">
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endif
-                            @endfor
-                        </div>
-                    </div>
+                    @include('frontend.component.support-sidebar')
 
                 </div>
 
